@@ -60,11 +60,11 @@
 
     <section id="personagens" class="section alt">
       <div class="section-title">
-        <p class="eyebrow">02 • VAGAS</p>
-        <h2>Personagens</h2>
-        <p><span id="availableCount">0</span> disponíveis • <span id="occupiedCount">0</span> ocupados</p>
+        <p class="eyebrow">02 • FECHADOS</p>
+        <h2>🔒 Personagens Fechados</h2>
+        <p>Aqui aparecem os personagens já aprovados pela administração.</p>
       </div>
-      <div id="characterGrid" class="character-grid"></div>
+      <div id="closedCharacters" class="character-grid"></div>
     </section>
 
     <section id="regras" class="section">
@@ -168,17 +168,22 @@ function escapeHtml(v){return String(v ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;
 function setStatus(text, cls='status'){const el=document.getElementById('status');el.className=cls+' full';el.textContent=text;}
 
 function render(){
-  const grid=document.getElementById("characterGrid"), select=document.getElementById("personagem");
-  grid.innerHTML="";
+  const closed=document.getElementById("closedCharacters"), select=document.getElementById("personagem");
   select.innerHTML='<option value="">Selecione um personagem</option><option value="__custom__">✨ Quero ser outro personagem</option>';
   characters.forEach(([name,anime])=>{
-    const busy=occupied.includes(name);
-    grid.insertAdjacentHTML("beforeend",`<article class="character"><h3>${escapeHtml(name)}</h3><p>${escapeHtml(anime)}</p><span class="badge ${busy?'occupied':'available'}">${busy?'OCUPADO':'DISPONÍVEL'}</span></article>`);
-    if(!busy) select.insertAdjacentHTML("beforeend",`<option value="${escapeHtml(name)}">${escapeHtml(name)} — ${escapeHtml(anime)}</option>`);
+    if(!occupied.includes(name)){
+      select.insertAdjacentHTML("beforeend",`<option value="${escapeHtml(name)}">${escapeHtml(name)} — ${escapeHtml(anime)}</option>`);
+    }
   });
-  const listed=occupied.filter(x=>characters.some(c=>c[0]===x)).length;
-  document.getElementById("availableCount").textContent=Math.max(0,characters.length-listed)+" + opção livre";
-  document.getElementById("occupiedCount").textContent=listed;
+  if(!occupied.length){
+    closed.innerHTML='<p class="request-empty">📭 Nenhum personagem foi fechado ainda.</p>';
+  } else {
+    closed.innerHTML=occupied.map(name=>{
+      const item=characters.find(c=>c[0]===name);
+      const data=item ? {anime:item[1]} : {};
+      return `<article class="character"><h3>${escapeHtml(name)}</h3><p>${escapeHtml(data.anime||"Personagem personalizado")}</p><span class="badge occupied">🔒 FECHADO</span></article>`;
+    }).join("");
+  }
   if(adminLogged) renderRequests();
 }
 
