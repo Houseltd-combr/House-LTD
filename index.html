@@ -133,7 +133,7 @@
           <h2 style="font-size:30px">Gerenciar vagas</h2>
           <p>Abra, feche ou libere personagens diretamente pelo site.</p>
         </div>
-        <div id="adminControls" class="admin-controls"></div>
+        <div id="adminLogin" class="admin-login"><p>🔒 Área exclusiva da administração</p><input id="adminPassword" type="password" placeholder="Senha da administração"><button class="button" type="button" onclick="loginAdmin()">Entrar</button><small id="loginStatus"></small></div><div id="adminPanel" style="display:none"><div id="adminControls" class="admin-controls"></div><button class="mini-btn danger" type="button" onclick="logoutAdmin()">Sair do painel</button></div>
         <p class="admin-note">⚠️ Este painel salva as alterações apenas neste navegador. Para todos os membros verem as mesmas vagas, precisaremos conectar uma base de dados.</p>
       </div>
       <div class="notice">
@@ -186,6 +186,7 @@ function render(){
   document.getElementById("occupiedCount").textContent = listedOccupied + listedClosed;
 
   const controls = document.getElementById("adminControls");
+  if(!controls) return;
   controls.innerHTML = characters.map(([name, anime])=>{
     const busy = occupied.includes(name);
     const shut = closed.includes(name);
@@ -195,6 +196,28 @@ function render(){
     return `<div class="admin-row"><div><b>${name}</b><br><small>${anime} • ${state}</small></div>${action}</div>`;
   }).join("");
 }
+const ADMIN_PASSWORD = "HOUSEALLADM";
+function loginAdmin(){
+  const value = document.getElementById("adminPassword").value;
+  if(value === ADMIN_PASSWORD){
+    sessionStorage.setItem("houseAllAdmin", "1");
+    showAdmin();
+  } else {
+    document.getElementById("loginStatus").textContent = "Senha incorreta.";
+  }
+}
+function showAdmin(){
+  document.getElementById("adminLogin").style.display = "none";
+  document.getElementById("adminPanel").style.display = "block";
+}
+function logoutAdmin(){
+  sessionStorage.removeItem("houseAllAdmin");
+  document.getElementById("adminLogin").style.display = "block";
+  document.getElementById("adminPanel").style.display = "none";
+  document.getElementById("adminPassword").value = "";
+}
+if(sessionStorage.getItem("houseAllAdmin") === "1") showAdmin();
+
 function toggleClosed(name){
   const closed = getClosed();
   const i = closed.indexOf(name);
