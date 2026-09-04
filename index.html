@@ -130,7 +130,25 @@
   </section>
 
   <footer>HOUSE ALL • CENTRAL DE RECEPÇÃO</footer>
-  <script>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, setDoc, addDoc, deleteDoc, onSnapshot, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCRUNymKVh-UxKkSvNEUZkzAjmRi_4_AQU",
+  authDomain: "house-ltd.firebaseapp.com",
+  projectId: "house-ltd",
+  storageBucket: "house-ltd.firebasestorage.app",
+  messagingSenderId: "821811124213",
+  appId: "1:821811124213:web:c8dd2b2f1e1a41bcd632bc",
+  measurementId: "G-P28WHBV9VB"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
 const characters = [
   ["Naruto Uzumaki","Naruto"],["Sasuke Uchiha","Naruto"],["Sakura Haruno","Naruto"],
   ["Kakashi Hatake","Naruto"],["Itachi Uchiha","Naruto"],["Hinata Hyuga","Naruto"],
@@ -140,18 +158,16 @@ const characters = [
   ["Gojo Satoru","Jujutsu Kaisen"],["Yuji Itadori","Jujutsu Kaisen"],["Megumi Fushiguro","Jujutsu Kaisen"]
 ];
 
-const occupiedKey = "houseAllOccupied";
-const requestsKey = "houseAllRequests";
-const adminKey = "houseAllAdminAccount";
-const adminSessionKey = "houseAllAdminSession";
-const getOccupied=()=>JSON.parse(localStorage.getItem(occupiedKey)||"[]");
-const saveOccupied=x=>localStorage.setItem(occupiedKey,JSON.stringify(x));
-const getRequests=()=>JSON.parse(localStorage.getItem(requestsKey)||"[]");
-const saveRequests=x=>localStorage.setItem(requestsKey,JSON.stringify(x));
+let occupied = [];
+let requests = [];
+let unsubscribeOccupied = null;
+let unsubscribeRequests = null;
+let adminLogged = false;
 
-function escapeHtml(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function escapeHtml(v){return String(v ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function setStatus(text, cls='status'){const el=document.getElementById('status');el.className=cls+' full';el.textContent=text;}
+
 function render(){
-  const occupied=getOccupied(), requests=getRequests();
   const grid=document.getElementById("characterGrid"), select=document.getElementById("personagem");
   grid.innerHTML="";
   select.innerHTML='<option value="">Selecione um personagem</option><option value="__custom__">✨ Quero ser outro personagem</option>';
@@ -163,65 +179,106 @@ function render(){
   const listed=occupied.filter(x=>characters.some(c=>c[0]===x)).length;
   document.getElementById("availableCount").textContent=Math.max(0,characters.length-listed)+" + opção livre";
   document.getElementById("occupiedCount").textContent=listed;
-  if(sessionStorage.getItem(adminSessionKey)==="1") showAdminWorkspace();
+  if(adminLogged) renderRequests();
 }
 
-function randomCode(){
-  const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let code=""; for(let i=0;i<6;i++) code+=chars[Math.floor(Math.random()*chars.length)];
-  return code;
+function renderRequests(){
+  const list=document.getElementById("requestList");
+  if(!requests.length){list.innerHTML='<p class="request-empty">📭 Nenhuma solicitação pendente.</p>';return;}
+  list.innerHTML=requests.map(r=>`<article class="request-item"><h4>${escapeHtml(r.name)} — ${escapeHtml(r.character)}</h4><p><strong>Idade:</strong> ${escapeHtml(r.age)}</p><p><strong>Anime:</strong> ${escapeHtml(r.anime||'Não informado')}</p><p><strong>Mensagem:</strong> ${escapeHtml(r.message||'Sem mensagem')}</p><div class="request-actions"><button class="mini-btn success" onclick="approveRequest('${r.id}')">✓ Aprovar</button><button class="mini-btn danger" onclick="rejectRequest('${r.id}')">✕ Rejeitar</button></div></article>`).join("");
 }
-function createAdminAccess(){
+
+async function startFirebase(){
+  try{
+    await signInAnonymously(auth);
+    const occupiedRef=collection(db,"occupiedCharacters");
+    const requestsRef=collection(db,"characterRequests");
+    unsubscribeOccupied=onSnapshot(occupiedRef,snap=>{
+      occupied=snap.docs.map(d=>d.id);
+      render();
+    },err=>setStatus('Erro ao carregar vagas: '+err.message,'admin-error'));
+    unsubscribeRequests=onSnapshot(requestsRef,snap=>{
+      requests=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderRequests();
+    },err=>document.getElementById('adminEntryStatus').textContent='Erro ao carregar solicitações: '+err.message);
+    render();
+  }catch(err){
+    setStatus('O Firebase ainda não está liberado para acesso anônimo. Ative “Anonymous” na Authentication do Firebase.','admin-error');
+    console.error(err);
+  }
+}
+
+async function createAdminAccess(){
   const name=document.getElementById("adminName").value.trim(), age=document.getElementById("adminAge").value, role=document.getElementById("adminRole").value.trim();
   const out=document.getElementById("adminEntryStatus"), box=document.getElementById("newAdminCode");
   if(!name||!age||!role){out.className="admin-error";out.textContent="Preencha nome, idade e cargo/função.";return;}
-  if(localStorage.getItem(adminKey)){out.className="admin-error";out.textContent="Já existe um acesso de administração neste navegador. Use seu código para entrar.";return;}
-  const code=randomCode();
-  localStorage.setItem(adminKey,JSON.stringify({name,age,role,code}));
-  sessionStorage.setItem(adminSessionKey,"1");
-  out.className="admin-success";out.textContent="Acesso criado! Guarde seu código abaixo.";
-  box.style.display="block";box.innerHTML=`<div class="code-box">${code}</div><p><strong>⚠️ Guarde este código.</strong> Ele será necessário nas próximas entradas.</p>`;
-  showAdminWorkspace();
+  try{
+    const ref=doc(db,"adminConfig","main"), snap=await getDoc(ref);
+    if(snap.exists()){out.className="admin-error";out.textContent="O acesso de administração já foi criado. Use o código para entrar.";return;}
+    const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let code=""; for(let i=0;i<6;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+    await setDoc(ref,{name,age,role,code,createdAt:serverTimestamp()});
+    adminLogged=true;
+    out.className="admin-success";out.textContent="Acesso criado! Guarde seu código abaixo.";
+    box.style.display="block";box.innerHTML=`<div class="code-box">${code}</div><p><strong>⚠️ Guarde este código.</strong> Ele será necessário nas próximas entradas.</p>`;
+    showAdminWorkspace();
+  }catch(err){out.className="admin-error";out.textContent="Não foi possível criar o acesso: "+err.message;}
 }
-function enterAdminAccess(){
-  const code=document.getElementById("adminCodeInput").value.trim().toUpperCase(), account=JSON.parse(localStorage.getItem(adminKey)||"null"), out=document.getElementById("adminEntryStatus");
-  if(!account){out.className="admin-error";out.textContent="Nenhum acesso foi criado neste navegador. Faça a primeira entrada.";return;}
-  if(code===account.code){sessionStorage.setItem(adminSessionKey,"1");out.className="admin-success";out.textContent=`Bem-vindo(a), ${account.name}!`;showAdminWorkspace();}
-  else {out.className="admin-error";out.textContent="Código incorreto.";}
+
+async function enterAdminAccess(){
+  const code=document.getElementById("adminCodeInput").value.trim().toUpperCase(), out=document.getElementById("adminEntryStatus");
+  if(!code){out.className="admin-error";out.textContent="Digite seu código.";return;}
+  try{
+    const q=query(collection(db,"adminConfig"),where("code","==",code));
+    const snap=await getDocs(q);
+    if(snap.empty){out.className="admin-error";out.textContent="Código incorreto.";return;}
+    const account=snap.docs[0].data();
+    adminLogged=true;
+    out.className="admin-success";out.textContent=`Bem-vindo(a), ${account.name}!`;
+    showAdminWorkspace();
+  }catch(err){out.className="admin-error";out.textContent="Erro ao entrar: "+err.message;}
 }
-function showAdminWorkspace(){
-  document.getElementById("adminWorkspace").style.display="block";
-  renderRequests();
-}
-function adminLogout(){sessionStorage.removeItem(adminSessionKey);document.getElementById("adminWorkspace").style.display="none";}
-function renderRequests(){
-  const list=document.getElementById("requestList"), requests=getRequests();
-  if(!requests.length){list.innerHTML='<p class="request-empty">📭 Nenhuma solicitação pendente.</p>';return;}
-  list.innerHTML=requests.map((r,i)=>`<article class="request-item"><h4>${escapeHtml(r.name)} — ${escapeHtml(r.character)}</h4><p><strong>Idade:</strong> ${escapeHtml(r.age)}</p><p><strong>Anime:</strong> ${escapeHtml(r.anime||'Não informado')}</p><p><strong>Mensagem:</strong> ${escapeHtml(r.message||'Sem mensagem')}</p><div class="request-actions"><button class="mini-btn success" onclick="approveRequest(${i})">✓ Aprovar</button><button class="mini-btn danger" onclick="rejectRequest(${i})">✕ Rejeitar</button></div></article>`).join("");
-}
-function approveRequest(i){
-  const requests=getRequests(), r=requests[i]; if(!r)return;
-  if(getOccupied().includes(r.character)){alert("Esse personagem já está ocupado.");return;}
-  const occupied=getOccupied(); occupied.push(r.character); saveOccupied(occupied); requests.splice(i,1); saveRequests(requests); render(); renderRequests();
-}
-function rejectRequest(i){const requests=getRequests();requests.splice(i,1);saveRequests(requests);renderRequests();}
+
+function showAdminWorkspace(){document.getElementById("adminWorkspace").style.display="block";renderRequests();}
+function adminLogout(){adminLogged=false;document.getElementById("adminWorkspace").style.display="none";}
+
+window.approveRequest=async function(id){
+  const r=requests.find(x=>x.id===id); if(!r)return;
+  try{
+    const occupiedRef=doc(db,"occupiedCharacters",r.character);
+    const snap=await getDoc(occupiedRef);
+    if(snap.exists()){alert("Esse personagem já está ocupado.");await deleteDoc(doc(db,"characterRequests",id));return;}
+    await setDoc(occupiedRef,{name:r.name,anime:r.anime||"",approvedAt:serverTimestamp()});
+    await deleteDoc(doc(db,"characterRequests",id));
+  }catch(err){alert("Não foi possível aprovar: "+err.message);}
+};
+
+window.rejectRequest=async function(id){
+  try{await deleteDoc(doc(db,"characterRequests",id));}
+  catch(err){alert("Não foi possível rejeitar: "+err.message);}
+};
+
+window.createAdminAccess=createAdminAccess;
+window.enterAdminAccess=enterAdminAccess;
+window.adminLogout=adminLogout;
 
 const characterSelect=document.getElementById("personagem"), customWrap=document.getElementById("customWrap"), customInput=document.getElementById("customPersonagem");
 characterSelect.addEventListener("change",()=>{const custom=characterSelect.value==="__custom__";customWrap.style.display=custom?"block":"none";customInput.required=custom;if(custom)customInput.focus();});
 
-document.getElementById("receptionForm").addEventListener("submit",e=>{
+document.getElementById("receptionForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const name=document.getElementById("nome").value.trim(), age=document.getElementById("idade").value, anime=document.getElementById("anime").value.trim(), message=document.getElementById("mensagem").value.trim();
   let char=characterSelect.value; if(char==="__custom__") char=customInput.value.trim(); if(!char)return;
-  if(getOccupied().includes(char)){document.getElementById("status").textContent="⚠ Esse personagem já está ocupado.";return;}
-  const requests=getRequests();
-  if(requests.some(r=>r.character===char)){document.getElementById("status").textContent="⚠ Já existe uma solicitação para esse personagem.";return;}
-  requests.push({name,age,anime,message,character:char,createdAt:Date.now()});saveRequests(requests);
-  document.getElementById("status").textContent=`✓ Solicitação enviada! ${char} aguarda aprovação da administração.`;
-  e.target.reset();customWrap.style.display="none";customInput.required=false;render();
+  if(occupied.includes(char)){setStatus("⚠ Esse personagem já está ocupado.");return;}
+  if(requests.some(r=>r.character===char)){setStatus("⚠ Já existe uma solicitação para esse personagem.");return;}
+  try{
+    await addDoc(collection(db,"characterRequests"),{name,age,anime,message,character:char,createdAt:serverTimestamp()});
+    setStatus(`✓ Solicitação enviada! ${char} aguarda aprovação da administração.`);
+    e.target.reset();customWrap.style.display="none";customInput.required=false;
+  }catch(err){setStatus("Não foi possível enviar a solicitação: "+err.message,"admin-error");}
 });
 
-render();
+startFirebase();
 </script>
 </body>
 </html>
