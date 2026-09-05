@@ -677,14 +677,12 @@ Nome ou senha incorretos.
 L
 </div>
 
-
 <button
 class="nav-btn active"
 onclick="showPage('home',this)"
 >
 ⌂
 </button>
-
 
 <button
 class="nav-btn"
@@ -693,14 +691,12 @@ onclick="showPage('chat',this)"
 💬
 </button>
 
-
 <button
 class="nav-btn"
 onclick="showPage('requests',this)"
 >
 📋
 </button>
-
 
 <button
 class="nav-btn"
@@ -709,7 +705,6 @@ onclick="showPage('vagas',this)"
 🎭
 </button>
 
-
 <button
 class="nav-btn"
 onclick="showPage('members',this)"
@@ -717,14 +712,12 @@ onclick="showPage('members',this)"
 👥
 </button>
 
-
 <button
 class="nav-btn"
 onclick="showPage('admins',this)"
 >
 🛡️
 </button>
-
 
 <button
 class="nav-btn logout"
@@ -734,7 +727,6 @@ onclick="logout()"
 </button>
 
 </aside>
-
 
 
 <main class="main">
@@ -784,9 +776,7 @@ ADMs online
 
 </div>
 
-
 <br>
-
 
 <div class="panel">
 
@@ -807,7 +797,6 @@ Nenhum acesso registrado.
 </section>
 
 
-
 <!-- =========================
      CHAT
 ========================= -->
@@ -815,11 +804,12 @@ Nenhum acesso registrado.
 <section id="chat" class="page">
 
 <div class="top">
+
 <h2>
 Chat da Administração
 </h2>
-</div>
 
+</div>
 
 <div class="panel chat">
 
@@ -829,7 +819,6 @@ class="messages"
 >
 Carregando mensagens...
 </div>
-
 
 <div class="chatInput">
 
@@ -851,7 +840,6 @@ Enviar
 </section>
 
 
-
 <!-- =========================
      SOLICITAÇÕES
 ========================= -->
@@ -866,7 +854,6 @@ Solicitações da Recepção
 
 </div>
 
-
 <div class="panel">
 
 <div
@@ -879,7 +866,6 @@ Carregando solicitações...
 </div>
 
 </section>
-
 
 
 <!-- =========================
@@ -896,11 +882,9 @@ Personagens / Vagas
 
 </div>
 
-
 <div class="panel">
 
 <div class="list">
-
 
 <div class="form">
 
@@ -931,7 +915,6 @@ Fechada
 
 </select>
 
-
 <button
 class="action"
 onclick="addVaga()"
@@ -946,13 +929,11 @@ onclick="addVaga()"
 Carregando personagens...
 </div>
 
-
 </div>
 
 </div>
 
 </section>
-
 
 
 <!-- =========================
@@ -969,7 +950,6 @@ Membros
 
 </div>
 
-
 <div class="panel">
 
 <div
@@ -982,7 +962,6 @@ Carregando membros...
 </div>
 
 </section>
-
 
 
 <!-- =========================
@@ -998,7 +977,6 @@ Administradores
 </h2>
 
 </div>
-
 
 <div class="panel">
 
@@ -1019,7 +997,6 @@ Carregando administradores...
 </div>
 
 
-
 <!-- =========================
      MODAL EDITAR VAGA
 ========================= -->
@@ -1035,24 +1012,20 @@ class="modal"
 ✏️ Editar personagem
 </h3>
 
-
 <input
 id="editCharacter"
 placeholder="Personagem"
 >
-
 
 <input
 id="editAnime"
 placeholder="Anime"
 >
 
-
 <input
 id="editMember"
 placeholder="Membro / Livre"
 >
-
 
 <select id="editStatus">
 
@@ -1065,7 +1038,6 @@ Fechada
 </option>
 
 </select>
-
 
 <div class="modal-actions">
 
@@ -1090,13 +1062,11 @@ Cancelar
 </div>
 
 
-
 <!-- =========================
      FIREBASE
 ========================= -->
 
 <script type="module">
-
 
 import {
     initializeApp
@@ -1151,7 +1121,6 @@ const firebaseConfig = {
 
 const app =
 initializeApp(firebaseConfig);
-
 
 const db =
 getFirestore(app);
@@ -1220,6 +1189,46 @@ let editingVagaId = null;
 
 
 /* =========================
+   LISTENERS
+========================= */
+
+let listeners = [];
+
+
+function clearListeners(){
+
+    listeners.forEach(
+        unsubscribe => {
+
+            try{
+                unsubscribe();
+            }catch(e){}
+
+        }
+    );
+
+    listeners=[];
+
+}
+
+
+function addListener(unsubscribe){
+
+    listeners.push(unsubscribe);
+
+}
+
+
+/* =========================
+   CACHE VAGAS
+========================= */
+
+let vagasCache = [];
+
+let occupiedCache = [];
+
+
+/* =========================
    LOADING
 ========================= */
 
@@ -1270,10 +1279,12 @@ setInterval(()=>{
 
         clearInterval(loadingInterval);
 
-        document.getElementById("loadingScreen")
+        document
+        .getElementById("loadingScreen")
         .style.display="none";
 
-        document.getElementById("login")
+        document
+        .getElementById("login")
         .style.display="flex";
 
     }
@@ -1293,7 +1304,6 @@ async function(){
     .getElementById("loginName")
     .value
     .trim();
-
 
     const password =
     document
@@ -1323,7 +1333,7 @@ async function(){
     }
 
 
-    currentAdmin = found;
+    currentAdmin=found;
 
 
     document
@@ -1400,6 +1410,9 @@ async function(){
 
 window.logout =
 async function(){
+
+    clearListeners();
+
 
     if(currentAdmin){
 
@@ -1492,59 +1505,82 @@ function listenChat(){
     );
 
 
-    onSnapshot(
-        q,
-        snapshot => {
+    addListener(
 
-            const box =
-            document.getElementById("messages");
+        onSnapshot(
+            q,
+            snapshot => {
 
-            box.innerHTML="";
-
-
-            snapshot.forEach(
-                docSnap => {
-
-                    const data =
-                    docSnap.data();
+                const box =
+                document.getElementById(
+                    "messages"
+                );
 
 
-                    const div =
-                    document.createElement("div");
+                box.innerHTML="";
 
 
-                    div.className="message";
+                snapshot.forEach(
+                    docSnap => {
+
+                        const data =
+                        docSnap.data();
 
 
-                    div.innerHTML=`
-
-                    <div class="author">
-
-                    ${escapeHTML(data.author || "ADM")}
-
-                    <small>
-                    • ${escapeHTML(data.role || "")}
-                    </small>
-
-                    </div>
-
-                    <div>
-                    ${escapeHTML(data.text || "")}
-                    </div>
-
-                    `;
+                        const div =
+                        document.createElement("div");
 
 
-                    box.appendChild(div);
-
-                }
-            );
+                        div.className="message";
 
 
-            box.scrollTop =
-            box.scrollHeight;
+                        div.innerHTML=`
 
-        }
+                        <div class="author">
+
+                        ${escapeHTML(
+                            data.author || "ADM"
+                        )}
+
+                        <small>
+                        • ${escapeHTML(
+                            data.role || ""
+                        )}
+                        </small>
+
+                        </div>
+
+                        <div>
+                        ${escapeHTML(
+                            data.text || ""
+                        )}
+                        </div>
+
+                        `;
+
+
+                        box.appendChild(div);
+
+                    }
+                );
+
+
+                box.scrollTop =
+                box.scrollHeight;
+
+            },
+
+            error => {
+
+                console.error(
+                    "Erro no chat:",
+                    error
+                );
+
+            }
+
+        )
+
     );
 
 }
@@ -1554,7 +1590,9 @@ window.sendMessage =
 async function(){
 
     const input =
-    document.getElementById("messageInput");
+    document.getElementById(
+        "messageInput"
+    );
 
 
     const text =
@@ -1568,21 +1606,33 @@ async function(){
     return;
 
 
-    await addDoc(
+    try{
 
-        collection(db,"chat"),
+        await addDoc(
 
-        {
-            author:currentAdmin.name,
-            role:currentAdmin.role,
-            text:text,
-            createdAt:serverTimestamp()
-        }
+            collection(db,"chat"),
 
-    );
+            {
+                author:currentAdmin.name,
+                role:currentAdmin.role,
+                text:text,
+                createdAt:serverTimestamp()
+            }
+
+        );
 
 
-    input.value="";
+        input.value="";
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Não foi possível enviar a mensagem."
+        );
+
+    }
 
 };
 
@@ -1600,174 +1650,185 @@ function listenRequests(){
     );
 
 
-    onSnapshot(
-        q,
-        snapshot => {
+    addListener(
 
-            const list =
-            document.getElementById(
-                "requestsList"
-            );
+        onSnapshot(
+            q,
 
+            snapshot => {
 
-            list.innerHTML="";
-
-
-            document.getElementById(
-                "requestCount"
-            )
-            .textContent=snapshot.size;
+                const list =
+                document.getElementById(
+                    "requestsList"
+                );
 
 
-            if(snapshot.empty){
+                list.innerHTML="";
 
-                list.innerHTML=
-                "<p>Nenhuma solicitação recebida.</p>";
 
-                return;
+                document.getElementById(
+                    "requestCount"
+                )
+                .textContent=snapshot.size;
+
+
+                if(snapshot.empty){
+
+                    list.innerHTML=
+                    "<p>Nenhuma solicitação recebida.</p>";
+
+                    return;
+
+                }
+
+
+                snapshot.forEach(
+                    docSnap => {
+
+                        const data =
+                        docSnap.data();
+
+
+                        const id =
+                        docSnap.id;
+
+
+                        const status =
+                        data.status ||
+                        "Pendente";
+
+
+                        let statusClass =
+                        "status-pendente";
+
+
+                        if(status==="Aprovada")
+                        statusClass=
+                        "status-aprovada";
+
+
+                        if(status==="Recusada")
+                        statusClass=
+                        "status-recusada";
+
+
+                        const item =
+                        document.createElement("div");
+
+
+                        item.className="item";
+
+
+                        item.innerHTML=`
+
+                        <strong>
+                        ${escapeHTML(
+                            data.name || "Sem nome"
+                        )}
+                        </strong>
+
+                        <br>
+
+                        🎭 Personagem:
+                        ${escapeHTML(
+                            data.character || "-"
+                        )}
+
+                        <br>
+
+                        🎌 Anime:
+                        ${escapeHTML(
+                            data.anime || "-"
+                        )}
+
+                        <br>
+
+                        🎂 Idade:
+                        ${escapeHTML(
+                            data.age ||
+                            data.idade ||
+                            "-"
+                        )}
+
+                        <br>
+
+                        💬 Mensagem:
+                        ${escapeHTML(
+                            data.message ||
+                            data.mensagem ||
+                            "-"
+                        )}
+
+                        <br>
+
+                        Status:
+
+                        <span class="${statusClass}">
+                        ${escapeHTML(status)}
+                        </span>
+
+
+                        <div class="request-buttons">
+
+                        ${
+                            status==="Pendente"
+                            ?
+
+                            `
+
+                            <button
+                            class="accept"
+                            onclick="acceptRequest('${id}')"
+                            >
+                            ✓ ACEITAR
+                            </button>
+
+                            <button
+                            class="reject"
+                            onclick="rejectRequest('${id}')"
+                            >
+                            ✕ RECUSAR
+                            </button>
+
+                            `
+
+                            :
+
+                            ""
+
+                        }
+
+
+                        <button
+                        class="delete"
+                        onclick="deleteRequest('${id}')"
+                        >
+                        🗑 EXCLUIR
+                        </button>
+
+                        </div>
+
+                        `;
+
+
+                        list.appendChild(item);
+
+                    }
+                );
+
+            },
+
+            error => {
+
+                console.error(
+                    "Erro nas solicitações:",
+                    error
+                );
 
             }
 
+        )
 
-            snapshot.forEach(
-                docSnap => {
-
-                    const data =
-                    docSnap.data();
-
-
-                    const id =
-                    docSnap.id;
-
-
-                    const status =
-                    data.status ||
-                    "Pendente";
-
-
-                    let statusClass =
-                    "status-pendente";
-
-
-                    if(status==="Aprovada")
-                    statusClass=
-                    "status-aprovada";
-
-
-                    if(status==="Recusada")
-                    statusClass=
-                    "status-recusada";
-
-
-                    const item =
-                    document.createElement("div");
-
-
-                    item.className="item";
-
-
-                    item.innerHTML=`
-
-                    <strong>
-                    ${escapeHTML(
-                        data.name || "Sem nome"
-                    )}
-                    </strong>
-
-                    <br>
-
-                    🎭 Personagem:
-                    ${escapeHTML(
-                        data.character || "-"
-                    )}
-
-                    <br>
-
-                    🎌 Anime:
-                    ${escapeHTML(
-                        data.anime || "-"
-                    )}
-
-                    <br>
-
-                    🎂 Idade:
-                    ${escapeHTML(
-                        data.age ||
-                        data.idade ||
-                        "-"
-                    )}
-
-                    <br>
-
-                    💬 Mensagem:
-                    ${escapeHTML(
-                        data.message ||
-                        data.mensagem ||
-                        "-"
-                    )}
-
-                    <br>
-
-                    Status:
-
-                    <span class="${statusClass}">
-
-                    ${escapeHTML(status)}
-
-                    </span>
-
-
-                    <div class="request-buttons">
-
-
-                    ${
-                        status==="Pendente"
-                        ?
-
-                        `
-
-                        <button
-                        class="accept"
-                        onclick="acceptRequest('${id}')"
-                        >
-                        ✓ ACEITAR
-                        </button>
-
-                        <button
-                        class="reject"
-                        onclick="rejectRequest('${id}')"
-                        >
-                        ✕ RECUSAR
-                        </button>
-
-                        `
-
-                        :
-
-                        ""
-
-                    }
-
-
-                    <button
-                    class="delete"
-                    onclick="deleteRequest('${id}')"
-                    >
-                    🗑 EXCLUIR
-                    </button>
-
-
-                    </div>
-
-                    `;
-
-
-                    list.appendChild(item);
-
-                }
-            );
-
-        }
     );
 
 }
@@ -1821,6 +1882,10 @@ async function(id){
         (data.character || "").trim();
 
 
+        const name =
+        (data.name || "").trim();
+
+
         if(!character){
 
             alert(
@@ -1832,6 +1897,60 @@ async function(id){
         }
 
 
+        if(!name){
+
+            alert(
+                "Essa solicitação não possui nome."
+            );
+
+            return;
+
+        }
+
+
+        const normalized =
+        normalizeCharacter(character);
+
+
+        /* =========================
+           CRIA MEMBRO
+        ========================= */
+
+        await addDoc(
+
+            collection(db,"members"),
+
+            {
+                name:name,
+
+                age:
+                data.age ??
+                data.idade ??
+                "",
+
+                character:character,
+
+                anime:
+                data.anime || "",
+
+                requestId:id,
+
+                approvedBy:
+                currentAdmin?.name ||
+                "ADM",
+
+                approvedAt:
+                serverTimestamp(),
+
+                createdAt:
+                serverTimestamp(),
+
+                active:true
+            }
+
+        );
+
+
         /* =========================
            FECHA PERSONAGEM
         ========================= */
@@ -1841,16 +1960,23 @@ async function(id){
             doc(
                 db,
                 "occupiedCharacters",
-                normalizeCharacter(character)
+                normalized
             ),
 
             {
                 character:character,
-                member:data.name || "Membro",
-                anime:data.anime || "",
+
+                member:name,
+
+                anime:
+                data.anime || "",
+
                 requestId:id,
+
                 approvedBy:
-                currentAdmin?.name || "ADM",
+                currentAdmin?.name ||
+                "ADM",
+
                 approvedAt:
                 serverTimestamp()
             }
@@ -1859,7 +1985,7 @@ async function(id){
 
 
         /* =========================
-           FECHA VAGA CORRESPONDENTE
+           FECHA VAGA EXISTENTE
         ========================= */
 
         const vagasSnapshot =
@@ -1880,8 +2006,7 @@ async function(id){
                 normalizeCharacter(
                     vagaData.character || ""
                 )
-                ===
-                normalizeCharacter(character)
+                === normalized
             ){
 
                 await updateDoc(
@@ -1894,10 +2019,7 @@ async function(id){
 
                     {
                         status:"Fechada",
-                        member:
-                        data.name ||
-                        vagaData.member ||
-                        "Membro"
+                        member:name
                     }
 
                 );
@@ -1908,7 +2030,7 @@ async function(id){
 
 
         /* =========================
-           APROVA SOLICITAÇÃO
+           APROVA FICHA
         ========================= */
 
         await updateDoc(
@@ -1923,14 +2045,16 @@ async function(id){
                 "ADM",
 
                 approvedAt:
-                serverTimestamp()
+                serverTimestamp(),
+
+                memberCreated:true
             }
 
         );
 
 
         alert(
-            "Solicitação aprovada! O personagem foi fechado."
+            "Solicitação aprovada! O membro foi cadastrado e o personagem foi fechado."
         );
 
 
@@ -2013,7 +2137,7 @@ async function(id){
 
     if(
         !confirm(
-            "Excluir definitivamente esta solicitação?"
+            "Excluir definitivamente esta solicitação? O membro aprovado continuará cadastrado."
         )
     )
     return;
@@ -2056,193 +2180,472 @@ async function(id){
 
 function listenVagas(){
 
-    const q =
+    const vagasQuery =
     query(
         collection(db,"vagas"),
         orderBy("character","asc")
     );
 
 
-    onSnapshot(
-        q,
-        snapshot => {
+    addListener(
 
-            const list =
-            document.getElementById(
-                "vagasList"
-            );
+        onSnapshot(
+            vagasQuery,
 
+            snapshot => {
 
-            list.innerHTML="";
+                vagasCache =
+                snapshot.docs.map(
+                    d => ({
+                        id:d.id,
+                        ...d.data()
+                    })
+                );
 
+                renderVagas();
 
-            document.getElementById(
-                "vagaCount"
-            )
-            .textContent=snapshot.size;
+            },
 
+            error => {
 
-            if(snapshot.empty){
-
-                list.innerHTML=
-                "<p>Nenhum personagem cadastrado.</p>";
-
-                return;
+                console.error(
+                    "Erro nas vagas:",
+                    error
+                );
 
             }
 
+        )
 
-            snapshot.forEach(
-                docSnap => {
-
-                    const data =
-                    docSnap.data();
+    );
 
 
-                    const id =
-                    docSnap.id;
+    addListener(
+
+        onSnapshot(
+
+            collection(
+                db,
+                "occupiedCharacters"
+            ),
+
+            snapshot => {
+
+                occupiedCache =
+                snapshot.docs.map(
+                    d => ({
+                        id:d.id,
+                        ...d.data()
+                    })
+                );
+
+                renderVagas();
+
+            },
+
+            error => {
+
+                console.error(
+                    "Erro nos personagens ocupados:",
+                    error
+                );
+
+            }
+
+        )
+
+    );
+
+}
 
 
-                    const character =
-                    data.character ||
-                    "-";
+/* =========================
+   RENDERIZAR VAGAS
+========================= */
+
+function renderVagas(){
+
+    const list =
+    document.getElementById(
+        "vagasList"
+    );
 
 
-                    const status =
-                    data.status === "Fechada"
-                    ?
-                    "Fechada"
-                    :
-                    "Aberta";
+    list.innerHTML="";
 
 
-                    const item =
-                    document.createElement("div");
+    const mapa =
+    new Map();
 
 
-                    item.className="item";
+    /* VAGAS CADASTRADAS */
+
+    vagasCache.forEach(
+        vaga => {
+
+            const key =
+            normalizeCharacter(
+                vaga.character || ""
+            );
 
 
-                    item.innerHTML=`
-
-                    <div class="vaga-top">
-
-                    <div>
-
-                    <strong>
-                    🎭 ${escapeHTML(character)}
-                    </strong>
-
-                    <br>
-
-                    🎌 Anime:
-                    ${escapeHTML(
-                        data.anime || "-"
-                    )}
-
-                    <br>
-
-                    👤 Membro:
-                    ${escapeHTML(
-                        data.member || "Livre"
-                    )}
-
-                    <br>
-
-                    <span
-                    class="vaga-badge
-                    ${
-                        status==="Fechada"
-                        ?
-                        "badge-closed"
-                        :
-                        "badge-open"
-                    }"
-                    >
-
-                    ${
-                        status==="Fechada"
-                        ?
-                        "🔴 VAGA FECHADA"
-                        :
-                        "🟢 VAGA ABERTA"
-                    }
-
-                    </span>
-
-                    </div>
-
-                    </div>
-
-
-                    <div class="request-buttons">
-
-
-                    ${
-                        status==="Fechada"
-
-                        ?
-
-                        `
-
-                        <button
-                        class="open"
-                        onclick="openVaga('${id}')"
-                        >
-                        🔓 ABRIR VAGA
-                        </button>
-
-                        `
-
-                        :
-
-                        `
-
-                        <button
-                        class="close"
-                        onclick="closeVaga('${id}')"
-                        >
-                        🔒 FECHAR VAGA
-                        </button>
-
-                        `
-
-                    }
-
-
-                    <button
-                    class="edit"
-                    onclick="editVaga('${id}')"
-                    >
-                    ✏️ EDITAR
-                    </button>
-
-
-                    <button
-                    class="delete"
-                    onclick="deleteVaga(
-                        '${id}',
-                        '${escapeAttribute(character)}'
-                    )"
-                    >
-                    🗑 EXCLUIR
-                    </button>
-
-
-                    </div>
-
-                    `;
-
-
-                    list.appendChild(item);
-
+            mapa.set(
+                key,
+                {
+                    type:"vaga",
+                    ...vaga
                 }
             );
 
         }
     );
 
+
+    /* OCUPAÇÕES QUE NÃO POSSUEM VAGA */
+
+    occupiedCache.forEach(
+        occupied => {
+
+            const key =
+            normalizeCharacter(
+                occupied.character || ""
+            );
+
+
+            if(!mapa.has(key)){
+
+                mapa.set(
+                    key,
+                    {
+                        type:"occupied",
+                        id:occupied.id,
+                        character:
+                        occupied.character,
+
+                        anime:
+                        occupied.anime || "",
+
+                        member:
+                        occupied.member ||
+                        "Fechado",
+
+                        status:"Fechada",
+
+                        requestId:
+                        occupied.requestId || "",
+
+                        manual:
+                        occupied.manual || false
+                    }
+                );
+
+            }
+
+        }
+    );
+
+
+    const personagens =
+    Array.from(
+        mapa.values()
+    ).sort(
+        (a,b) =>
+        String(a.character || "")
+        .localeCompare(
+            String(b.character || ""),
+            "pt-BR"
+        )
+    );
+
+
+    document.getElementById(
+        "vagaCount"
+    )
+    .textContent =
+    personagens.length;
+
+
+    if(!personagens.length){
+
+        list.innerHTML=
+        "<p>Nenhum personagem cadastrado.</p>";
+
+        return;
+
+    }
+
+
+    personagens.forEach(
+        data => {
+
+            const character =
+            data.character || "-";
+
+
+            const status =
+            data.status === "Fechada"
+            ?
+            "Fechada"
+            :
+            "Aberta";
+
+
+            const item =
+            document.createElement("div");
+
+
+            item.className="item";
+
+
+            item.innerHTML=`
+
+            <div class="vaga-top">
+
+            <div>
+
+            <strong>
+            🎭 ${escapeHTML(character)}
+            </strong>
+
+            <br>
+
+            🎌 Anime:
+            ${escapeHTML(
+                data.anime || "-"
+            )}
+
+            <br>
+
+            👤 Membro:
+            ${escapeHTML(
+                data.member || "Livre"
+            )}
+
+            <br>
+
+            <span
+            class="vaga-badge
+            ${
+                status==="Fechada"
+                ?
+                "badge-closed"
+                :
+                "badge-open"
+            }"
+            >
+
+            ${
+                status==="Fechada"
+                ?
+                "🔴 VAGA FECHADA"
+                :
+                "🟢 VAGA ABERTA"
+            }
+
+            </span>
+
+            ${
+                data.type==="occupied"
+                ?
+                `
+                <br>
+                <small style="color:#8295b1">
+                ⚠️ Fechado na recepção
+                </small>
+                `
+                :
+                ""
+            }
+
+            </div>
+
+            </div>
+
+
+            <div class="request-buttons">
+
+
+            ${
+                status==="Fechada"
+
+                ?
+
+                `
+
+                <button
+                class="open"
+                ${
+                    data.type==="vaga"
+                    ?
+                    `onclick="openVaga('${data.id}')"`
+                    :
+                    `onclick="openOccupiedVaga('${escapeAttribute(character)}')"`
+                }
+                >
+                🔓 ABRIR VAGA
+                </button>
+
+                `
+
+                :
+
+                `
+
+                <button
+                class="close"
+                onclick="closeVaga('${data.id}')"
+                >
+                🔒 FECHAR VAGA
+                </button>
+
+                `
+
+            }
+
+
+            ${
+                data.type==="vaga"
+
+                ?
+
+                `
+
+                <button
+                class="edit"
+                onclick="editVaga('${data.id}')"
+                >
+                ✏️ EDITAR
+                </button>
+
+
+                <button
+                class="delete"
+                onclick="deleteVaga(
+                    '${data.id}',
+                    '${escapeAttribute(character)}'
+                )"
+                >
+                🗑 EXCLUIR
+                </button>
+
+                `
+
+                :
+
+                ""
+
+            }
+
+
+            </div>
+
+            `;
+
+
+            list.appendChild(item);
+
+        }
+    );
+
 }
+
+
+/* =========================
+   ABRIR OCUPAÇÃO SEM VAGA
+========================= */
+
+window.openOccupiedVaga =
+async function(character){
+
+    if(
+        !confirm(
+            `Abrir a vaga de ${character}?`
+        )
+    )
+    return;
+
+
+    try{
+
+        const normalized =
+        normalizeCharacter(character);
+
+
+        const occupiedRef =
+        doc(
+            db,
+            "occupiedCharacters",
+            normalized
+        );
+
+
+        const occupiedSnap =
+        await getDoc(occupiedRef);
+
+
+        if(!occupiedSnap.exists()){
+
+            alert(
+                "Personagem ocupado não encontrado."
+            );
+
+            return;
+
+        }
+
+
+        const data =
+        occupiedSnap.data();
+
+
+        /* CRIA VAGA ABERTA */
+
+        await addDoc(
+
+            collection(db,"vagas"),
+
+            {
+                character:
+                data.character ||
+                character,
+
+                anime:
+                data.anime || "",
+
+                member:"Livre",
+
+                status:"Aberta",
+
+                createdAt:
+                serverTimestamp()
+            }
+
+        );
+
+
+        /* REMOVE FECHAMENTO */
+
+        await deleteDoc(
+            occupiedRef
+        );
+
+
+        alert(
+            `A vaga de ${character} foi aberta!`
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Erro ao abrir a vaga."
+        );
+
+    }
+
+};
 
 
 /* =========================
@@ -2296,16 +2699,16 @@ async function(){
         normalizeCharacter(character);
 
 
-        /* EVITA DUPLICADOS */
+        /* PROCURA VAGA EXISTENTE */
 
-        const existing =
+        const existingVagas =
         await getDocs(
             collection(db,"vagas")
         );
 
 
         const duplicate =
-        existing.docs.some(
+        existingVagas.docs.some(
             vaga =>
             normalizeCharacter(
                 vaga.data().character || ""
@@ -2325,22 +2728,57 @@ async function(){
         }
 
 
+        /* VERIFICA SE ESTÁ FECHADO */
+
+        const occupiedSnap =
+        await getDoc(
+
+            doc(
+                db,
+                "occupiedCharacters",
+                normalized
+            )
+
+        );
+
+
+        if(occupiedSnap.exists()){
+
+            alert(
+                "Esse personagem já está fechado/ocupado. Abra a vaga existente antes de cadastrá-lo novamente."
+            );
+
+            return;
+
+        }
+
+
         await addDoc(
 
             collection(db,"vagas"),
 
             {
                 character:character,
+
                 anime:anime,
-                member:member || "Livre",
+
+                member:
+                status==="Fechada"
+                ?
+                (member || "Fechado manualmente")
+                :
+                "Livre",
+
                 status:status,
-                createdAt:serverTimestamp()
+
+                createdAt:
+                serverTimestamp()
             }
 
         );
 
 
-        /* SE COMEÇAR FECHADA */
+        /* FECHA SE NECESSÁRIO */
 
         if(status==="Fechada"){
 
@@ -2354,12 +2792,19 @@ async function(){
 
                 {
                     character:character,
+
                     member:
-                    member || "Fechado manualmente",
+                    member ||
+                    "Fechado manualmente",
+
                     anime:anime,
+
                     manual:true,
+
                     approvedBy:
-                    currentAdmin?.name || "ADM",
+                    currentAdmin?.name ||
+                    "ADM",
+
                     approvedAt:
                     serverTimestamp()
                 }
@@ -2433,882 +2878,4 @@ async function(id){
 
 
         const vagaSnap =
-        await getDoc(vagaRef);
-
-
-        if(!vagaSnap.exists()){
-
-            alert(
-                "Personagem não encontrado."
-            );
-
-            return;
-
-        }
-
-
-        const data =
-        vagaSnap.data();
-
-
-        const character =
-        data.character;
-
-
-        await updateDoc(
-
-            vagaRef,
-
-            {
-                status:"Aberta",
-                member:"Livre"
-            }
-
-        );
-
-
-        await deleteDoc(
-
-            doc(
-                db,
-                "occupiedCharacters",
-                normalizeCharacter(character)
-            )
-
-        );
-
-
-        alert(
-            `A vaga de ${character} foi aberta!`
-        );
-
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            "Erro ao abrir a vaga."
-        );
-
-    }
-
-};
-
-
-/* =========================
-   FECHAR VAGA
-========================= */
-
-window.closeVaga =
-async function(id){
-
-    if(
-        !confirm(
-            "Tem certeza que deseja fechar esta vaga?"
-        )
-    )
-    return;
-
-
-    try{
-
-        const vagaRef =
-        doc(
-            db,
-            "vagas",
-            id
-        );
-
-
-        const vagaSnap =
-        await getDoc(vagaRef);
-
-
-        if(!vagaSnap.exists()){
-
-            alert(
-                "Personagem não encontrado."
-            );
-
-            return;
-
-        }
-
-
-        const data =
-        vagaSnap.data();
-
-
-        const character =
-        data.character;
-
-
-        await updateDoc(
-
-            vagaRef,
-
-            {
-                status:"Fechada"
-            }
-
-        );
-
-
-        await setDoc(
-
-            doc(
-                db,
-                "occupiedCharacters",
-                normalizeCharacter(character)
-            ),
-
-            {
-                character:character,
-                member:
-                data.member ||
-                "Fechado manualmente",
-                anime:
-                data.anime || "",
-                manual:true,
-                approvedBy:
-                currentAdmin?.name ||
-                "ADM",
-                approvedAt:
-                serverTimestamp()
-            }
-
-        );
-
-
-        alert(
-            `A vaga de ${character} foi fechada!`
-        );
-
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            "Erro ao fechar a vaga."
-        );
-
-    }
-
-};
-
-
-/* =========================
-   EDITAR VAGA
-========================= */
-
-window.editVaga =
-async function(id){
-
-    try{
-
-        const vagaSnap =
-        await getDoc(
-            doc(db,"vagas",id)
-        );
-
-
-        if(!vagaSnap.exists()){
-
-            alert(
-                "Personagem não encontrado."
-            );
-
-            return;
-
-        }
-
-
-        const data =
-        vagaSnap.data();
-
-
-        editingVagaId=id;
-
-
-        document
-        .getElementById("editCharacter")
-        .value =
-        data.character || "";
-
-
-        document
-        .getElementById("editAnime")
-        .value =
-        data.anime || "";
-
-
-        document
-        .getElementById("editMember")
-        .value =
-        data.member || "Livre";
-
-
-        document
-        .getElementById("editStatus")
-        .value =
-        data.status==="Fechada"
-        ?
-        "Fechada"
-        :
-        "Aberta";
-
-
-        document
-        .getElementById("editModal")
-        .style.display="flex";
-
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            "Erro ao carregar personagem."
-        );
-
-    }
-
-};
-
-
-/* =========================
-   SALVAR EDIÇÃO
-========================= */
-
-window.saveEditVaga =
-async function(){
-
-    if(!editingVagaId)
-    return;
-
-
-    const character =
-    document
-    .getElementById("editCharacter")
-    .value
-    .trim();
-
-
-    const anime =
-    document
-    .getElementById("editAnime")
-    .value
-    .trim();
-
-
-    const member =
-    document
-    .getElementById("editMember")
-    .value
-    .trim();
-
-
-    const status =
-    document
-    .getElementById("editStatus")
-    .value;
-
-
-    if(!character){
-
-        alert(
-            "Digite o nome do personagem."
-        );
-
-        return;
-
-    }
-
-
-    try{
-
-        const vagaRef =
-        doc(
-            db,
-            "vagas",
-            editingVagaId
-        );
-
-
-        const oldSnap =
-        await getDoc(vagaRef);
-
-
-        const oldData =
-        oldSnap.data();
-
-
-        const oldCharacter =
-        oldData.character || "";
-
-
-        /* REMOVE OCUPAÇÃO ANTIGA */
-
-        if(
-            normalizeCharacter(oldCharacter)
-            !==
-            normalizeCharacter(character)
-        ){
-
-            await deleteDoc(
-
-                doc(
-                    db,
-                    "occupiedCharacters",
-                    normalizeCharacter(oldCharacter)
-                )
-
-            );
-
-        }
-
-
-        await updateDoc(
-
-            vagaRef,
-
-            {
-                character:character,
-                anime:anime,
-                member:member || "Livre",
-                status:status
-            }
-
-        );
-
-
-        /* NOVO STATUS FECHADO */
-
-        if(status==="Fechada"){
-
-            await setDoc(
-
-                doc(
-                    db,
-                    "occupiedCharacters",
-                    normalizeCharacter(character)
-                ),
-
-                {
-                    character:character,
-                    member:
-                    member ||
-                    "Fechado manualmente",
-                    anime:anime,
-                    manual:true,
-                    approvedBy:
-                    currentAdmin?.name ||
-                    "ADM",
-                    approvedAt:
-                    serverTimestamp()
-                }
-
-            );
-
-        }
-
-
-        /* NOVO STATUS ABERTO */
-
-        else{
-
-            await deleteDoc(
-
-                doc(
-                    db,
-                    "occupiedCharacters",
-                    normalizeCharacter(character)
-                )
-
-            );
-
-        }
-
-
-        closeEditModal();
-
-
-        alert(
-            "Personagem atualizado com sucesso!"
-        );
-
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            "Erro ao editar personagem."
-        );
-
-    }
-
-};
-
-
-/* =========================
-   FECHAR MODAL
-========================= */
-
-window.closeEditModal =
-function(){
-
-    editingVagaId=null;
-
-    document
-    .getElementById("editModal")
-    .style.display="none";
-
-};
-
-
-/* =========================
-   EXCLUIR VAGA
-========================= */
-
-window.deleteVaga =
-async function(id,character){
-
-    if(
-        !confirm(
-            `Excluir a vaga de ${character}?`
-        )
-    )
-    return;
-
-
-    try{
-
-        await deleteDoc(
-
-            doc(
-                db,
-                "vagas",
-                id
-            )
-
-        );
-
-
-        await deleteDoc(
-
-            doc(
-                db,
-                "occupiedCharacters",
-                normalizeCharacter(character)
-            )
-
-        );
-
-
-        alert(
-            "Vaga excluída."
-        );
-
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            "Erro ao excluir a vaga."
-        );
-
-    }
-
-};
-
-
-/* =========================
-   MEMBROS
-========================= */
-
-function listenMembers(){
-
-    const q =
-    query(
-        collection(db,"requests"),
-        orderBy("createdAt","desc")
-    );
-
-
-    onSnapshot(
-        q,
-        snapshot => {
-
-            const list =
-            document.getElementById(
-                "membersList"
-            );
-
-
-            list.innerHTML="";
-
-
-            /*
-             * SOMENTE FICHAS APROVADAS
-             */
-
-            const approved =
-            snapshot.docs.filter(
-                docSnap =>
-                docSnap.data().status
-                ===
-                "Aprovada"
-            );
-
-
-            document.getElementById(
-                "memberCount"
-            )
-            .textContent =
-            approved.length;
-
-
-            if(!approved.length){
-
-                list.innerHTML=
-                "<p>Nenhum membro aprovado ainda.</p>";
-
-                return;
-
-            }
-
-
-            approved.forEach(
-                docSnap => {
-
-                    const data =
-                    docSnap.data();
-
-
-                    const item =
-                    document.createElement("div");
-
-
-                    item.className="item";
-
-
-                    item.innerHTML=`
-
-                    <strong>
-                    👤 ${escapeHTML(
-                        data.name || "Sem nome"
-                    )}
-                    </strong>
-
-                    <br><br>
-
-                    🎂 <strong>Idade:</strong>
-                    ${escapeHTML(
-                        data.age ||
-                        data.idade ||
-                        "-"
-                    )}
-
-                    <br>
-
-                    🎭 <strong>Personagem:</strong>
-                    ${escapeHTML(
-                        data.character || "-"
-                    )}
-
-                    <br>
-
-                    🎌 <strong>Anime:</strong>
-                    ${escapeHTML(
-                        data.anime || "-"
-                    )}
-
-                    <br>
-
-                    📋 <strong>Status:</strong>
-                    <span class="status-aprovada">
-                    Membro aprovado
-                    </span>
-
-                    `;
-
-
-                    list.appendChild(item);
-
-                }
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================
-   ADMS ONLINE
-========================= */
-
-function listenOnline(){
-
-    const q =
-    collection(
-        db,
-        "adminsOnline"
-    );
-
-
-    onSnapshot(
-        q,
-        snapshot => {
-
-            const list =
-            document.getElementById(
-                "adminsList"
-            );
-
-
-            list.innerHTML="";
-
-
-            let online=0;
-
-
-            snapshot.forEach(
-                docSnap => {
-
-                    const data =
-                    docSnap.data();
-
-
-                    if(data.online)
-                    online++;
-
-
-                    const item =
-                    document.createElement("div");
-
-
-                    item.className="item";
-
-
-                    item.innerHTML=`
-
-                    <strong>
-                    ${escapeHTML(
-                        data.name || "-"
-                    )}
-                    </strong>
-
-                    <br>
-
-                    Cargo:
-                    ${escapeHTML(
-                        data.role || "-"
-                    )}
-
-                    <br>
-
-                    <span class="${
-                        data.online
-                        ?
-                        "online"
-                        :
-                        "offline"
-                    }">
-
-                    ${
-                        data.online
-                        ?
-                        "● Online"
-                        :
-                        "● Offline"
-                    }
-
-                    </span>
-
-                    `;
-
-
-                    list.appendChild(item);
-
-                }
-            );
-
-
-            document.getElementById(
-                "onlineCount"
-            )
-            .textContent=online;
-
-        }
-    );
-
-}
-
-
-/* =========================
-   ACESSOS
-========================= */
-
-function listenAccess(){
-
-    const q =
-    query(
-        collection(db,"accessLogs"),
-        orderBy("time","desc")
-    );
-
-
-    onSnapshot(
-        q,
-        snapshot => {
-
-            const list =
-            document.getElementById(
-                "accessList"
-            );
-
-
-            list.innerHTML="";
-
-
-            if(snapshot.empty){
-
-                list.innerHTML=
-                "Nenhum acesso registrado.";
-
-                return;
-
-            }
-
-
-            snapshot.forEach(
-                docSnap => {
-
-                    const data =
-                    docSnap.data();
-
-
-                    const item =
-                    document.createElement("div");
-
-
-                    item.className="item";
-
-
-                    item.innerHTML=`
-
-                    <strong>
-                    ${escapeHTML(
-                        data.name || "-"
-                    )}
-                    </strong>
-
-                    entrou no painel.
-
-                    `;
-
-
-                    list.appendChild(item);
-
-                }
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================
-   CARREGAR DADOS
-========================= */
-
-function loadData(){
-
-    listenChat();
-
-    listenRequests();
-
-    listenVagas();
-
-    listenMembers();
-
-    listenOnline();
-
-    listenAccess();
-
-}
-
-
-/* =========================
-   SEGURANÇA
-========================= */
-
-function escapeHTML(text){
-
-    return String(text ?? "")
-
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
-
-}
-
-
-function escapeAttribute(text){
-
-    return String(text ?? "")
-
-        .replaceAll(
-            "\\",
-            "\\\\"
-        )
-
-        .replaceAll(
-            "'",
-            "\\'"
-        );
-
-}
-
-
-function normalizeCharacter(name){
-
-    return String(name ?? "")
-        .trim()
-        .toLowerCase()
-        .replace(/[\/\\?#%]/g,"-")
-        .replace(/\s+/g,"_");
-
-}
-
-</script>
-
-</body>
-  </html>
+        await
