@@ -1,1 +1,1194 @@
-<!DOCTYPE html> <html lang="pt-BR"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Recepção • House LTD</title> <style> *{box-sizing:border-box} html{scroll-behavior:smooth} body{ margin:0; font-family:Inter,Arial,sans-serif; background:#0d0b13; color:#f7f3fb; line-height:1.5 } a{ color:inherit; text-decoration:none } .hero{ min-height:72vh; background: radial-gradient(circle at 75% 20%,#123b78 0,transparent 35%), linear-gradient(135deg,#0c0912,#1c1026); position:relative; overflow:hidden } .hero:after{ content:""; position:absolute; width:420px; height:420px; border:1px solid #ffffff18; border-radius:50%; right:-100px; bottom:-180px; box-shadow: 0 0 0 80px #ffffff05, 0 0 0 160px #ffffff03 } nav{ height:72px; display:flex; align-items:center; gap:26px; padding:0 7%; border-bottom:1px solid #ffffff10; position:relative; z-index:2 } .logo{ font-weight:900; letter-spacing:2px; margin-right:auto } .logo span, .hero h1 span{ color:#79b8ff } .hero-content{ max-width:800px; padding:110px 7%; position:relative; z-index:1 } .eyebrow{ font-size:12px; letter-spacing:3px; color:#8fc7ff; font-weight:800 } .hero h1{ font-size:clamp(48px,8vw,90px); line-height:.95; margin:18px 0 } .subtitle{ font-size:18px; color:#c9c2d0; max-width:560px } .button{ display:inline-block; border:0; border-radius:12px; padding:14px 22px; background:#3d9bff; color:#06121f; font-weight:900; cursor:pointer; transition:.2s } .button:hover{ transform:translateY(-2px); filter:brightness(1.08) } .section{ padding:90px 7%; max-width:1200px; margin:auto } .alt{ max-width:none; background:#120e19; padding-left:7%; padding-right:7% } .section-title{ margin-bottom:35px } .section-title h2{ font-size:42px; margin:5px 0 } .section-title p:not(.eyebrow){ color:#aaa1b3 } .card{ background:#17121f; border:1px solid #ffffff12; border-radius:18px; padding:24px; box-shadow:0 15px 50px #00000025 } .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px } label{ font-weight:700; font-size:14px; color:#d9d1df } input, select, textarea{ width:100%; margin-top:8px; background:#0e0b13; color:#fff; border:1px solid #ffffff16; border-radius:10px; padding:13px; font:inherit; outline:none } input:focus, select:focus, textarea:focus{ border-color:#3d9bff } textarea{ min-height:100px; resize:vertical } .full{ grid-column:1/-1 } .status{ margin:0; color:#8fc7ff; font-weight:700 } .success{ color:#a6ffe0 } .error{ color:#ffb9c8 } .character-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px; max-width:1200px; margin:auto } .character{ padding:20px; border-radius:16px; border:1px solid #ffffff12; background:#17121f } .character h3{ margin:0 0 4px } .character p{ margin:0; color:#9f97a7; font-size:13px } .badge{ display:inline-block; margin-top:14px; padding:5px 9px; border-radius:99px; font-size:11px; font-weight:900 } .occupied{ background:#5a2938; color:#ffb9c8 } .rules{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px } .rules b{ font-size:32px; color:#3d9bff } .notice{ margin-top:22px; padding:18px; border-left:3px solid #3d9bff; background:#17121f; color:#bdb4c4; border-radius:8px } footer{ text-align:center; padding:35px; border-top:1px solid #ffffff10; color:#776f80; font-size:12px; letter-spacing:2px } @media(max-width:700px){ nav a{ display:none } .admin-link{ display:inline-block!important; background:#3d9bff; color:#06121f; padding:9px 12px; border-radius:10px; font-size:12px; font-weight:900 } .hero-content{ padding-top:80px } .form-grid, .rules{ grid-template-columns:1fr } .full{ grid-column:auto } .section{ padding:65px 5% } .alt{ padding-left:5%; padding-right:5% } .section-title h2{ font-size:34px } } </style> </head> <body> <header class="hero"> <nav> <div class="logo"> HOUSE <span>ALL</span> </div> <a href="#recepcao">Recepção</a> <a href="#personagens">Personagens</a> <a href="#regras">Como funciona</a> <a class="admin-link" href="administracao.html"> 🔐 Administração </a> </nav> <div class="hero-content"> <p class="eyebrow"> ✦ CENTRAL DE RECEPÇÃO ✦ </p> <h1> Bem-vindo à<br> <span>House LTD</span> </h1> <p class="subtitle"> Faça sua ficha, escolha um personagem disponível ou crie sua própria escolha. </p> <a class="button" href="#recepcao"> Fazer minha ficha </a> </div> </header> <main> <!-- RECEPÇÃO --> <section id="recepcao" class="section"> <div class="section-title"> <p class="eyebrow"> 01 • ENTRADA </p> <h2> Ficha de recepção </h2> <p> Preencha os dados abaixo para registrar sua entrada na House. </p> </div> <form id="receptionForm" class="card form-grid"> <label> Nome / apelido <input id="nome" required maxlength="30" placeholder="Como devemos te chamar?" > </label> <label> Idade <input id="idade" type="number" min="10" max="99" required placeholder="Ex.: 16" > </label> <label> Seu personagem <select id="personagem" required> <option value=""> Carregando personagens... </option> </select> </label> <label id="customWrap" style="display:none" > Qual personagem? <input id="customPersonagem" maxlength="60" placeholder="Digite o personagem que quiser" > </label> <label> Anime <input id="anime" maxlength="40" placeholder="Ex.: Naruto" > </label> <label class="full"> Mensagem de entrada <textarea id="mensagem" maxlength="180" placeholder="Deixe uma mensagem para a recepção..." ></textarea> </label> <button class="button full" type="submit" > Confirmar recepção ✦ </button> <p id="status" class="status full" ></p> </form> </section> <!-- PERSONAGENS FECHADOS --> <section id="personagens" class="section alt"> <div class="section-title"> <p class="eyebrow"> 02 • FECHADOS </p> <h2> 🔒 Personagens Fechados </h2> <p> Aqui aparecem os personagens já aprovados pela administração. </p> </div> <div id="closedCharacters" class="character-grid" > <p class="status"> Carregando... </p> </div> </section> <!-- REGRAS --> <section id="regras" class="section"> <div class="section-title"> <p class="eyebrow"> 03 • RECEPÇÃO </p> <h2> Como funciona? </h2> </div> <div class="rules"> <article class="card"> <b>01</b> <h3> Preencha a ficha </h3> <p> Informe seu nome, idade e escolha um personagem — ou use a opção livre. </p> </article> <article class="card"> <b>02</b> <h3> Confirme sua entrada </h3> <p> Ao enviar, o personagem vira uma solicitação para a administração analisar. </p> </article> <article class="card"> <b>03</b> <h3> Confira as vagas </h3> <p> Os personagens só aparecem como fechados depois que a administração aprovar a solicitação. </p> </article> </div> <div class="notice"> <strong>Importante:</strong> sua ficha será enviada para a administração. O personagem só ficará <strong>🔒 FECHADO</strong> depois da aprovação. </div> </section> </main> <footer> HOUSE LTD • CENTRAL DE RECEPÇÃO </footer> <!-- FIREBASE --> <script type="module"> import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"; import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js"; /* ============================== FIREBASE HOUSE LTD ================================ */ const firebaseConfig = { apiKey: "AIzaSyAg4h7phK_shSp4oUT-PJMH_iKu6cjJ82Q", authDomain: "house-6dfc9.firebaseapp.com", projectId: "house-6dfc9", storageBucket: "house-6dfc9.firebasestorage.app", messagingSenderId: "184001079413", appId: "1:184001079413:web:de4df4327d2cabdd30703c" }; const app = initializeApp(firebaseConfig); const db = getFirestore(app); /* ============================== PERSONAGENS ================================ */ const characters = [ ["Naruto Uzumaki","Naruto"], ["Sasuke Uchiha","Naruto"], ["Sakura Haruno","Naruto"], ["Kakashi Hatake","Naruto"], ["Itachi Uchiha","Naruto"], ["Hinata Hyuga","Naruto"], ["Boruto Uzumaki","Boruto"], ["Sarada Uchiha","Boruto"], ["Mitsuki","Boruto"], ["Deku","My Hero Academia"], ["Bakugo Katsuki","My Hero Academia"], ["Shoto Todoroki","My Hero Academia"], ["Ochaco Uraraka","My Hero Academia"], ["Shinobu Kocho","Demon Slayer"], ["Tanjiro Kamado","Demon Slayer"], ["Gojo Satoru","Jujutsu Kaisen"], ["Yuji Itadori","Jujutsu Kaisen"], ["Megumi Fushiguro","Jujutsu Kaisen"] ]; let occupied = []; /* ============================== ELEMENTOS ================================ */ const form = document.getElementById("receptionForm"); const characterSelect = document.getElementById("personagem"); const customWrap = document.getElementById("customWrap"); const customInput = document.getElementById("customPersonagem"); const status = document.getElementById("status"); const closedCharacters = document.getElementById("closedCharacters"); /* ============================== STATUS ================================ */ function showStatus(message, type = "normal") { status.textContent = message; status.className = "status full"; if (type === "success") { status.classList.add("success"); } if (type === "error") { status.classList.add("error"); } } /* ============================== CARREGAR PERSONAGENS ================================ */ function renderCharacters() { characterSelect.innerHTML = ""; const defaultOption = document.createElement("option"); defaultOption.value = ""; defaultOption.textContent = "Selecione um personagem"; characterSelect.appendChild(defaultOption); characters.forEach(([name, anime]) => { if (!occupied.includes(name)) { const option = document.createElement("option"); option.value = name; option.textContent = `${name} — ${anime}`; characterSelect.appendChild(option); } }); const customOption = document.createElement("option"); customOption.value = "__custom__"; customOption.textContent = "✨ Quero ser outro personagem"; characterSelect.appendChild(customOption); renderClosedCharacters(); } /* ============================== PERSONAGENS FECHADOS ================================ */ function renderClosedCharacters() { if (!occupied.length) { closedCharacters.innerHTML = ` <p class="status"> 📭 Nenhum personagem foi fechado ainda. </p> `; return; } closedCharacters.innerHTML = occupied.map(name => { const found = characters.find(item => item[0] === name); const anime = found ? found[1] : "Personagem personalizado"; return ` <article class="character"> <h3> ${escapeHTML(name)} </h3> <p> ${escapeHTML(anime)} </p> <span class="badge occupied"> 🔒 FECHADO </span> </article> `; }).join(""); } /* ============================== PERSONAGEM PERSONALIZADO ================================ */ characterSelect.addEventListener( "change", () => { const custom = characterSelect.value === "__custom__"; customWrap.style.display = custom ? "block" : "none"; customInput.required = custom; if (custom) { customInput.focus(); } } ); /* ============================== ENVIAR FICHA ================================ */ form.addEventListener( "submit", async event => { event.preventDefault(); const name = document.getElementById("nome") .value .trim(); const age = document.getElementById("idade") .value; const anime = document.getElementById("anime") .value .trim(); const message = document.getElementById("mensagem") .value .trim(); let character = characterSelect.value; if (character === "__custom__") { character = customInput.value.trim(); } if (!name || !age || !character) { showStatus( "⚠ Preencha todos os campos obrigatórios.", "error" ); return; } if (occupied.includes(character)) { showStatus( "⚠ Esse personagem já está fechado.", "error" ); return; } const submitButton = form.querySelector("button[type='submit']"); submitButton.disabled = true; submitButton.textContent = "Enviando..."; try { /* A SOLICITAÇÃO É SALVA EM: Firestore ↓ requests O administracao.html já está configurado para ouvir essa mesma coleção. */ await addDoc( collection(db, "requests"), { name: name, age: Number(age), character: character, anime: anime, message: message, status: "Pendente", createdAt: serverTimestamp() } ); showStatus( `✓ Solicitação enviada com sucesso! ${character} aguarda a aprovação da administração.`, "success" ); form.reset(); customWrap.style.display = "none"; customInput.required = false; } catch (error) { console.error( "Erro ao enviar ficha:", error ); showStatus( "❌ Não foi possível enviar sua ficha. Tente novamente.", "error" ); } submitButton.disabled = false; submitButton.textContent = "Confirmar recepção ✦"; } ); /* ============================== FIRESTORE — PERSONAGENS FECHADOS ================================ */ onSnapshot( collection(db, "occupiedCharacters"), snapshot => { occupied = snapshot.docs.map( document => document.id ); renderCharacters(); }, error => { console.error( "Erro ao carregar personagens fechados:", error ); /* Se a coleção ainda não existir, mostramos todos os personagens como disponíveis. */ occupied = []; renderCharacters(); } ); /* ============================== SEGURANÇA DO HTML ================================ */ function escapeHTML(value) { return String(value ?? "") .replace(/&/g, "&amp;") .replace(/</g, "&lt;") .replace(/>/g, "&gt;") .replace(/"/g, "&quot;") .replace(/'/g, "&#039;"); } /* ============================== INICIALIZAÇÃO ================================ */ renderCharacters(); </script> </body> </html> 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Recepção • House LTD</title>
+
+<style>
+*{box-sizing:border-box}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    font-family:Inter,Arial,sans-serif;
+    background:#0d0b13;
+    color:#f7f3fb;
+    line-height:1.5;
+}
+
+a{
+    color:inherit;
+    text-decoration:none;
+}
+
+.hero{
+    min-height:72vh;
+    background:
+        radial-gradient(circle at 75% 20%,#123b78 0,transparent 35%),
+        linear-gradient(135deg,#0c0912,#1c1026);
+    position:relative;
+    overflow:hidden;
+}
+
+.hero:after{
+    content:"";
+    position:absolute;
+    width:420px;
+    height:420px;
+    border:1px solid #ffffff18;
+    border-radius:50%;
+    right:-100px;
+    bottom:-180px;
+    box-shadow:
+        0 0 0 80px #ffffff05,
+        0 0 0 160px #ffffff03;
+}
+
+nav{
+    height:72px;
+    display:flex;
+    align-items:center;
+    gap:26px;
+    padding:0 7%;
+    border-bottom:1px solid #ffffff10;
+    position:relative;
+    z-index:2;
+}
+
+.logo{
+    font-weight:900;
+    letter-spacing:2px;
+    margin-right:auto;
+}
+
+.logo span,
+.hero h1 span{
+    color:#79b8ff;
+}
+
+.hero-content{
+    max-width:800px;
+    padding:110px 7%;
+    position:relative;
+    z-index:1;
+}
+
+.eyebrow{
+    font-size:12px;
+    letter-spacing:3px;
+    color:#8fc7ff;
+    font-weight:800;
+}
+
+.hero h1{
+    font-size:clamp(48px,8vw,90px);
+    line-height:.95;
+    margin:18px 0;
+}
+
+.subtitle{
+    font-size:18px;
+    color:#c9c2d0;
+    max-width:560px;
+}
+
+.button{
+    display:inline-block;
+    border:0;
+    border-radius:12px;
+    padding:14px 22px;
+    background:#3d9bff;
+    color:#06121f;
+    font-weight:900;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.button:hover{
+    transform:translateY(-2px);
+    filter:brightness(1.08);
+}
+
+.button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+    transform:none;
+}
+
+.section{
+    padding:90px 7%;
+    max-width:1200px;
+    margin:auto;
+}
+
+.alt{
+    max-width:none;
+    background:#120e19;
+    padding-left:7%;
+    padding-right:7%;
+}
+
+.section-title{
+    margin-bottom:35px;
+}
+
+.section-title h2{
+    font-size:42px;
+    margin:5px 0;
+}
+
+.section-title p:not(.eyebrow){
+    color:#aaa1b3;
+}
+
+.card{
+    background:#17121f;
+    border:1px solid #ffffff12;
+    border-radius:18px;
+    padding:24px;
+    box-shadow:0 15px 50px #00000025;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+}
+
+label{
+    font-weight:700;
+    font-size:14px;
+    color:#d9d1df;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    margin-top:8px;
+    background:#0e0b13;
+    color:#fff;
+    border:1px solid #ffffff16;
+    border-radius:10px;
+    padding:13px;
+    font:inherit;
+    outline:none;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:#3d9bff;
+}
+
+textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+.full{
+    grid-column:1/-1;
+}
+
+.status{
+    margin:0;
+    color:#8fc7ff;
+    font-weight:700;
+}
+
+.success{
+    color:#a6ffe0;
+}
+
+.error{
+    color:#ffb9c8;
+}
+
+.character-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:16px;
+    max-width:1200px;
+    margin:auto;
+}
+
+.character{
+    padding:20px;
+    border-radius:16px;
+    border:1px solid #ffffff12;
+    background:#17121f;
+}
+
+.character h3{
+    margin:0 0 4px;
+}
+
+.character p{
+    margin:0;
+    color:#9f97a7;
+    font-size:13px;
+}
+
+.badge{
+    display:inline-block;
+    margin-top:14px;
+    padding:5px 9px;
+    border-radius:99px;
+    font-size:11px;
+    font-weight:900;
+}
+
+.occupied{
+    background:#5a2938;
+    color:#ffb9c8;
+}
+
+.open{
+    background:#173d35;
+    color:#a6ffe0;
+}
+
+.rules{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+}
+
+.rules b{
+    font-size:32px;
+    color:#3d9bff;
+}
+
+.notice{
+    margin-top:22px;
+    padding:18px;
+    border-left:3px solid #3d9bff;
+    background:#17121f;
+    color:#bdb4c4;
+    border-radius:8px;
+}
+
+footer{
+    text-align:center;
+    padding:35px;
+    border-top:1px solid #ffffff10;
+    color:#776f80;
+    font-size:12px;
+    letter-spacing:2px;
+}
+
+@media(max-width:700px){
+
+    nav a{
+        display:none;
+    }
+
+    .admin-link{
+        display:inline-block!important;
+        background:#3d9bff;
+        color:#06121f;
+        padding:9px 12px;
+        border-radius:10px;
+        font-size:12px;
+        font-weight:900;
+    }
+
+    .hero-content{
+        padding-top:80px;
+    }
+
+    .form-grid,
+    .rules{
+        grid-template-columns:1fr;
+    }
+
+    .full{
+        grid-column:auto;
+    }
+
+    .section{
+        padding:65px 5%;
+    }
+
+    .alt{
+        padding-left:5%;
+        padding-right:5%;
+    }
+
+    .section-title h2{
+        font-size:34px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="hero">
+
+<nav>
+
+<div class="logo">
+HOUSE <span>ALL</span>
+</div>
+
+<a href="#recepcao">Recepção</a>
+<a href="#personagens">Personagens</a>
+<a href="#regras">Como funciona</a>
+
+<a class="admin-link" href="administracao.html">
+🔐 Administração
+</a>
+
+</nav>
+
+<div class="hero-content">
+
+<p class="eyebrow">
+✦ CENTRAL DE RECEPÇÃO ✦
+</p>
+
+<h1>
+Bem-vindo à<br>
+<span>House LTD</span>
+</h1>
+
+<p class="subtitle">
+Faça sua ficha e escolha livremente o personagem que deseja representar.
+</p>
+
+<a class="button" href="#recepcao">
+Fazer minha ficha
+</a>
+
+</div>
+
+</header>
+
+
+<main>
+
+
+<!-- RECEPÇÃO -->
+
+<section id="recepcao" class="section">
+
+<div class="section-title">
+
+<p class="eyebrow">
+01 • ENTRADA
+</p>
+
+<h2>
+Ficha de recepção
+</h2>
+
+<p>
+Preencha os dados abaixo para registrar sua entrada na House.
+</p>
+
+</div>
+
+
+<form id="receptionForm" class="card form-grid">
+
+
+<label>
+Nome / apelido
+
+<input
+id="nome"
+required
+maxlength="30"
+placeholder="Como devemos te chamar?"
+>
+
+</label>
+
+
+<label>
+Idade
+
+<input
+id="idade"
+type="number"
+min="10"
+max="99"
+required
+placeholder="Ex.: 16"
+>
+
+</label>
+
+
+<!-- PERSONAGEM LIVRE -->
+
+<label>
+Personagem
+
+<input
+id="personagem"
+required
+maxlength="60"
+placeholder="Digite o personagem que deseja usar"
+>
+
+</label>
+
+
+<label>
+Anime
+
+<input
+id="anime"
+required
+maxlength="50"
+placeholder="Ex.: Naruto"
+>
+
+</label>
+
+
+<label class="full">
+
+Mensagem de entrada
+
+<textarea
+id="mensagem"
+maxlength="180"
+placeholder="Deixe uma mensagem para a recepção..."
+></textarea>
+
+</label>
+
+
+<button
+class="button full"
+type="submit"
+id="submitButton"
+>
+Confirmar recepção ✦
+</button>
+
+
+<p
+id="status"
+class="status full"
+></p>
+
+</form>
+
+</section>
+
+
+
+<!-- VAGAS ABERTAS -->
+
+<section class="section">
+
+<div class="section-title">
+
+<p class="eyebrow">
+02 • DISPONÍVEIS
+</p>
+
+<h2>
+🟢 Vagas abertas
+</h2>
+
+<p>
+Personagens atualmente disponíveis na House.
+</p>
+
+</div>
+
+
+<div
+id="openCharacters"
+class="character-grid"
+>
+
+<p class="status">
+Carregando vagas...
+</p>
+
+</div>
+
+</section>
+
+
+
+<!-- PERSONAGENS FECHADOS -->
+
+<section id="personagens" class="section alt">
+
+<div class="section-title">
+
+<p class="eyebrow">
+03 • FECHADOS
+</p>
+
+<h2>
+🔒 Personagens Fechados
+</h2>
+
+<p>
+Aqui aparecem automaticamente os personagens fechados pela administração.
+</p>
+
+</div>
+
+
+<div
+id="closedCharacters"
+class="character-grid"
+>
+
+<p class="status">
+Carregando...
+</p>
+
+</div>
+
+</section>
+
+
+
+<!-- REGRAS -->
+
+<section id="regras" class="section">
+
+<div class="section-title">
+
+<p class="eyebrow">
+04 • RECEPÇÃO
+</p>
+
+<h2>
+Como funciona?
+</h2>
+
+</div>
+
+
+<div class="rules">
+
+
+<article class="card">
+
+<b>01</b>
+
+<h3>
+Preencha a ficha
+</h3>
+
+<p>
+Informe seu nome, idade, personagem e anime.
+</p>
+
+</article>
+
+
+<article class="card">
+
+<b>02</b>
+
+<h3>
+Envie sua recepção
+</h3>
+
+<p>
+Sua ficha será enviada para a administração analisar.
+</p>
+
+</article>
+
+
+<article class="card">
+
+<b>03</b>
+
+<h3>
+Aguarde a aprovação
+</h3>
+
+<p>
+O personagem só ficará fechado depois que a administração aprovar sua ficha.
+</p>
+
+</article>
+
+
+</div>
+
+
+<div class="notice">
+
+<strong>Importante:</strong>
+sua ficha será enviada para a administração.
+O personagem só ficará
+<strong>🔒 FECHADO</strong>
+depois da aprovação.
+
+</div>
+
+</section>
+
+</main>
+
+
+<footer>
+HOUSE LTD • CENTRAL DE RECEPÇÃO
+</footer>
+
+
+
+<!-- FIREBASE -->
+
+<script type="module">
+
+import {
+    initializeApp
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    onSnapshot,
+    serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+/* =========================
+   FIREBASE
+========================= */
+
+const firebaseConfig = {
+
+    apiKey:
+    "AIzaSyAg4h7phK_shSp4oUT-PJMH_iK6cjJ82Q",
+
+    authDomain:
+    "house-6dfc9.firebaseapp.com",
+
+    projectId:
+    "house-6dfc9",
+
+    storageBucket:
+    "house-6dfc9.firebasestorage.app",
+
+    messagingSenderId:
+    "184001079413",
+
+    appId:
+    "1:184001079413:web:de4df4327d2cabdd30703c"
+
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+
+/* =========================
+   ELEMENTOS
+========================= */
+
+const form =
+document.getElementById("receptionForm");
+
+const characterInput =
+document.getElementById("personagem");
+
+const animeInput =
+document.getElementById("anime");
+
+const status =
+document.getElementById("status");
+
+const closedCharacters =
+document.getElementById("closedCharacters");
+
+const openCharacters =
+document.getElementById("openCharacters");
+
+const submitButton =
+document.getElementById("submitButton");
+
+
+/* =========================
+   DADOS
+========================= */
+
+let occupied = [];
+
+let openVacancies = [];
+
+
+/* =========================
+   STATUS
+========================= */
+
+function showStatus(message,type="normal"){
+
+    status.textContent = message;
+
+    status.className =
+    "status full";
+
+    if(type === "success"){
+        status.classList.add("success");
+    }
+
+    if(type === "error"){
+        status.classList.add("error");
+    }
+
+}
+
+
+/* =========================
+   NORMALIZAR PERSONAGEM
+========================= */
+
+function normalizeCharacter(name){
+
+    return String(name || "")
+        .trim()
+        .toLowerCase();
+
+}
+
+
+/* =========================
+   RENDERIZAR VAGAS ABERTAS
+========================= */
+
+function renderOpenVacancies(){
+
+    if(!openVacancies.length){
+
+        openCharacters.innerHTML = `
+            <p class="status">
+                📭 Nenhuma vaga foi cadastrada como aberta.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    openCharacters.innerHTML =
+    openVacancies.map(vaga => {
+
+        const character =
+        escapeHTML(vaga.character || "Sem nome");
+
+        const anime =
+        escapeHTML(vaga.anime || "Anime não informado");
+
+
+        return `
+
+        <article class="character">
+
+            <h3>
+                ${character}
+            </h3>
+
+            <p>
+                ${anime}
+            </p>
+
+            <span class="badge open">
+                🟢 VAGA ABERTA
+            </span>
+
+        </article>
+
+        `;
+
+    }).join("");
+
+}
+
+
+/* =========================
+   PERSONAGENS FECHADOS
+========================= */
+
+function renderClosedCharacters(){
+
+    if(!occupied.length){
+
+        closedCharacters.innerHTML = `
+            <p class="status">
+                📭 Nenhum personagem foi fechado ainda.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    closedCharacters.innerHTML =
+    occupied.map(item => {
+
+        const name =
+        escapeHTML(item.character);
+
+        const anime =
+        escapeHTML(item.anime || "Anime não informado");
+
+
+        return `
+
+        <article class="character">
+
+            <h3>
+                ${name}
+            </h3>
+
+            <p>
+                ${anime}
+            </p>
+
+            <span class="badge occupied">
+                🔒 FECHADO
+            </span>
+
+        </article>
+
+        `;
+
+    }).join("");
+
+}
+
+
+/* =========================
+   FIRESTORE — VAGAS
+========================= */
+
+onSnapshot(
+
+    collection(db,"vagas"),
+
+    snapshot => {
+
+        openVacancies = [];
+
+        snapshot.forEach(doc => {
+
+            const data = doc.data();
+
+            const character =
+            String(data.character || "").trim();
+
+
+            if(
+                character &&
+                String(data.status || "")
+                .toLowerCase() === "aberta"
+            ){
+
+                openVacancies.push({
+
+                    character:
+                    character,
+
+                    anime:
+                    data.anime || ""
+
+                });
+
+            }
+
+        });
+
+
+        renderOpenVacancies();
+
+    },
+
+    error => {
+
+        console.error(
+            "Erro ao carregar vagas:",
+            error
+        );
+
+        openVacancies = [];
+
+        renderOpenVacancies();
+
+    }
+
+);
+
+
+/* =========================
+   FIRESTORE — FECHADOS
+========================= */
+
+onSnapshot(
+
+    collection(db,"occupiedCharacters"),
+
+    snapshot => {
+
+        occupied = [];
+
+
+        snapshot.forEach(doc => {
+
+            const data = doc.data();
+
+
+            occupied.push({
+
+                character:
+                data.character || doc.id,
+
+                anime:
+                data.anime || ""
+
+            });
+
+        });
+
+
+        renderClosedCharacters();
+
+    },
+
+    error => {
+
+        console.error(
+            "Erro ao carregar personagens fechados:",
+            error
+        );
+
+        occupied = [];
+
+        renderClosedCharacters();
+
+    }
+
+);
+
+
+/* =========================
+   ENVIAR FICHA
+========================= */
+
+form.addEventListener(
+"submit",
+async event => {
+
+    event.preventDefault();
+
+
+    const name =
+    document
+    .getElementById("nome")
+    .value
+    .trim();
+
+
+    const age =
+    document
+    .getElementById("idade")
+    .value;
+
+
+    const character =
+    characterInput
+    .value
+    .trim();
+
+
+    const anime =
+    animeInput
+    .value
+    .trim();
+
+
+    const message =
+    document
+    .getElementById("mensagem")
+    .value
+    .trim();
+
+
+    if(
+        !name ||
+        !age ||
+        !character ||
+        !anime
+    ){
+
+        showStatus(
+            "⚠ Preencha todos os campos obrigatórios.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /* =========================
+       VERIFICAR PERSONAGEM FECHADO
+    ========================= */
+
+    const normalized =
+    normalizeCharacter(character);
+
+
+    const alreadyOccupied =
+    occupied.some(item =>
+        normalizeCharacter(item.character)
+        === normalized
+    );
+
+
+    if(alreadyOccupied){
+
+        showStatus(
+            "⚠ Esse personagem já está fechado.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    submitButton.disabled = true;
+
+    submitButton.textContent =
+    "Enviando...";
+
+
+    try{
+
+        await addDoc(
+
+            collection(db,"requests"),
+
+            {
+
+                name:
+                name,
+
+                age:
+                Number(age),
+
+                character:
+                character,
+
+                anime:
+                anime,
+
+                message:
+                message,
+
+                status:
+                "Pendente",
+
+                createdAt:
+                serverTimestamp()
+
+            }
+
+        );
+
+
+        showStatus(
+
+            `✓ Solicitação enviada com sucesso! ${character} aguarda a aprovação da administração.`,
+
+            "success"
+
+        );
+
+
+        form.reset();
+
+
+    }catch(error){
+
+        console.error(
+            "Erro ao enviar ficha:",
+            error
+        );
+
+
+        showStatus(
+
+            "❌ Não foi possível enviar sua ficha. Tente novamente.",
+
+            "error"
+
+        );
+
+    }
+
+
+    submitButton.disabled = false;
+
+    submitButton.textContent =
+    "Confirmar recepção ✦";
+
+});
+
+
+/* =========================
+   SEGURANÇA HTML
+========================= */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+</script>
+
+</body>
+  </html>
