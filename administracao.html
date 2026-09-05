@@ -8,23 +8,18 @@
 <title>House LTD — Administração</title>
 
 <style>
-
 *{
     box-sizing:border-box;
 }
 
-html,body{
+body{
     margin:0;
-    padding:0;
-    min-height:100%;
-    font-family:Arial,Helvetica,sans-serif;
-    background:#050914;
+    font-family:Arial,sans-serif;
+    background:#070b14;
     color:#fff;
 }
 
-button,
-input,
-select{
+button,input,select,textarea{
     font:inherit;
 }
 
@@ -32,171 +27,155 @@ button{
     cursor:pointer;
 }
 
-/* =========================
-   LOADING
-========================= */
-
 #loadingScreen{
     position:fixed;
     inset:0;
-    z-index:99999;
-    display:flex;
-    align-items:center;
-    justify-content:center;
     background:
-        radial-gradient(circle at top,#10234b 0%,#070c18 45%,#03060d 100%);
-}
-
-.loadingBox{
-    width:min(90%,420px);
-    text-align:center;
-}
-
-.loadingLogo{
-    width:90px;
-    height:90px;
-    margin:auto;
+        radial-gradient(circle at top,#123d78,#070b14 55%);
     display:flex;
     align-items:center;
     justify-content:center;
-    border-radius:28px;
-    background:linear-gradient(135deg,#1687ff,#0755d8);
-    box-shadow:0 15px 50px rgba(0,120,255,.35);
-    font-size:42px;
+    z-index:9999;
+}
+
+.loading-box{
+    text-align:center;
+    width:90%;
+    max-width:420px;
+}
+
+.logo{
+    width:85px;
+    height:85px;
+    margin:auto;
+    border-radius:24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:46px;
     font-weight:900;
+    background:linear-gradient(135deg,#258cff,#1651a5);
+    box-shadow:0 0 40px #147cff55;
 }
 
-.loadingTitle{
-    margin-top:25px;
-    font-size:30px;
-    font-weight:900;
+.loading-box h1{
+    margin:20px 0 5px;
+    font-size:34px;
 }
 
-.loadingSub{
-    margin-top:6px;
-    color:#7f9ac0;
-    font-size:13px;
-    letter-spacing:2px;
+.loading-box p{
+    color:#91a7c8;
 }
 
-.loadingText{
-    margin-top:35px;
-    color:#9db0cf;
-    min-height:20px;
-}
-
-.loadingBar{
-    height:7px;
-    margin-top:15px;
+.progress{
+    height:6px;
+    background:#172337;
+    border-radius:20px;
     overflow:hidden;
-    border-radius:20px;
-    background:#172238;
+    margin-top:25px;
 }
 
-#loadingProgress{
-    width:5%;
+.progress-bar{
     height:100%;
-    border-radius:20px;
-    background:linear-gradient(90deg,#0879ff,#5bb4ff);
-    transition:.4s;
+    width:0;
+    background:#238cff;
+    transition:.3s;
 }
-
-/* =========================
-   LOGIN
-========================= */
 
 #loginScreen{
-    min-height:100vh;
     display:none;
+    min-height:100vh;
     align-items:center;
     justify-content:center;
-    padding:25px;
+    padding:20px;
     background:
-        radial-gradient(circle at 50% 0,#10244a 0%,#070c17 45%,#03060d 100%);
+        radial-gradient(circle at top,#123d78,#070b14 60%);
 }
 
-.loginBox{
-    width:min(100%,430px);
+.login-box{
+    width:100%;
+    max-width:430px;
     padding:35px;
-    border:1px solid #1b3c70;
-    border-radius:25px;
-    background:rgba(10,20,38,.92);
-    box-shadow:0 25px 80px rgba(0,0,0,.5);
+    border:1px solid #223653;
+    background:#0c1320ee;
+    border-radius:22px;
+    box-shadow:0 25px 80px #0008;
 }
 
-.loginLogo{
-    width:75px;
-    height:75px;
-    margin:0 auto 20px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:23px;
-    background:linear-gradient(135deg,#1687ff,#0755d8);
-    font-size:36px;
+.login-logo{
+    text-align:center;
     font-weight:900;
+    font-size:38px;
 }
 
-.loginBox h1{
-    margin:0;
+.login-logo span{
+    color:#258cff;
+}
+
+.login-box h2{
     text-align:center;
-    font-size:27px;
+    margin-bottom:5px;
 }
 
-.loginBox p{
+.login-box .subtitle{
     text-align:center;
-    color:#8094b4;
-    margin:8px 0 30px;
+    color:#8295b2;
+    margin-bottom:28px;
 }
 
-.formGroup{
-    margin-bottom:17px;
+.field{
+    margin-bottom:16px;
 }
 
-.formGroup label{
+.field label{
     display:block;
     margin-bottom:7px;
-    color:#aabbd4;
+    color:#b9c9df;
     font-size:14px;
 }
 
-.formGroup input,
-.formGroup select{
+input,
+select,
+textarea{
     width:100%;
-    padding:15px;
-    border:1px solid #234474;
-    border-radius:14px;
-    outline:none;
+    border:1px solid #263b5a;
+    background:#0a111d;
     color:#fff;
-    background:#070e1d;
-    transition:.2s;
+    border-radius:11px;
+    padding:13px;
+    outline:none;
 }
 
-.formGroup input:focus,
-.formGroup select:focus{
-    border-color:#1687ff;
-    box-shadow:0 0 0 3px rgba(22,135,255,.12);
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:#258cff;
 }
 
-.primaryBtn{
+textarea{
+    min-height:90px;
+    resize:vertical;
+}
+
+.primary{
     width:100%;
     border:0;
-    border-radius:14px;
-    padding:15px;
+    border-radius:11px;
+    padding:14px;
     color:#fff;
-    font-weight:800;
-    background:linear-gradient(135deg,#1687ff,#0759d8);
-    transition:.2s;
+    font-weight:bold;
+    background:linear-gradient(135deg,#258cff,#1760bd);
 }
 
-.primaryBtn:hover{
-    transform:translateY(-1px);
-    filter:brightness(1.08);
+.primary:hover{
+    filter:brightness(1.1);
 }
 
-/* =========================
-   APP
-========================= */
+.error{
+    color:#ff7180;
+    text-align:center;
+    margin-top:15px;
+}
 
 #app{
     display:none;
@@ -208,745 +187,531 @@ button{
     left:0;
     top:0;
     bottom:0;
-    width:105px;
-    z-index:100;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:18px 10px;
-    border-right:1px solid #162c4b;
-    background:#07101e;
+    width:245px;
+    background:#0a111d;
+    border-right:1px solid #1d2d45;
+    padding:20px 15px;
+    z-index:50;
 }
 
 .brand{
-    width:76px;
-    height:76px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:23px;
-    background:linear-gradient(135deg,#1687ff,#0755d8);
-    font-size:34px;
-    font-weight:900;
-    box-shadow:0 10px 30px rgba(0,100,255,.25);
+    padding:10px;
+    text-align:center;
+    margin-bottom:25px;
 }
 
-.nav{
-    width:100%;
-    margin-top:35px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
+.brand strong{
+    font-size:27px;
 }
 
-.navBtn{
+.brand span{
+    color:#258cff;
+}
+
+.brand small{
+    display:block;
+    color:#657b9b;
+    margin-top:4px;
+}
+
+.current-adm{
+    background:#101c2d;
+    border:1px solid #223957;
+    border-radius:13px;
+    padding:12px;
+    margin-bottom:18px;
+}
+
+.current-adm b{
+    display:block;
+}
+
+.current-adm small{
+    color:#6d83a2;
+}
+
+.nav-btn{
     width:100%;
-    min-height:60px;
-    border:1px solid transparent;
-    border-radius:18px;
-    color:#7890b3;
+    text-align:left;
+    border:0;
     background:transparent;
-    font-size:25px;
-    transition:.2s;
+    color:#91a5c2;
+    padding:13px;
+    border-radius:10px;
+    margin:3px 0;
 }
 
-.navBtn:hover{
-    color:#fff;
-    background:#0d1c32;
-}
-
-.navBtn.active{
-    color:#fff;
-    border-color:#1c4b87;
-    background:linear-gradient(135deg,#10325e,#0c2140);
-    box-shadow:inset 3px 0 #1687ff;
-}
-
-.logoutBtn{
-    margin-top:auto;
-    color:#ff6d6d;
-}
-
-.main{
-    min-height:100vh;
-    margin-left:105px;
-    padding:30px;
-}
-
-.topbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:15px;
-    margin-bottom:28px;
-}
-
-.topbar h1{
-    margin:0;
-    font-size:32px;
-}
-
-.userBadge{
-    padding:10px 15px;
-    border:1px solid #1b3b67;
-    border-radius:14px;
-    color:#9eb4d3;
-    background:#0a1527;
-}
-
-.userBadge strong{
+.nav-btn:hover,
+.nav-btn.active{
+    background:#142a46;
     color:#fff;
 }
 
-/* =========================
-   PAGES
-========================= */
+.logout{
+    margin-top:15px;
+    color:#ff7785;
+}
+
+main{
+    margin-left:245px;
+    padding:28px;
+    max-width:1500px;
+}
 
 .page{
     display:none;
-    animation:pageIn .25s ease;
 }
 
 .page.active{
     display:block;
 }
 
-@keyframes pageIn{
-    from{
-        opacity:0;
-        transform:translateY(8px);
-    }
-    to{
-        opacity:1;
-        transform:none;
-    }
+.page-title{
+    margin-bottom:25px;
 }
 
-/* =========================
-   CARDS
-========================= */
+.page-title h1{
+    margin:0;
+    font-size:30px;
+}
+
+.page-title p{
+    color:#7185a1;
+}
 
 .stats{
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    gap:18px;
-    margin-bottom:22px;
-}
-
-.statCard{
-    padding:22px;
-    border:1px solid #18365e;
-    border-radius:20px;
-    background:linear-gradient(145deg,#0d1a2e,#091221);
-}
-
-.statIcon{
-    font-size:25px;
-}
-
-.statNumber{
-    margin-top:12px;
-    font-size:31px;
-    font-weight:900;
-}
-
-.statLabel{
-    margin-top:5px;
-    color:#7890b1;
-}
-
-.panel{
-    padding:25px;
-    border:1px solid #18365e;
-    border-radius:23px;
-    background:linear-gradient(145deg,#0d192c,#091321);
-    margin-bottom:20px;
-}
-
-.panelTitle{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
     gap:15px;
-    margin-bottom:20px;
-}
-
-.panelTitle h2{
-    margin:0;
-    font-size:22px;
-}
-
-.smallBtn{
-    border:1px solid #244875;
-    border-radius:10px;
-    padding:9px 13px;
-    color:#b9cbe5;
-    background:#0b1729;
-}
-
-.smallBtn:hover{
-    background:#122743;
-}
-
-/* =========================
-   SEARCH
-========================= */
-
-.searchBox{
-    margin-bottom:18px;
-}
-
-.searchBox input{
-    width:100%;
-    padding:14px 16px;
-    border:1px solid #234474;
-    border-radius:14px;
-    outline:none;
-    color:#fff;
-    background:#070e1c;
-}
-
-.searchBox input:focus{
-    border-color:#1687ff;
-}
-
-/* =========================
-   VAGAS
-========================= */
-
-.vagaForm{
-    display:grid;
-    grid-template-columns:1.2fr 1fr 1fr 160px auto;
-    gap:12px;
-    align-items:end;
     margin-bottom:25px;
 }
 
-.vagaForm input,
-.vagaForm select{
-    width:100%;
-    padding:14px;
-    border:1px solid #234474;
-    border-radius:13px;
-    outline:none;
-    color:#fff;
-    background:#070e1d;
+.stat{
+    background:#0d1624;
+    border:1px solid #1e3049;
+    border-radius:16px;
+    padding:20px;
 }
 
-.vagaForm input:focus,
-.vagaForm select:focus{
-    border-color:#1687ff;
+.stat-icon{
+    font-size:25px;
 }
 
-.addBtn{
-    height:49px;
-    border:0;
-    border-radius:13px;
-    padding:0 20px;
-    color:#fff;
-    font-weight:800;
-    background:linear-gradient(135deg,#1687ff,#075bd8);
+.stat strong{
+    display:block;
+    font-size:30px;
+    margin-top:8px;
 }
 
-.vagasGrid{
+.stat span{
+    color:#7287a5;
+}
+
+.card{
+    background:#0d1624;
+    border:1px solid #1e3049;
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.card h3{
+    margin-top:0;
+}
+
+.toolbar{
+    display:flex;
+    gap:10px;
+    margin-bottom:18px;
+}
+
+.toolbar input{
+    flex:1;
+}
+
+.grid{
     display:grid;
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
     gap:15px;
 }
 
-.vagaCard{
-    padding:20px;
-    border:1px solid #1c3a63;
-    border-radius:19px;
-    background:#101f35;
+.vaga{
+    background:#0d1624;
+    border:1px solid #1e3049;
+    border-radius:16px;
+    padding:18px;
 }
 
-.vagaHeader{
+.vaga.closed{
+    border-color:#552c36;
+}
+
+.vaga h3{
+    margin:0 0 5px;
+}
+
+.vaga .anime{
+    color:#7287a5;
+    margin-bottom:15px;
+}
+
+.status{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.open{
+    background:#123a2a;
+    color:#5dffad;
+}
+
+.closed-status{
+    background:#45202a;
+    color:#ff7182;
+}
+
+.vaga-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:15px;
+}
+
+.action{
+    border:1px solid #29405f;
+    background:#111e30;
+    color:#fff;
+    border-radius:9px;
+    padding:9px;
+}
+
+.action:hover{
+    background:#19304d;
+}
+
+.danger{
+    border-color:#63303a;
+    color:#ff7180;
+}
+
+.success{
+    border-color:#286147;
+    color:#62e8a1;
+}
+
+.requests{
     display:flex;
-    align-items:flex-start;
+    flex-direction:column;
+    gap:12px;
+}
+
+.request{
+    background:#101a29;
+    border:1px solid #233753;
+    border-radius:14px;
+    padding:16px;
+}
+
+.request-head{
+    display:flex;
     justify-content:space-between;
     gap:10px;
 }
 
-.vagaName{
-    font-size:20px;
-    font-weight:900;
+.request h3{
+    margin:0 0 5px;
 }
 
-.vagaAnime,
-.vagaMember{
-    margin-top:7px;
-    color:#d5dfed;
+.muted{
+    color:#7185a1;
 }
 
-.vagaStatus{
-    display:inline-block;
-    margin-top:15px;
-    padding:8px 11px;
-    border-radius:9px;
-    font-size:12px;
-    font-weight:900;
-}
-
-.statusOpen{
-    color:#4ce58b;
-    background:#123d2a;
-}
-
-.statusClosed{
-    color:#ff6262;
-    background:#4a1820;
-}
-
-.receptionClosed{
-    margin-top:9px;
-    color:#8ca1c0;
-    font-size:14px;
-}
-
-.vagaActions{
+.request-actions{
     display:flex;
-    flex-wrap:wrap;
     gap:8px;
-    margin-top:15px;
-}
-
-.actionBtn{
-    border:0;
-    border-radius:10px;
-    padding:10px 13px;
-    font-weight:800;
-}
-
-.openBtn{
-    color:#062512;
-    background:#25c76b;
-}
-
-.closeBtn{
-    color:#fff;
-    background:#bc2635;
-}
-
-.editBtn{
-    color:#fff;
-    background:#235eaa;
-}
-
-.deleteBtn{
-    color:#fff;
-    background:#8f1e2c;
-}
-
-.deleteBtn:hover{
-    background:#bd2739;
-}
-
-/* =========================
-   REQUESTS
-========================= */
-
-.requestCard,
-.memberCard,
-.adminCard,
-.chatMessage{
-    padding:17px;
-    margin-bottom:12px;
-    border:1px solid #19385f;
-    border-radius:16px;
-    background:#0d1b2e;
-}
-
-.requestTitle,
-.memberTitle,
-.adminTitle{
-    font-size:17px;
-    font-weight:900;
-}
-
-.infoLine{
-    margin-top:6px;
-    color:#a9bad3;
-}
-
-.requestActions{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:15px;
-}
-
-.approveBtn{
-    border:0;
-    border-radius:9px;
-    padding:10px 14px;
-    color:#fff;
-    background:#168b51;
-    font-weight:800;
-}
-
-.rejectBtn{
-    border:0;
-    border-radius:9px;
-    padding:10px 14px;
-    color:#fff;
-    background:#a52838;
-    font-weight:800;
-}
-
-/* =========================
-   CHAT
-========================= */
-
-.chatBox{
-    height:500px;
-    overflow-y:auto;
-    padding:15px;
-    border:1px solid #19385f;
-    border-radius:17px;
-    background:#050c17;
-}
-
-.chatMessage strong{
-    color:#54a9ff;
-}
-
-.chatTime{
-    margin-left:8px;
-    color:#617895;
-    font-size:11px;
-}
-
-.chatForm{
-    display:flex;
-    gap:10px;
     margin-top:12px;
+    flex-wrap:wrap;
 }
 
-.chatForm input{
-    flex:1;
-    padding:14px;
-    border:1px solid #234474;
-    border-radius:13px;
-    outline:none;
-    color:#fff;
-    background:#070e1c;
+.member{
+    position:relative;
+    background:#0d1624;
+    border:1px solid #1e3049;
+    border-radius:15px;
+    padding:17px;
 }
 
-.chatForm button{
+.member h3{
+    margin:0;
+}
+
+.member p{
+    color:#778ba7;
+}
+
+.member-delete{
+    position:absolute;
+    top:12px;
+    right:12px;
     border:0;
-    border-radius:13px;
-    padding:0 20px;
-    color:#fff;
-    background:#1687ff;
-    font-weight:800;
-}
-
-/* =========================
-   STATUS
-========================= */
-
-.online{
-    color:#42e582;
-}
-
-.offline{
-    color:#7489a5;
-}
-
-.badge{
-    display:inline-block;
-    padding:5px 8px;
+    background:#3b1820;
+    color:#ff7180;
     border-radius:8px;
-    font-size:11px;
-    font-weight:800;
+    padding:7px 9px;
 }
 
-.badgeOnline{
-    color:#45e78b;
-    background:#123c29;
+.admin-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:15px;
 }
 
-.badgeOffline{
-    color:#8497b0;
-    background:#182638;
+.admin-card{
+    background:#0d1624;
+    border:1px solid #1e3049;
+    border-radius:15px;
+    padding:18px;
 }
 
-/* =========================
-   MODAL
-========================= */
+.online-dot{
+    display:inline-block;
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#777;
+    margin-right:7px;
+}
+
+.online-dot.on{
+    background:#42e58d;
+    box-shadow:0 0 10px #42e58d;
+}
+
+.chat{
+    height:500px;
+    display:flex;
+    flex-direction:column;
+}
+
+.chat-messages{
+    flex:1;
+    overflow-y:auto;
+    padding:10px 2px;
+}
+
+.message{
+    max-width:80%;
+    background:#15243a;
+    border-radius:12px;
+    padding:10px 13px;
+    margin-bottom:9px;
+}
+
+.message.me{
+    margin-left:auto;
+    background:#15539a;
+}
+
+.message b{
+    display:block;
+    font-size:12px;
+    margin-bottom:4px;
+}
+
+.message small{
+    color:#a7bad3;
+}
+
+.chat-form{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+}
+
+.chat-form input{
+    flex:1;
+}
 
 .modal{
     position:fixed;
     inset:0;
-    z-index:9999;
     display:none;
     align-items:center;
     justify-content:center;
+    background:#000b;
+    z-index:100;
     padding:20px;
-    background:rgba(0,0,0,.72);
 }
 
 .modal.show{
     display:flex;
 }
 
-.modalBox{
-    width:min(100%,480px);
+.modal-box{
+    width:100%;
+    max-width:500px;
+    background:#0d1624;
+    border:1px solid #29415f;
+    border-radius:18px;
     padding:25px;
-    border:1px solid #244a7b;
-    border-radius:22px;
-    background:#0a1526;
-    box-shadow:0 25px 80px rgba(0,0,0,.6);
 }
 
-.modalBox h2{
-    margin-top:0;
-}
-
-.modalActions{
+.modal-actions{
     display:flex;
     gap:10px;
-    margin-top:20px;
+    margin-top:15px;
 }
 
-.modalActions button{
+.modal-actions button{
     flex:1;
-    padding:13px;
-    border:0;
-    border-radius:12px;
-    font-weight:800;
 }
 
-.cancelBtn{
-    color:#fff;
-    background:#26374e;
-}
-
-.confirmBtn{
-    color:#fff;
-    background:#c42b3b;
-}
-
-/* =========================
-   EMPTY
-========================= */
-
-.empty{
-    padding:40px 20px;
-    text-align:center;
-    color:#7187a5;
-}
-
-.emptyIcon{
-    font-size:40px;
-    margin-bottom:10px;
-}
-
-/* =========================
-   TOAST
-========================= */
-
-#toastContainer{
+.toast-container{
     position:fixed;
     right:20px;
     bottom:20px;
-    z-index:100000;
+    z-index:500;
     display:flex;
     flex-direction:column;
     gap:10px;
 }
 
 .toast{
-    min-width:250px;
-    max-width:360px;
-    padding:14px 17px;
-    border:1px solid #264875;
-    border-radius:13px;
-    background:#0d1b30;
-    box-shadow:0 15px 40px rgba(0,0,0,.4);
-    animation:toastIn .25s ease;
+    background:#101c2c;
+    border:1px solid #29415f;
+    border-radius:12px;
+    padding:13px 16px;
+    box-shadow:0 10px 30px #0006;
 }
 
-.toast.success{
-    border-color:#237b4d;
+.empty{
+    text-align:center;
+    padding:35px;
+    color:#7185a1;
 }
 
-.toast.error{
-    border-color:#87303c;
+.log{
+    padding:11px 0;
+    border-bottom:1px solid #1b2a3e;
+    color:#91a4be;
 }
 
-@keyframes toastIn{
-    from{
-        opacity:0;
-        transform:translateY(10px);
-    }
-    to{
-        opacity:1;
-        transform:none;
-    }
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-@media(max-width:900px){
+@media(max-width:850px){
 
     .sidebar{
-        width:72px;
-        padding:12px 7px;
+        width:70px;
+        padding:10px 7px;
     }
 
-    .brand{
-        width:52px;
-        height:52px;
-        border-radius:17px;
-        font-size:25px;
+    .brand strong{
+        font-size:20px;
     }
 
-    .navBtn{
-        min-height:50px;
-        font-size:21px;
-    }
-
-    .main{
-        margin-left:72px;
-        padding:20px 15px;
-    }
-
-    .topbar h1{
-        font-size:25px;
-    }
-
-    .userBadge{
+    .brand small,
+    .current-adm,
+    .nav-btn span{
         display:none;
+    }
+
+    .nav-btn{
+        text-align:center;
+        font-size:20px;
+    }
+
+    main{
+        margin-left:70px;
+        padding:18px;
     }
 
     .stats{
         grid-template-columns:repeat(2,1fr);
     }
-
-    .vagaForm{
-        grid-template-columns:1fr;
-    }
-
-    .vagasGrid{
-        grid-template-columns:1fr;
-    }
 }
 
-@media(max-width:500px){
-
-    .panel{
-        padding:16px;
-    }
+@media(max-width:550px){
 
     .stats{
-        gap:10px;
+        grid-template-columns:1fr 1fr;
+        gap:8px;
     }
 
-    .statCard{
-        padding:15px;
-    }
-
-    .statNumber{
-        font-size:25px;
-    }
-
-    .vagaCard{
-        padding:16px;
-    }
-
-    .vagaActions{
-        flex-direction:column;
-    }
-
-    .actionBtn{
-        width:100%;
-    }
-
-    .chatForm{
-        flex-direction:column;
-    }
-
-    .chatForm button{
+    .stat{
         padding:13px;
     }
 
-    #toastContainer{
-        left:15px;
-        right:15px;
+    .stat strong{
+        font-size:23px;
     }
 
-    .toast{
-        min-width:0;
-        width:100%;
+    .toolbar{
+        flex-direction:column;
+    }
+
+    .chat-form{
+        flex-direction:column;
+    }
+
+    .request-head{
+        flex-direction:column;
     }
 }
-
 </style>
 </head>
 
 <body>
 
-<!-- =========================
-     LOADING
-========================= -->
+<!-- ================= LOADING ================= -->
 
 <div id="loadingScreen">
 
-    <div class="loadingBox">
+    <div class="loading-box">
 
-        <div class="loadingLogo">L</div>
+        <div class="logo">L</div>
 
-        <div class="loadingTitle">LTD</div>
+        <h1>LTD</h1>
 
-        <div class="loadingSub">
-            HOUSE ALL / GERAL
-        </div>
+        <p id="loadingText">INICIANDO SISTEMA...</p>
 
-        <div class="loadingText" id="loadingText">
-            Iniciando sistema...
-        </div>
-
-        <div class="loadingBar">
-            <div id="loadingProgress"></div>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
         </div>
 
     </div>
 
 </div>
 
-
-<!-- =========================
-     LOGIN
-========================= -->
+<!-- ================= LOGIN ================= -->
 
 <div id="loginScreen">
 
-    <div class="loginBox">
+    <div class="login-box">
 
-        <div class="loginLogo">L</div>
+        <div class="login-logo">
+            HOUSE <span>LTD</span>
+        </div>
 
-        <h1>Administração LTD</h1>
+        <h2>Administração</h2>
 
-        <p>Área exclusiva da administração</p>
+        <div class="subtitle">
+            Área exclusiva da equipe
+        </div>
 
-        <div class="formGroup">
+        <div class="field">
 
             <label>Nome do ADM</label>
 
             <input
                 id="loginName"
-                type="text"
                 placeholder="Digite seu nome"
                 autocomplete="username"
             >
 
         </div>
 
-        <div class="formGroup">
+        <div class="field">
 
             <label>Senha</label>
 
@@ -959,199 +724,307 @@ button{
 
         </div>
 
-        <button
-            class="primaryBtn"
-            id="loginBtn"
-        >
-            🔐 Entrar na administração
+        <button class="primary" onclick="login()">
+            🔐 Entrar
         </button>
+
+        <div id="loginError" class="error"></div>
 
     </div>
 
 </div>
 
-
-<!-- =========================
-     APP
-========================= -->
+<!-- ================= APP ================= -->
 
 <div id="app">
 
     <aside class="sidebar">
 
-        <div class="brand">L</div>
+        <div class="brand">
 
-        <nav class="nav">
+            <strong>HOUSE <span>LTD</span></strong>
 
-            <button class="navBtn active" data-page="home" title="Início">
-                🏠
-            </button>
+            <small>ADMINISTRAÇÃO</small>
 
-            <button class="navBtn" data-page="chat" title="Chat">
-                💬
-            </button>
+        </div>
 
-            <button class="navBtn" data-page="requests" title="Solicitações">
-                📋
-            </button>
+        <div class="current-adm">
 
-            <button class="navBtn" data-page="vagas" title="Personagens / Vagas">
-                🎭
-            </button>
+            <b id="currentAdmName">ADM</b>
 
-            <button class="navBtn" data-page="members" title="Membros">
-                👥
-            </button>
+            <small id="currentAdmRole">Administrador</small>
 
-            <button class="navBtn" data-page="admins" title="Administradores">
-                🛡️
-            </button>
+        </div>
 
-        </nav>
+        <button class="nav-btn active" onclick="showPage('home',this)">
+            🏠 <span>Home</span>
+        </button>
 
-        <button
-            class="navBtn logoutBtn"
-            id="logoutBtn"
-            title="Sair"
-        >
-            🚪
+        <button class="nav-btn" onclick="showPage('requests',this)">
+            📥 <span>Solicitações</span>
+        </button>
+
+        <button class="nav-btn" onclick="showPage('vagas',this)">
+            🎭 <span>Vagas</span>
+        </button>
+
+        <button class="nav-btn" onclick="showPage('members',this)">
+            👥 <span>Membros</span>
+        </button>
+
+        <button class="nav-btn" onclick="showPage('admins',this)">
+            🛡️ <span>ADMs</span>
+        </button>
+
+        <button class="nav-btn" onclick="showPage('chat',this)">
+            💬 <span>Chat</span>
+        </button>
+
+        <button class="nav-btn logout" onclick="logout()">
+            🚪 <span>Sair</span>
         </button>
 
     </aside>
 
+    <main>
 
-    <main class="main">
+        <!-- ================= HOME ================= -->
 
-        <div class="topbar">
+        <section id="home" class="page active">
 
-            <h1 id="pageTitle">
-                Início
-            </h1>
+            <div class="page-title">
 
-            <div class="userBadge">
-                ADM: <strong id="currentAdm">—</strong>
-            </div>
+                <h1>Painel da House 👑</h1>
 
-        </div>
-
-
-        <!-- =====================
-             HOME
-        ====================== -->
-
-        <section
-            id="page-home"
-            class="page active"
-        >
-
-            <div class="stats">
-
-                <div class="statCard">
-                    <div class="statIcon">👥</div>
-                    <div class="statNumber" id="statMembers">0</div>
-                    <div class="statLabel">Membros</div>
-                </div>
-
-                <div class="statCard">
-                    <div class="statIcon">🎭</div>
-                    <div class="statNumber" id="statCharacters">0</div>
-                    <div class="statLabel">Personagens</div>
-                </div>
-
-                <div class="statCard">
-                    <div class="statIcon">📋</div>
-                    <div class="statNumber" id="statRequests">0</div>
-                    <div class="statLabel">Solicitações</div>
-                </div>
-
-                <div class="statCard">
-                    <div class="statIcon">🟢</div>
-                    <div class="statNumber" id="statOnline">0</div>
-                    <div class="statLabel">ADMs online</div>
-                </div>
-
-            </div>
-
-
-            <div class="panel">
-
-                <div class="panelTitle">
-
-                    <h2>📊 Sistema</h2>
-
-                    <button
-                        class="smallBtn"
-                        id="refreshBtn"
-                    >
-                        ↻ Atualizar
-                    </button>
-
-                </div>
-
-                <p style="color:#8498b5;line-height:1.6">
-                    Bem-vindo ao painel administrativo da House LTD.
-                    Utilize o menu lateral para administrar solicitações,
-                    personagens, membros e administradores.
+                <p>
+                    Bem-vindo à central administrativa da House LTD.
                 </p>
 
             </div>
 
+            <div class="stats">
 
-            <div class="panel">
+                <div class="stat">
 
-                <div class="panelTitle">
-                    <h2>🔐 Últimos acessos</h2>
+                    <div class="stat-icon">👥</div>
+
+                    <strong id="statMembers">0</strong>
+
+                    <span>Membros</span>
+
                 </div>
 
-                <div id="accessLogs">
-                    <div class="empty">
-                        Carregando...
-                    </div>
+                <div class="stat">
+
+                    <div class="stat-icon">🎭</div>
+
+                    <strong id="statCharacters">0</strong>
+
+                    <span>Personagens</span>
+
                 </div>
+
+                <div class="stat">
+
+                    <div class="stat-icon">📥</div>
+
+                    <strong id="statRequests">0</strong>
+
+                    <span>Solicitações</span>
+
+                </div>
+
+                <div class="stat">
+
+                    <div class="stat-icon">🟢</div>
+
+                    <strong id="statAdmins">0</strong>
+
+                    <span>ADMs online</span>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <h3>📊 Atividade recente</h3>
+
+                <div id="accessLogs"></div>
 
             </div>
 
         </section>
 
+        <!-- ================= REQUESTS ================= -->
 
-        <!-- =====================
-             CHAT
-        ====================== -->
+        <section id="requests" class="page">
 
-        <section
-            id="page-chat"
-            class="page"
-        >
+            <div class="page-title">
 
-            <div class="panel">
+                <h1>📥 Solicitações</h1>
 
-                <div class="panelTitle">
-                    <h2>💬 Chat da Administração</h2>
+                <p>
+                    Analise as fichas enviadas pela recepção.
+                </p>
+
+            </div>
+
+            <div class="toolbar">
+
+                <input
+                    id="requestSearch"
+                    placeholder="🔎 Procurar solicitação..."
+                    oninput="renderRequests()"
+                >
+
+            </div>
+
+            <div id="requestsList" class="requests"></div>
+
+        </section>
+
+        <!-- ================= VAGAS ================= -->
+
+        <section id="vagas" class="page">
+
+            <div class="page-title">
+
+                <h1>🎭 Personagens / Vagas</h1>
+
+                <p>
+                    Abra, feche, edite ou exclua vagas da House.
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>➕ Adicionar nova vaga</h3>
+
+                <div class="field">
+
+                    <label>Personagem</label>
+
+                    <input id="vagaCharacter" placeholder="Ex.: Varesa">
+
                 </div>
 
-                <div
-                    class="chatBox"
-                    id="chatMessages"
-                >
-                    <div class="empty">
-                        Carregando mensagens...
-                    </div>
+                <div class="field">
+
+                    <label>Anime</label>
+
+                    <input id="vagaAnime" placeholder="Ex.: Genshin Impact">
+
                 </div>
 
-                <form
-                    class="chatForm"
-                    id="chatForm"
+                <div class="field">
+
+                    <label>Status inicial</label>
+
+                    <select id="vagaStatus">
+
+                        <option value="Aberta">🟢 Aberta</option>
+
+                        <option value="Fechada">🔴 Fechada</option>
+
+                    </select>
+
+                </div>
+
+                <button class="primary" onclick="addVaga()">
+                    Adicionar vaga
+                </button>
+
+            </div>
+
+            <div class="toolbar">
+
+                <input
+                    id="vagaSearch"
+                    placeholder="🔎 Procurar personagem..."
+                    oninput="renderVagas()"
                 >
+
+            </div>
+
+            <div id="vagasGrid" class="grid"></div>
+
+        </section>
+
+        <!-- ================= MEMBERS ================= -->
+
+        <section id="members" class="page">
+
+            <div class="page-title">
+
+                <h1>👥 Membros</h1>
+
+                <p>
+                    Membros registrados na House.
+                </p>
+
+            </div>
+
+            <div class="toolbar">
+
+                <input
+                    id="memberSearch"
+                    placeholder="🔎 Procurar membro..."
+                    oninput="renderMembers()"
+                >
+
+            </div>
+
+            <div id="membersGrid" class="grid"></div>
+
+        </section>
+
+        <!-- ================= ADMINS ================= -->
+
+        <section id="admins" class="page">
+
+            <div class="page-title">
+
+                <h1>🛡️ Administração</h1>
+
+                <p>
+                    Equipe autorizada da House LTD.
+                </p>
+
+            </div>
+
+            <div id="adminsGrid" class="admin-list"></div>
+
+        </section>
+
+        <!-- ================= CHAT ================= -->
+
+        <section id="chat" class="page">
+
+            <div class="page-title">
+
+                <h1>💬 Chat da Administração</h1>
+
+                <p>
+                    Comunicação privada entre os ADMs.
+                </p>
+
+            </div>
+
+            <div class="card chat">
+
+                <div id="chatMessages" class="chat-messages"></div>
+
+                <form class="chat-form" onsubmit="sendMessage(event)">
 
                     <input
                         id="chatInput"
-                        type="text"
                         placeholder="Digite uma mensagem..."
                         maxlength="500"
-                        autocomplete="off"
                     >
 
-                    <button type="submit">
+                    <button class="primary" style="width:auto;padding-left:25px;padding-right:25px">
                         Enviar
                     </button>
 
@@ -1161,289 +1034,57 @@ button{
 
         </section>
 
-
-        <!-- =====================
-             REQUESTS
-        ====================== -->
-
-        <section
-            id="page-requests"
-            class="page"
-        >
-
-            <div class="panel">
-
-                <div class="panelTitle">
-
-                    <h2>📋 Solicitações da Recepção</h2>
-
-                    <button
-                        class="smallBtn"
-                        onclick="loadData()"
-                    >
-                        ↻ Atualizar
-                    </button>
-
-                </div>
-
-                <div
-                    class="searchBox"
-                >
-
-                    <input
-                        id="requestSearch"
-                        type="text"
-                        placeholder="🔎 Procurar solicitação..."
-                    >
-
-                </div>
-
-                <div id="requestsList">
-                    <div class="empty">
-                        Carregando solicitações...
-                    </div>
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =====================
-             VAGAS
-        ====================== -->
-
-        <section
-            id="page-vagas"
-            class="page"
-        >
-
-            <div class="panel">
-
-                <div class="panelTitle">
-
-                    <h2>🎭 Personagens / Vagas</h2>
-
-                </div>
-
-
-                <div class="vagaForm">
-
-                    <div>
-                        <input
-                            id="vagaCharacter"
-                            type="text"
-                            placeholder="Nome do personagem"
-                        >
-                    </div>
-
-                    <div>
-                        <input
-                            id="vagaAnime"
-                            type="text"
-                            placeholder="Anime"
-                        >
-                    </div>
-
-                    <div>
-                        <input
-                            id="vagaMember"
-                            type="text"
-                            placeholder="Membro / Livre"
-                        >
-                    </div>
-
-                    <div>
-                        <select id="vagaStatus">
-                            <option value="Aberta">Aberta</option>
-                            <option value="Fechada">Fechada</option>
-                        </select>
-                    </div>
-
-                    <button
-                        class="addBtn"
-                        id="addVagaBtn"
-                    >
-                        ➕ Adicionar
-                    </button>
-
-                </div>
-
-
-                <div class="searchBox">
-
-                    <input
-                        id="vagaSearch"
-                        type="text"
-                        placeholder="🔎 Procurar personagem, anime ou membro..."
-                    >
-
-                </div>
-
-
-                <div
-                    class="vagasGrid"
-                    id="vagasList"
-                >
-
-                    <div class="empty">
-                        <div class="emptyIcon">🎭</div>
-                        Carregando vagas...
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =====================
-             MEMBERS
-        ====================== -->
-
-        <section
-            id="page-members"
-            class="page"
-        >
-
-            <div class="panel">
-
-                <div class="panelTitle">
-                    <h2>👥 Membros</h2>
-                </div>
-
-                <div class="searchBox">
-
-                    <input
-                        id="memberSearch"
-                        type="text"
-                        placeholder="🔎 Procurar membro..."
-                    >
-
-                </div>
-
-                <div id="membersList">
-
-                    <div class="empty">
-                        Carregando membros...
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =====================
-             ADMINS
-        ====================== -->
-
-        <section
-            id="page-admins"
-            class="page"
-        >
-
-            <div class="panel">
-
-                <div class="panelTitle">
-                    <h2>🛡️ Administradores</h2>
-                </div>
-
-                <div id="adminsList"></div>
-
-            </div>
-
-        </section>
-
     </main>
 
 </div>
 
+<!-- ================= MODAL EDITAR ================= -->
 
-<!-- =========================
-     MODAL EDITAR VAGA
-========================= -->
+<div id="editModal" class="modal">
 
-<div
-    class="modal"
-    id="editModal"
->
+    <div class="modal-box">
 
-    <div class="modalBox">
+        <h2>✏️ Editar vaga</h2>
 
-        <h2>✏️ Editar personagem</h2>
+        <input type="hidden" id="editId">
 
-        <input
-            type="hidden"
-            id="editVagaId"
-        >
-
-        <div class="formGroup">
+        <div class="field">
 
             <label>Personagem</label>
 
-            <input
-                id="editCharacter"
-                type="text"
-            >
+            <input id="editCharacter">
 
         </div>
 
-        <div class="formGroup">
+        <div class="field">
 
             <label>Anime</label>
 
-            <input
-                id="editAnime"
-                type="text"
-            >
+            <input id="editAnime">
 
         </div>
 
-        <div class="formGroup">
-
-            <label>Membro</label>
-
-            <input
-                id="editMember"
-                type="text"
-            >
-
-        </div>
-
-        <div class="formGroup">
+        <div class="field">
 
             <label>Status</label>
 
             <select id="editStatus">
 
-                <option value="Aberta">
-                    Aberta
-                </option>
+                <option value="Aberta">🟢 Aberta</option>
 
-                <option value="Fechada">
-                    Fechada
-                </option>
+                <option value="Fechada">🔴 Fechada</option>
 
             </select>
 
         </div>
 
-        <div class="modalActions">
+        <div class="modal-actions">
 
-            <button
-                class="cancelBtn"
-                onclick="closeEditModal()"
-            >
+            <button class="action" onclick="closeModal()">
                 Cancelar
             </button>
 
-            <button
-                class="confirmBtn"
-                id="saveEditBtn"
-            >
+            <button class="primary" onclick="saveEdit()">
                 Salvar
             </button>
 
@@ -1453,45 +1094,15 @@ button{
 
 </div>
 
+<div id="toastContainer" class="toast-container"></div>
 
-<!-- =========================
-     TOAST
-========================= -->
-
-<div id="toastContainer"></div>
-
-
-<!-- =========================
-     FALLBACK DO LOADING
-========================= -->
-
-<script>
-
-window.__ltdStarted = false;
-
-setTimeout(() => {
-
-    if(window.__ltdStarted) return;
-
-    const loading = document.getElementById("loadingScreen");
-    const login = document.getElementById("loginScreen");
-
-    if(loading) loading.style.display = "none";
-    if(login) login.style.display = "flex";
-
-},8000);
-
-</script>
-
-
-<!-- =========================
-     FIREBASE / APP
-========================= -->
+<!-- ================= FIREBASE ================= -->
 
 <script type="module">
 
-import { initializeApp } from
-"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
     getFirestore,
@@ -1504,16 +1115,10 @@ import {
     deleteDoc,
     updateDoc,
     getDoc
-} from
-"https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
-window.__ltdStarted = true;
-
-
-/* =========================
-   FIREBASE
-========================= */
+/* ================= FIREBASE CONFIG ================= */
 
 const firebaseConfig = {
 
@@ -1532,98 +1137,69 @@ const firebaseConfig = {
 };
 
 
-let db = null;
+const app = initializeApp(firebaseConfig);
 
-try{
-
-    const app = initializeApp(firebaseConfig);
-
-    db = getFirestore(app);
-
-}catch(error){
-
-    console.error("Erro Firebase:",error);
-
-}
+const db = getFirestore(app);
 
 
-/* =========================
-   ADMS
-========================= */
-
-/*
-    COLOQUE AQUI AS SENHAS DOS SEUS ADMS.
-
-    Exemplo:
-
-    {
-        name:"Aiko",
-        password:"SUA_SENHA",
-        role:"Owner"
-    }
-
-*/
+/* ================= ADMINS ================= */
 
 const ADMINS = [
 
     {
         name:"Aiko",
-        password:"COLOQUE_A_SENHA_AQUI",
-        role:"Owner"
+        password:"YM7JQ7",
+        role:"Dono"
     },
 
     {
         name:"Helo",
-        password:"COLOQUE_A_SENHA_AQUI",
+        password:"Ilovekillua",
         role:"Adm"
     },
 
     {
         name:"Noah",
-        password:"COLOQUE_A_SENHA_AQUI",
+        password:"Shinobumywife",
         role:"Sub-dono"
     },
 
     {
         name:"Shiro",
-        password:"COLOQUE_A_SENHA_AQUI",
+        password:"Agoodboy67",
         role:"Adm"
     },
 
     {
         name:"Shime",
-        password:"COLOQUE_A_SENHA_AQUI",
+        password:"Bandidoquer67resenha",
         role:"Adm"
     },
 
     {
         name:"Evan",
-        password:"COLOQUE_A_SENHA_AQUI",
+        password:"Se_oKaiser_MeMandar_EuLato_4uau",
         role:"Adm"
     },
 
     {
         name:"Lucca",
-        password:"COLOQUE_A_SENHA_AQUI",
+        password:"Mebota_yoshiki342",
         role:"Adm"
     },
 
     {
         name:"Luan",
-        password:"COLOQUE_A_SENHA_AQUI",
+        password:"2210",
         role:"Adm"
     }
 
 ];
 
 
-/* =========================
-   ESTADO
-========================= */
+/* ================= ESTADO ================= */
 
 let currentAdm = null;
-
-let listeners = [];
 
 let vagasData = [];
 
@@ -1635,117 +1211,48 @@ let requestsData = [];
 
 let adminsOnlineData = [];
 
+let logsData = [];
 
-/* =========================
-   ELEMENTOS
-========================= */
+let chatData = [];
 
-const loadingScreen =
-document.getElementById("loadingScreen");
-
-const loadingText =
-document.getElementById("loadingText");
-
-const loadingProgress =
-document.getElementById("loadingProgress");
-
-const loginScreen =
-document.getElementById("loginScreen");
-
-const app =
-document.getElementById("app");
+let listeners = [];
 
 
-/* =========================
-   UTILIDADES
-========================= */
+/* ================= UTILIDADES ================= */
 
 function escapeHTML(value){
 
-    if(value === null || value === undefined){
-        return "";
-    }
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
-    return String(value)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
 }
 
 
-function normalizeCharacter(name){
+function normalize(value){
 
-    return String(name || "")
+    return String(value ?? "")
         .trim()
         .toLowerCase()
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g,"")
-        .replace(/[^a-z0-9]/g,"");
-}
-
-
-function formatDate(timestamp){
-
-    if(!timestamp){
-        return "Agora";
-    }
-
-    try{
-
-        const date =
-            timestamp.toDate
-            ? timestamp.toDate()
-            : new Date(timestamp);
-
-        return date.toLocaleString("pt-BR");
-
-    }catch{
-
-        return "Agora";
-
-    }
+        .replace(/[\u0300-\u036f]/g,"");
 
 }
 
 
-function showToast(message,type="success"){
+function dateValue(timestamp){
 
-    const container =
-        document.getElementById("toastContainer");
+    if(!timestamp) return 0;
 
-    const toast =
-        document.createElement("div");
-
-    toast.className =
-        `toast ${type}`;
-
-    toast.textContent = message;
-
-    container.appendChild(toast);
-
-    setTimeout(() => {
-
-        toast.remove();
-
-    },3500);
-
-}
-
-
-function getTimestampValue(timestamp){
-
-    if(!timestamp){
-        return 0;
+    if(typeof timestamp.toMillis === "function"){
+        return timestamp.toMillis();
     }
 
     if(timestamp.seconds){
-        return timestamp.seconds;
-    }
-
-    if(timestamp instanceof Date){
-        return timestamp.getTime();
+        return timestamp.seconds * 1000;
     }
 
     return 0;
@@ -1753,514 +1260,330 @@ function getTimestampValue(timestamp){
 }
 
 
-/* =========================
-   LOADING
-========================= */
+function formatDate(timestamp){
 
-async function boot(){
+    const value = dateValue(timestamp);
 
-    const steps = [
+    if(!value) return "agora";
 
-        ["Conectando ao sistema...",15],
-
-        ["Verificando banco de dados...",35],
-
-        ["Carregando administração...",55],
-
-        ["Preparando painel...",75],
-
-        ["Sistema pronto!",100]
-
-    ];
-
-    for(const step of steps){
-
-        loadingText.textContent = step[0];
-
-        loadingProgress.style.width =
-            step[1] + "%";
-
-        await new Promise(resolve =>
-            setTimeout(resolve,350)
-        );
-
-    }
-
-    setTimeout(() => {
-
-        loadingScreen.style.display = "none";
-
-        loginScreen.style.display = "flex";
-
-    },250);
+    return new Date(value).toLocaleString("pt-BR");
 
 }
 
 
-boot();
+function toast(message){
+
+    const container =
+        document.getElementById("toastContainer");
+
+    const el =
+        document.createElement("div");
+
+    el.className = "toast";
+
+    el.textContent = message;
+
+    container.appendChild(el);
+
+    setTimeout(()=>{
+        el.remove();
+    },3000);
+
+}
 
 
-/* =========================
-   LOGIN
-========================= */
+/* ================= LOADING ================= */
 
-document
-.getElementById("loginBtn")
-.addEventListener("click",login);
+let progress = 0;
 
+const loadingMessages = [
 
-document
-.getElementById("loginPassword")
-.addEventListener("keydown",event => {
+    "INICIANDO SISTEMA...",
 
-    if(event.key === "Enter"){
-        login();
+    "CONECTANDO AO FIREBASE...",
+
+    "CARREGANDO ADMINISTRAÇÃO...",
+
+    "PREPARANDO PAINEL...",
+
+    "SISTEMA PRONTO!"
+
+];
+
+const loadingInterval = setInterval(()=>{
+
+    progress += 20;
+
+    document.getElementById("progressBar").style.width =
+        progress + "%";
+
+    document.getElementById("loadingText").textContent =
+        loadingMessages[Math.min(progress/20,5)-1] ||
+        "SISTEMA PRONTO!";
+
+    if(progress >= 100){
+
+        clearInterval(loadingInterval);
+
+        setTimeout(()=>{
+
+            document.getElementById("loadingScreen").style.display =
+                "none";
+
+            document.getElementById("loginScreen").style.display =
+                "flex";
+
+        },500);
+
     }
 
-});
+},300);
 
 
-async function login(){
+/* ================= LOGIN ================= */
+
+window.login = async function(){
 
     const name =
-        document.getElementById("loginName")
-        .value
-        .trim();
+        document.getElementById("loginName").value.trim();
 
     const password =
-        document.getElementById("loginPassword")
-        .value;
+        document.getElementById("loginPassword").value;
 
-    if(!name || !password){
-
-        showToast(
-            "Preencha nome e senha.",
-            "error"
-        );
-
-        return;
-
-    }
-
+    const error =
+        document.getElementById("loginError");
 
     const adm =
-        ADMINS.find(item =>
-            item.name.toLowerCase() === name.toLowerCase() &&
-            item.password === password
+        ADMINS.find(a =>
+            a.name.toLowerCase() === name.toLowerCase() &&
+            a.password === password
         );
-
 
     if(!adm){
 
-        showToast(
-            "Nome ou senha incorretos.",
-            "error"
-        );
+        error.textContent =
+            "Nome ou senha incorretos.";
 
         return;
 
     }
-
 
     currentAdm = adm;
 
+    error.textContent = "";
 
-    document
-        .getElementById("currentAdm")
-        .textContent = adm.name;
+    document.getElementById("loginScreen").style.display =
+        "none";
 
+    document.getElementById("app").style.display =
+        "block";
 
-    loginScreen.style.display = "none";
+    document.getElementById("currentAdmName").textContent =
+        adm.name;
 
-    app.style.display = "block";
+    document.getElementById("currentAdmRole").textContent =
+        adm.role === "Dono"
+            ? "👑 Dono da House"
+            : adm.role === "Sub-dono"
+                ? "⭐ Sub-dono"
+                : "🛡️ Administrador";
 
+    await setDoc(
+        doc(db,"adminsOnline",normalize(adm.name)),
+        {
+            name:adm.name,
+            role:adm.role,
+            online:true,
+            updatedAt:serverTimestamp()
+        }
+    );
 
-    try{
-
-        await setDoc(
-
-            doc(
-                db,
-                "adminsOnline",
-                normalizeCharacter(adm.name)
-            ),
-
-            {
-                name:adm.name,
-                role:adm.role,
-                online:true,
-                updatedAt:serverTimestamp()
-            },
-
-            {
-                merge:true
-            }
-
-        );
-
-    }catch(error){
-
-        console.error(error);
-
-    }
-
-
-    try{
-
-        await addDoc(
-
-            collection(db,"accessLogs"),
-
-            {
-                name:adm.name,
-                role:adm.role,
-                action:"Login",
-                createdAt:serverTimestamp()
-            }
-
-        );
-
-    }catch(error){
-
-        console.error(error);
-
-    }
-
+    await addDoc(
+        collection(db,"accessLogs"),
+        {
+            name:adm.name,
+            role:adm.role,
+            action:"Entrou na administração",
+            createdAt:serverTimestamp()
+        }
+    );
 
     loadData();
 
-}
-
-
-/* =========================
-   LOGOUT
-========================= */
-
-document
-.getElementById("logoutBtn")
-.addEventListener("click",logout);
-
-
-async function logout(){
-
-    if(!currentAdm){
-        return;
-    }
-
-
-    try{
-
-        await setDoc(
-
-            doc(
-                db,
-                "adminsOnline",
-                normalizeCharacter(currentAdm.name)
-            ),
-
-            {
-                name:currentAdm.name,
-                role:currentAdm.role,
-                online:false,
-                updatedAt:serverTimestamp()
-            },
-
-            {
-                merge:true
-            }
-
-        );
-
-
-        await addDoc(
-
-            collection(db,"accessLogs"),
-
-            {
-                name:currentAdm.name,
-                role:currentAdm.role,
-                action:"Logout",
-                createdAt:serverTimestamp()
-            }
-
-        );
-
-    }catch(error){
-
-        console.error(error);
-
-    }
-
-
-    clearListeners();
-
-    currentAdm = null;
-
-    app.style.display = "none";
-
-    loginScreen.style.display = "flex";
-
-    document.getElementById("loginPassword").value = "";
-
-}
-
-
-/* =========================
-   NAVEGAÇÃO
-========================= */
-
-const pageTitles = {
-
-    home:"Início",
-
-    chat:"Chat",
-
-    requests:"Solicitações",
-
-    vagas:"Personagens / Vagas",
-
-    members:"Membros",
-
-    admins:"Administradores"
+    toast("Bem-vindo(a), " + adm.name + "!");
 
 };
 
 
 document
-.querySelectorAll(".navBtn[data-page]")
-.forEach(button => {
+.getElementById("loginPassword")
+.addEventListener("keydown",e=>{
 
-    button.addEventListener("click",() => {
-
-        showPage(button.dataset.page);
-
-    });
+    if(e.key === "Enter"){
+        window.login();
+    }
 
 });
 
 
-function showPage(page){
+/* ================= LOGOUT ================= */
 
-    document
-    .querySelectorAll(".page")
-    .forEach(section => {
+window.logout = async function(){
 
-        section.classList.remove("active");
+    if(!currentAdm) return;
 
-    });
+    try{
 
-
-    const selected =
-        document.getElementById("page-" + page);
-
-
-    if(selected){
-
-        selected.classList.add("active");
-
-    }
-
-
-    document
-    .querySelectorAll(".navBtn[data-page]")
-    .forEach(button => {
-
-        button.classList.toggle(
-            "active",
-            button.dataset.page === page
+        await setDoc(
+            doc(db,"adminsOnline",normalize(currentAdm.name)),
+            {
+                name:currentAdm.name,
+                role:currentAdm.role,
+                online:false,
+                updatedAt:serverTimestamp()
+            }
         );
 
-    });
+        await addDoc(
+            collection(db,"accessLogs"),
+            {
+                name:currentAdm.name,
+                role:currentAdm.role,
+                action:"Saiu da administração",
+                createdAt:serverTimestamp()
+            }
+        );
 
+    }catch(e){}
 
-    document
-    .getElementById("pageTitle")
-    .textContent =
-        pageTitles[page] || "LTD";
-
-}
-
-
-/* =========================
-   LISTENERS
-========================= */
-
-function clearListeners(){
-
-    listeners.forEach(unsubscribe => {
-
-        try{
-            unsubscribe();
-        }catch{}
-
-    });
+    listeners.forEach(unsubscribe=>unsubscribe());
 
     listeners = [];
 
-}
+    currentAdm = null;
+
+    document.getElementById("app").style.display =
+        "none";
+
+    document.getElementById("loginScreen").style.display =
+        "flex";
+
+    document.getElementById("loginName").value = "";
+
+    document.getElementById("loginPassword").value = "";
+
+};
 
 
-function addListener(unsubscribe){
+/* ================= NAVEGAÇÃO ================= */
 
-    listeners.push(unsubscribe);
+window.showPage = function(page,button){
 
-}
+    document
+        .querySelectorAll(".page")
+        .forEach(p=>p.classList.remove("active"));
 
+    document
+        .querySelectorAll(".nav-btn")
+        .forEach(b=>b.classList.remove("active"));
 
-/* =========================
-   CARREGAR DADOS
-========================= */
+    document
+        .getElementById(page)
+        .classList.add("active");
 
-window.loadData = function(){
-
-    if(!db){
-
-        showToast(
-            "Banco de dados indisponível.",
-            "error"
-        );
-
-        return;
-
+    if(button){
+        button.classList.add("active");
     }
 
+};
 
-    clearListeners();
+
+/* ================= FIRESTORE ================= */
+
+function loadData(){
+
+    listeners.forEach(unsubscribe=>unsubscribe());
+
+    listeners = [];
 
 
-    /* VAGAS */
-
-    addListener(
+    listeners.push(
 
         onSnapshot(
             collection(db,"vagas"),
-
-            snapshot => {
+            snapshot=>{
 
                 vagasData =
-                    snapshot.docs.map(item => ({
-
-                        id:item.id,
-                        ...item.data()
-
+                    snapshot.docs.map(d=>({
+                        id:d.id,
+                        ...d.data()
                     }));
 
                 renderVagas();
-
                 updateStats();
 
-            },
-
-            error => {
-
-                console.error(error);
-
-                showToast(
-                    "Erro ao carregar vagas.",
-                    "error"
-                );
-
             }
-
         )
 
     );
 
 
-    /* PERSONAGENS FECHADOS PELA RECEPÇÃO */
-
-    addListener(
+    listeners.push(
 
         onSnapshot(
             collection(db,"occupiedCharacters"),
-
-            snapshot => {
+            snapshot=>{
 
                 occupiedData =
-                    snapshot.docs.map(item => ({
-
-                        id:item.id,
-                        ...item.data()
-
+                    snapshot.docs.map(d=>({
+                        id:d.id,
+                        ...d.data()
                     }));
 
                 renderVagas();
-
                 updateStats();
 
-            },
-
-            error => {
-
-                console.error(error);
-
             }
-
         )
 
     );
 
 
-    /* MEMBROS */
-
-    addListener(
+    listeners.push(
 
         onSnapshot(
             collection(db,"members"),
-
-            snapshot => {
+            snapshot=>{
 
                 membersData =
-                    snapshot.docs.map(item => ({
-
-                        id:item.id,
-                        ...item.data()
-
+                    snapshot.docs.map(d=>({
+                        id:d.id,
+                        ...d.data()
                     }));
 
                 renderMembers();
-
                 updateStats();
 
-            },
-
-            error => {
-
-                console.error(error);
-
             }
-
         )
 
     );
 
 
-    /* SOLICITAÇÕES */
-
-    addListener(
+    listeners.push(
 
         onSnapshot(
             collection(db,"requests"),
-
-            snapshot => {
+            snapshot=>{
 
                 requestsData =
-                    snapshot.docs.map(item => ({
-
-                        id:item.id,
-                        ...item.data()
-
+                    snapshot.docs.map(d=>({
+                        id:d.id,
+                        ...d.data()
                     }));
 
                 renderRequests();
-
                 updateStats();
-
-            },
-
-            error => {
-
-                console.error(error);
 
             }
 
@@ -2269,32 +1592,20 @@ window.loadData = function(){
     );
 
 
-    /* ADMS ONLINE */
-
-    addListener(
+    listeners.push(
 
         onSnapshot(
             collection(db,"adminsOnline"),
-
-            snapshot => {
+            snapshot=>{
 
                 adminsOnlineData =
-                    snapshot.docs.map(item => ({
-
-                        id:item.id,
-                        ...item.data()
-
+                    snapshot.docs.map(d=>({
+                        id:d.id,
+                        ...d.data()
                     }));
 
                 renderAdmins();
-
                 updateStats();
-
-            },
-
-            error => {
-
-                console.error(error);
 
             }
 
@@ -2303,30 +1614,19 @@ window.loadData = function(){
     );
 
 
-    /* ACCESS LOGS */
-
-    addListener(
+    listeners.push(
 
         onSnapshot(
             collection(db,"accessLogs"),
+            snapshot=>{
 
-            snapshot => {
-
-                const logs =
-                    snapshot.docs.map(item => ({
-
-                        id:item.id,
-                        ...item.data()
-
+                logsData =
+                    snapshot.docs.map(d=>({
+                        id:d.id,
+                        ...d.data()
                     }));
 
-                renderAccessLogs(logs);
-
-            },
-
-            error => {
-
-                console.error(error);
+                renderLogs();
 
             }
 
@@ -2335,30 +1635,19 @@ window.loadData = function(){
     );
 
 
-    /* CHAT */
-
-    addListener(
+    listeners.push(
 
         onSnapshot(
             collection(db,"adminChat"),
+            snapshot=>{
 
-            snapshot => {
-
-                const messages =
-                    snapshot.docs.map(item => ({
-
-                        id:item.id,
-                        ...item.data()
-
+                chatData =
+                    snapshot.docs.map(d=>({
+                        id:d.id,
+                        ...d.data()
                     }));
 
-                renderChat(messages);
-
-            },
-
-            error => {
-
-                console.error(error);
+                renderChat();
 
             }
 
@@ -2369,151 +1658,101 @@ window.loadData = function(){
 }
 
 
-/* =========================
-   STATS
-========================= */
+/* ================= STATS ================= */
 
 function updateStats(){
 
-    document.getElementById("statMembers")
-        .textContent = membersData.length;
+    document.getElementById("statMembers").textContent =
+        membersData.length;
 
 
-    const characters =
-        new Map();
+    const characters = new Set();
 
-
-    vagasData.forEach(vaga => {
-
-        characters.set(
-            normalizeCharacter(vaga.character),
-            true
-        );
-
+    vagasData.forEach(v=>{
+        if(v.character){
+            characters.add(normalize(v.character));
+        }
     });
 
-
-    occupiedData.forEach(item => {
-
-        characters.set(
-            normalizeCharacter(item.character),
-            true
-        );
-
+    occupiedData.forEach(v=>{
+        if(v.character || v.name){
+            characters.add(
+                normalize(v.character || v.name)
+            );
+        }
     });
 
-
-    document.getElementById("statCharacters")
-        .textContent = characters.size;
-
-
-    document.getElementById("statRequests")
-        .textContent = requestsData.length;
+    document.getElementById("statCharacters").textContent =
+        characters.size;
 
 
-    document.getElementById("statOnline")
-        .textContent =
-            adminsOnlineData.filter(
-                item => item.online === true
-            ).length;
+    const pending =
+        requestsData.filter(
+            r => !r.status || r.status === "Pendente"
+        );
+
+    document.getElementById("statRequests").textContent =
+        pending.length;
+
+
+    document.getElementById("statAdmins").textContent =
+        adminsOnlineData.filter(a=>a.online).length;
 
 }
 
 
-/* =========================
-   RENDER VAGAS
-========================= */
+/* ================= VAGAS ================= */
 
-function buildVagas(){
+function mergedVagas(){
 
     const map = new Map();
 
 
-    /* VAGAS NORMAIS */
-
-    vagasData.forEach(vaga => {
+    vagasData.forEach(v=>{
 
         const key =
-            normalizeCharacter(vaga.character);
+            normalize(v.character);
 
-        if(!key){
-            return;
-        }
+        if(!key) return;
 
         map.set(key,{
-
-            type:"vaga",
-
-            id:vaga.id,
-
-            character:vaga.character || "Sem nome",
-
-            anime:vaga.anime || "Não informado",
-
-            member:vaga.member || "Livre",
-
-            status:
-                vaga.status || "Aberta",
-
-            reception:false
-
+            ...v,
+            type:"vaga"
         });
 
     });
 
 
-    /* PERSONAGENS FECHADOS PELA RECEPÇÃO */
+    occupiedData.forEach(o=>{
 
-    occupiedData.forEach(item => {
+        const character =
+            o.character || o.name;
 
         const key =
-            normalizeCharacter(item.character);
+            normalize(character);
 
-        if(!key){
-            return;
-        }
+        if(!key) return;
 
+        if(map.has(key)){
 
-        const existing =
-            map.get(key);
+            const old = map.get(key);
 
-
-        if(existing){
-
-            existing.status = "Fechada";
-
-            existing.member =
-                item.member ||
-                existing.member ||
-                "Ocupado";
-
-            existing.reception = true;
-
-            existing.occupiedId = item.id;
+            map.set(key,{
+                ...old,
+                status:"Fechada",
+                member:o.member || o.name || old.member,
+                type:"vaga"
+            });
 
         }else{
 
             map.set(key,{
-
-                type:"occupied",
-
-                id:item.id,
-
-                character:
-                    item.character || "Sem nome",
-
-                anime:
-                    item.anime || "Não informado",
-
-                member:
-                    item.member || "Ocupado",
-
+                id:o.id,
+                character:character,
+                anime:o.anime || "",
+                member:o.member || o.name || "Ocupado",
                 status:"Fechada",
-
-                reception:true,
-
-                occupiedId:item.id
-
+                type:"occupied"
             });
 
         }
@@ -2526,218 +1765,104 @@ function buildVagas(){
 }
 
 
-function renderVagas(){
+window.renderVagas = function(){
 
-    const container =
-        document.getElementById("vagasList");
+    const grid =
+        document.getElementById("vagasGrid");
 
     const search =
-        document.getElementById("vagaSearch")
-        .value
-        .trim()
-        .toLowerCase();
+        normalize(
+            document.getElementById("vagaSearch")?.value
+        );
 
 
-    let vagas =
-        buildVagas();
-
-
-    if(search){
-
-        vagas =
-            vagas.filter(vaga => {
-
-                return (
-
-                    String(vaga.character)
-                    .toLowerCase()
-                    .includes(search)
-
-                    ||
-
-                    String(vaga.anime)
-                    .toLowerCase()
-                    .includes(search)
-
-                    ||
-
-                    String(vaga.member)
-                    .toLowerCase()
-                    .includes(search)
-
-                );
-
-            });
-
-    }
-
-
-    vagas.sort((a,b) =>
-        String(a.character)
-        .localeCompare(
-            String(b.character),
-            "pt-BR"
+    let data =
+        mergedVagas()
+        .filter(v =>
+            !search ||
+            normalize(v.character).includes(search) ||
+            normalize(v.anime).includes(search)
         )
-    );
+        .sort((a,b)=>
+            a.character.localeCompare(b.character)
+        );
 
 
-    if(!vagas.length){
+    if(!data.length){
 
-        container.innerHTML = `
-
-            <div class="empty">
-
-                <div class="emptyIcon">
-                    🎭
-                </div>
-
-                Nenhum personagem encontrado.
-
-            </div>
-
-        `;
+        grid.innerHTML =
+            `<div class="empty">
+                Nenhuma vaga encontrada.
+            </div>`;
 
         return;
 
     }
 
 
-    container.innerHTML =
-        vagas.map(renderVagaCard).join("");
+    grid.innerHTML = data.map(v=>{
 
-}
-
-
-function renderVagaCard(vaga){
-
-    const isOpen =
-        vaga.status === "Aberta";
+        const closed =
+            v.status === "Fechada" ||
+            v.status === "Fechado" ||
+            v.status === "Ocupado";
 
 
-    const statusClass =
-        isOpen
-        ? "statusOpen"
-        : "statusClosed";
+        return `
 
+        <div class="vaga ${closed ? "closed":""}">
 
-    const statusText =
-        isOpen
-        ? "🟢 VAGA ABERTA"
-        : "🔴 VAGA FECHADA";
+            <h3>${escapeHTML(v.character)}</h3>
 
-
-    let receptionMessage = "";
-
-
-    if(vaga.reception){
-
-        receptionMessage = `
-
-            <div class="receptionClosed">
-                ⚠️ Fechado pela recepção
+            <div class="anime">
+                ${escapeHTML(v.anime || "Anime não informado")}
             </div>
 
-        `;
+            <span class="status ${closed ? "closed-status":"open"}">
 
-    }
+                ${closed ? "🔒 FECHADA":"🟢 ABERTA"}
 
-
-    let mainButton = "";
-
-
-    if(isOpen){
-
-        mainButton = `
-
-            <button
-                class="actionBtn closeBtn"
-                onclick="closeVaga('${vaga.id}')"
-            >
-                🔒 Fechar vaga
-            </button>
-
-        `;
-
-    }else{
-
-        mainButton = `
-
-            <button
-                class="actionBtn openBtn"
-                onclick="openVaga('${vaga.id}')"
-            >
-                🔓 Abrir vaga
-            </button>
-
-        `;
-
-    }
-
-
-    /*
-        IMPORTANTE:
-
-        O botão EXCLUIR aparece SEMPRE.
-
-        Para vaga criada normalmente:
-        - exclui o documento da coleção vagas.
-
-        Para personagem fechado pela recepção:
-        - exclui o occupiedCharacters.
-        - se existir vaga correspondente, também exclui a vaga.
-    */
-
-
-    return `
-
-        <div class="vagaCard">
-
-            <div class="vagaHeader">
-
-                <div>
-
-                    <div class="vagaName">
-                        🎭 ${escapeHTML(vaga.character)}
-                    </div>
-
-                    <div class="vagaAnime">
-                        ⛩️ Anime: ${escapeHTML(vaga.anime)}
-                    </div>
-
-                    <div class="vagaMember">
-                        👤 Membro: ${escapeHTML(vaga.member)}
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <span class="vagaStatus ${statusClass}">
-                ${statusText}
             </span>
 
+            ${
+                closed && v.member
+                ?
+                `<p class="muted">
+                    👤 ${escapeHTML(v.member)}
+                </p>`
+                :
+                `<p class="muted">
+                    👤 Livre
+                </p>`
+            }
 
-            ${receptionMessage}
+            <div class="vaga-actions">
 
-
-            <div class="vagaActions">
-
-                ${mainButton}
-
+                ${
+                    closed
+                    ?
+                    `<button
+                        class="action success"
+                        onclick="openVaga('${v.id}','${v.type}')">
+                        🔓 Abrir
+                    </button>`
+                    :
+                    `<button
+                        class="action"
+                        onclick="closeVaga('${v.id}','${v.type}')">
+                        🔒 Fechar
+                    </button>`
+                }
 
                 <button
-                    class="actionBtn editBtn"
-                    onclick="editVaga('${vaga.id}','${vaga.type}')"
-                >
+                    class="action"
+                    onclick="editVaga('${v.id}','${v.type}')">
                     ✏️ Editar
                 </button>
 
-
                 <button
-                    class="actionBtn deleteBtn"
-                    onclick="confirmDeleteVaga('${vaga.id}','${vaga.type}')"
-                >
+                    class="action danger"
+                    onclick="deleteVaga('${v.id}','${v.type}')">
                     🗑️ Excluir
                 </button>
 
@@ -2745,36 +1870,22 @@ function renderVagaCard(vaga){
 
         </div>
 
-    `;
+        `;
 
-}
+    }).join("");
 
-
-/* =========================
-   ADICIONAR VAGA
-========================= */
-
-document
-.getElementById("addVagaBtn")
-.addEventListener("click",addVaga);
+};
 
 
-async function addVaga(){
+window.addVaga = async function(){
 
     const character =
         document.getElementById("vagaCharacter")
-        .value
-        .trim();
+        .value.trim();
 
     const anime =
         document.getElementById("vagaAnime")
-        .value
-        .trim();
-
-    const member =
-        document.getElementById("vagaMember")
-        .value
-        .trim() || "Livre";
+        .value.trim();
 
     const status =
         document.getElementById("vagaStatus")
@@ -2783,33 +1894,22 @@ async function addVaga(){
 
     if(!character){
 
-        showToast(
-            "Digite o nome do personagem.",
-            "error"
-        );
+        toast("Digite o nome do personagem.");
 
         return;
 
     }
 
 
-    const key =
-        normalizeCharacter(character);
-
-
-    const existing =
-        buildVagas()
-        .find(item =>
-            normalizeCharacter(item.character) === key
+    const duplicate =
+        mergedVagas().some(
+            v => normalize(v.character) === normalize(character)
         );
 
 
-    if(existing){
+    if(duplicate){
 
-        showToast(
-            "Esse personagem já está cadastrado.",
-            "error"
-        );
+        toast("Esse personagem já está cadastrado.");
 
         return;
 
@@ -2819,455 +1919,260 @@ async function addVaga(){
     try{
 
         await addDoc(
-
             collection(db,"vagas"),
-
             {
                 character,
                 anime,
-                member,
                 status,
+                member:"Livre",
                 createdAt:serverTimestamp(),
-                updatedAt:serverTimestamp(),
-                createdBy:currentAdm?.name || "ADM"
+                createdBy:currentAdm?.name || ""
             }
-
         );
 
 
         if(status === "Fechada"){
 
             await setDoc(
-
-                doc(
-                    db,
-                    "occupiedCharacters",
-                    key
-                ),
-
+                doc(db,"occupiedCharacters",normalize(character)),
                 {
                     character,
                     anime,
-                    member,
-                    manual:true,
-                    createdAt:serverTimestamp(),
-                    updatedAt:serverTimestamp()
-                },
-
-                {
-                    merge:true
+                    member:"Ocupado",
+                    createdAt:serverTimestamp()
                 }
-
             );
 
         }
 
 
-        document
-        .getElementById("vagaCharacter")
-        .value = "";
+        document.getElementById("vagaCharacter").value = "";
 
-        document
-        .getElementById("vagaAnime")
-        .value = "";
+        document.getElementById("vagaAnime").value = "";
 
-        document
-        .getElementById("vagaMember")
-        .value = "";
+        document.getElementById("vagaStatus").value =
+            "Aberta";
 
 
-        showToast(
-            "Personagem adicionado com sucesso!"
-        );
+        toast("Vaga adicionada!");
 
     }catch(error){
 
-        console.error(error);
-
-        showToast(
-            "Não foi possível adicionar o personagem.",
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =========================
-   ABRIR VAGA
-========================= */
-
-window.openVaga = async function(vagaId){
-
-    try{
-
-        const vagaRef =
-            doc(db,"vagas",vagaId);
-
-
-        const vagaSnap =
-            await getDoc(vagaRef);
-
-
-        if(!vagaSnap.exists()){
-
-            showToast(
-                "Essa vaga não existe mais.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const vaga =
-            vagaSnap.data();
-
-
-        const key =
-            normalizeCharacter(vaga.character);
-
-
-        /*
-            AQUI ESTÁ A PARTE PRINCIPAL:
-
-            Ao abrir uma vaga, ela vira:
-            status = Aberta
-            member = Livre
-
-            E o registro de personagem ocupado
-            também é removido.
-        */
-
-
-        await updateDoc(
-
-            vagaRef,
-
-            {
-                status:"Aberta",
-                member:"Livre",
-                updatedAt:serverTimestamp(),
-                updatedBy:currentAdm?.name || "ADM"
-            }
-
-        );
-
-
-        await deleteDoc(
-
-            doc(
-                db,
-                "occupiedCharacters",
-                key
-            )
-
-        ).catch(() => {});
-
-
-        showToast(
-            `🔓 ${vaga.character} agora está aberta!`
-        );
-
-
-    }catch(error){
+        toast("Erro ao adicionar vaga.");
 
         console.error(error);
-
-        showToast(
-            "Erro ao abrir a vaga.",
-            "error"
-        );
 
     }
 
 };
 
 
-/* =========================
-   FECHAR VAGA
-========================= */
-
-window.closeVaga = async function(vagaId){
-
-    try{
-
-        const vagaRef =
-            doc(db,"vagas",vagaId);
-
-
-        const vagaSnap =
-            await getDoc(vagaRef);
-
-
-        if(!vagaSnap.exists()){
-
-            showToast(
-                "Essa vaga não existe.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const vaga =
-            vagaSnap.data();
-
-
-        const character =
-            vaga.character || "";
-
-
-        const key =
-            normalizeCharacter(character);
-
-
-        const member =
-            vaga.member &&
-            vaga.member !== "Livre"
-
-            ? vaga.member
-
-            : "Ocupado";
-
-
-        await updateDoc(
-
-            vagaRef,
-
-            {
-                status:"Fechada",
-                member,
-                updatedAt:serverTimestamp(),
-                updatedBy:currentAdm?.name || "ADM"
-            }
-
-        );
-
-
-        await setDoc(
-
-            doc(
-                db,
-                "occupiedCharacters",
-                key
-            ),
-
-            {
-                character,
-                anime:vaga.anime || "",
-                member,
-                manual:true,
-                updatedAt:serverTimestamp(),
-                updatedBy:currentAdm?.name || "ADM"
-            },
-
-            {
-                merge:true
-            }
-
-        );
-
-
-        showToast(
-            `🔒 ${character} foi fechada.`
-        );
-
-
-    }catch(error){
-
-        console.error(error);
-
-        showToast(
-            "Erro ao fechar a vaga.",
-            "error"
-        );
-
-    }
-
-};
-
-
-/* =========================
-   CONFIRMAR EXCLUSÃO
-========================= */
-
-window.confirmDeleteVaga = function(id,type){
-
-    const vagas =
-        buildVagas();
-
-
-    const vaga =
-        vagas.find(item =>
-
-            item.id === id &&
-            item.type === type
-
-        );
-
-
-    if(!vaga){
-
-        showToast(
-            "Personagem não encontrado.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const confirmed =
-        confirm(
-
-            `⚠️ EXCLUIR PERSONAGEM\n\n` +
-
-            `Tem certeza que deseja excluir ` +
-
-            `"${vaga.character}"?\n\n` +
-
-            `Essa ação não poderá ser desfeita.`
-
-        );
-
-
-    if(!confirmed){
-        return;
-    }
-
-
-    deleteVaga(
-        id,
-        type
-    );
-
-};
-
-
-/* =========================
-   EXCLUIR VAGA
-========================= */
-
-window.deleteVaga = async function(id,type){
+window.openVaga = async function(id,type){
 
     try{
 
         if(type === "occupied"){
 
-            /*
-                Quando veio somente da recepção,
-                o ID é do occupiedCharacters.
-            */
+            const ref =
+                doc(db,"occupiedCharacters",id);
+
+            const snap =
+                await getDoc(ref);
+
+            if(snap.exists()){
+
+                const data = snap.data();
+
+                await addDoc(
+                    collection(db,"vagas"),
+                    {
+                        character:data.character || data.name,
+                        anime:data.anime || "",
+                        status:"Aberta",
+                        member:"Livre",
+                        createdAt:serverTimestamp()
+                    }
+                );
+
+                await deleteDoc(ref);
+
+            }
+
+        }else{
+
+            const ref =
+                doc(db,"vagas",id);
+
+            const snap =
+                await getDoc(ref);
+
+            if(!snap.exists()) return;
+
+            const data = snap.data();
+
+            await updateDoc(
+                ref,
+                {
+                    status:"Aberta",
+                    member:"Livre",
+                    updatedAt:serverTimestamp()
+                }
+            );
 
             await deleteDoc(
-
                 doc(
                     db,
                     "occupiedCharacters",
-                    id
+                    normalize(data.character)
                 )
-
             );
-
-
-            showToast(
-                "🗑️ Personagem excluído da recepção."
-            );
-
-            return;
 
         }
 
 
-        /* VAGA NORMAL */
-
-        const vagaRef =
-            doc(db,"vagas",id);
-
-
-        const vagaSnap =
-            await getDoc(vagaRef);
-
-
-        if(!vagaSnap.exists()){
-
-            showToast(
-                "Essa vaga já foi excluída.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const vaga =
-            vagaSnap.data();
-
-
-        const key =
-            normalizeCharacter(vaga.character);
-
-
-        /*
-            Exclui a vaga normal.
-        */
-
-        await deleteDoc(vagaRef);
-
-
-        /*
-            Também remove o registro de ocupado,
-            caso exista.
-        */
-
-        await deleteDoc(
-
-            doc(
-                db,
-                "occupiedCharacters",
-                key
-            )
-
-        ).catch(() => {});
-
-
-        showToast(
-            `🗑️ ${vaga.character} foi excluído.`
-        );
-
+        toast("Vaga aberta novamente!");
 
     }catch(error){
 
         console.error(error);
 
-        showToast(
-            "Não foi possível excluir.",
-            "error"
-        );
+        toast("Não foi possível abrir a vaga.");
 
     }
 
 };
 
 
-/* =========================
-   EDITAR VAGA
-========================= */
+window.closeVaga = async function(id,type){
+
+    try{
+
+        if(type === "occupied"){
+
+            toast("Essa vaga já está fechada.");
+
+            return;
+
+        }
+
+
+        const ref =
+            doc(db,"vagas",id);
+
+        const snap =
+            await getDoc(ref);
+
+        if(!snap.exists()) return;
+
+        const data =
+            snap.data();
+
+
+        await updateDoc(
+            ref,
+            {
+                status:"Fechada",
+                member:"Ocupado",
+                updatedAt:serverTimestamp()
+            }
+        );
+
+
+        await setDoc(
+            doc(
+                db,
+                "occupiedCharacters",
+                normalize(data.character)
+            ),
+            {
+                character:data.character,
+                anime:data.anime || "",
+                member:"Ocupado",
+                updatedAt:serverTimestamp()
+            }
+        );
+
+
+        toast("Vaga fechada!");
+
+    }catch(error){
+
+        console.error(error);
+
+        toast("Não foi possível fechar a vaga.");
+
+    }
+
+};
+
+
+window.deleteVaga = async function(id,type){
+
+    const confirmed =
+        confirm(
+            "Tem certeza que deseja excluir esta vaga?"
+        );
+
+    if(!confirmed) return;
+
+
+    try{
+
+        if(type === "occupied"){
+
+            await deleteDoc(
+                doc(db,"occupiedCharacters",id)
+            );
+
+        }else{
+
+            const ref =
+                doc(db,"vagas",id);
+
+            const snap =
+                await getDoc(ref);
+
+            if(snap.exists()){
+
+                const data =
+                    snap.data();
+
+                await deleteDoc(ref);
+
+                await deleteDoc(
+                    doc(
+                        db,
+                        "occupiedCharacters",
+                        normalize(data.character)
+                    )
+                );
+
+            }
+
+        }
+
+
+        toast("Vaga excluída!");
+
+    }catch(error){
+
+        console.error(error);
+
+        toast("Erro ao excluir vaga.");
+
+    }
+
+};
+
+
+/* ================= EDITAR VAGA ================= */
 
 window.editVaga = async function(id,type){
 
     if(type === "occupied"){
 
-        showToast(
-            "Esse personagem foi fechado pela recepção. Abra a vaga primeiro para editar.",
-            "error"
+        toast(
+            "Abra a vaga antes de editar."
         );
 
         return;
@@ -3280,47 +2185,25 @@ window.editVaga = async function(id,type){
             doc(db,"vagas",id)
         );
 
+    if(!snap.exists()) return;
 
-    if(!snap.exists()){
-
-        showToast(
-            "Vaga não encontrada.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const vaga =
+    const data =
         snap.data();
 
 
-    document
-        .getElementById("editVagaId")
-        .value = id;
+    document.getElementById("editId").value =
+        id;
 
+    document.getElementById("editCharacter").value =
+        data.character || "";
 
-    document
-        .getElementById("editCharacter")
-        .value = vaga.character || "";
+    document.getElementById("editAnime").value =
+        data.anime || "";
 
-
-    document
-        .getElementById("editAnime")
-        .value = vaga.anime || "";
-
-
-    document
-        .getElementById("editMember")
-        .value = vaga.member || "Livre";
-
-
-    document
-        .getElementById("editStatus")
-        .value =
-            vaga.status || "Aberta";
+    document.getElementById("editStatus").value =
+        data.status === "Fechada"
+            ? "Fechada"
+            : "Aberta";
 
 
     document
@@ -3330,7 +2213,7 @@ window.editVaga = async function(id,type){
 };
 
 
-window.closeEditModal = function(){
+window.closeModal = function(){
 
     document
         .getElementById("editModal")
@@ -3339,52 +2222,27 @@ window.closeEditModal = function(){
 };
 
 
-document
-.getElementById("saveEditBtn")
-.addEventListener("click",saveEditVaga);
-
-
-async function saveEditVaga(){
+window.saveEdit = async function(){
 
     const id =
-        document
-        .getElementById("editVagaId")
-        .value;
-
+        document.getElementById("editId").value;
 
     const character =
-        document
-        .getElementById("editCharacter")
-        .value
-        .trim();
-
+        document.getElementById("editCharacter")
+        .value.trim();
 
     const anime =
-        document
-        .getElementById("editAnime")
-        .value
-        .trim();
-
-
-    const member =
-        document
-        .getElementById("editMember")
-        .value
-        .trim() || "Livre";
-
+        document.getElementById("editAnime")
+        .value.trim();
 
     const status =
-        document
-        .getElementById("editStatus")
+        document.getElementById("editStatus")
         .value;
 
 
     if(!character){
 
-        showToast(
-            "Digite o nome do personagem.",
-            "error"
-        );
+        toast("Informe o personagem.");
 
         return;
 
@@ -3393,225 +2251,138 @@ async function saveEditVaga(){
 
     try{
 
+        const ref =
+            doc(db,"vagas",id);
+
         const oldSnap =
-            await getDoc(
-                doc(db,"vagas",id)
-            );
+            await getDoc(ref);
 
+        if(!oldSnap.exists()) return;
 
-        if(!oldSnap.exists()){
-
-            showToast(
-                "Essa vaga não existe.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const oldData =
+        const old =
             oldSnap.data();
 
 
-        const oldKey =
-            normalizeCharacter(
-                oldData.character
-            );
-
-
-        const newKey =
-            normalizeCharacter(
-                character
-            );
-
-
         await updateDoc(
-
-            doc(db,"vagas",id),
-
+            ref,
             {
                 character,
                 anime,
-                member,
                 status,
-                updatedAt:serverTimestamp(),
-                updatedBy:currentAdm?.name || "ADM"
+                member:
+                    status === "Aberta"
+                        ? "Livre"
+                        : "Ocupado",
+                updatedAt:serverTimestamp()
             }
-
         );
 
 
-        /*
-            Remove o registro antigo.
-        */
-
-        if(oldKey !== newKey){
+        if(
+            old.character &&
+            normalize(old.character) !== normalize(character)
+        ){
 
             await deleteDoc(
-
                 doc(
                     db,
                     "occupiedCharacters",
-                    oldKey
+                    normalize(old.character)
                 )
-
-            ).catch(() => {});
+            );
 
         }
 
-
-        /*
-            Se estiver fechada,
-            mantém o occupiedCharacters atualizado.
-        */
 
         if(status === "Fechada"){
 
             await setDoc(
-
                 doc(
                     db,
                     "occupiedCharacters",
-                    newKey
+                    normalize(character)
                 ),
-
                 {
                     character,
                     anime,
-                    member,
-                    manual:true,
-                    updatedAt:serverTimestamp(),
-                    updatedBy:currentAdm?.name || "ADM"
-                },
-
-                {
-                    merge:true
+                    member:"Ocupado",
+                    updatedAt:serverTimestamp()
                 }
-
             );
 
         }else{
 
             await deleteDoc(
-
                 doc(
                     db,
                     "occupiedCharacters",
-                    newKey
+                    normalize(character)
                 )
-
-            ).catch(() => {});
+            );
 
         }
 
 
-        closeEditModal();
+        closeModal();
 
-        showToast(
-            "✏️ Personagem atualizado!"
-        );
-
+        toast("Vaga atualizada!");
 
     }catch(error){
 
         console.error(error);
 
-        showToast(
-            "Erro ao editar personagem.",
-            "error"
-        );
+        toast("Erro ao editar vaga.");
 
     }
 
-}
+};
 
 
-/* =========================
-   BUSCA VAGAS
-========================= */
+/* ================= REQUESTS ================= */
 
-document
-.getElementById("vagaSearch")
-.addEventListener(
-    "input",
-    renderVagas
-);
-
-
-/* =========================
-   REQUESTS
-========================= */
-
-function renderRequests(){
+window.renderRequests = function(){
 
     const container =
         document.getElementById("requestsList");
 
-
     const search =
-        document
-        .getElementById("requestSearch")
-        .value
-        .trim()
-        .toLowerCase();
+        normalize(
+            document.getElementById("requestSearch")?.value
+        );
 
 
-    let requests =
-        [...requestsData];
+    let data =
+        requestsData
+        .filter(r => {
+
+            const status =
+                r.status || "Pendente";
+
+            return (
+                status === "Pendente" ||
+                status === "pending"
+            );
+
+        })
+        .filter(r =>
+            !search ||
+            normalize(r.name).includes(search) ||
+            normalize(r.character).includes(search) ||
+            normalize(r.anime).includes(search)
+        )
+        .sort(
+            (a,b)=>
+                dateValue(b.createdAt) -
+                dateValue(a.createdAt)
+        );
 
 
-    requests.sort((a,b) =>
-        getTimestampValue(b.createdAt) -
-        getTimestampValue(a.createdAt)
-    );
+    if(!data.length){
 
-
-    if(search){
-
-        requests =
-            requests.filter(request => {
-
-                const text = [
-
-                    request.name,
-
-                    request.displayName,
-
-                    request.character,
-
-                    request.anime,
-
-                    request.message
-
-                ]
-                .join(" ")
-                .toLowerCase();
-
-
-                return text.includes(search);
-
-            });
-
-    }
-
-
-    if(!requests.length){
-
-        container.innerHTML = `
-
-            <div class="empty">
-
-                <div class="emptyIcon">
-                    📋
-                </div>
-
-                Nenhuma solicitação encontrada.
-
-            </div>
-
-        `;
+        container.innerHTML =
+            `<div class="empty">
+                📭 Nenhuma solicitação pendente.
+            </div>`;
 
         return;
 
@@ -3619,138 +2390,102 @@ function renderRequests(){
 
 
     container.innerHTML =
-        requests.map(renderRequest).join("");
+        data.map(r=>`
 
-}
+        <div class="request">
 
+            <div class="request-head">
 
-function renderRequest(request){
+                <div>
 
-    const status =
-        request.status || "Pendente";
+                    <h3>
+                        🎭 ${escapeHTML(
+                            r.character || "Personagem"
+                        )}
+                    </h3>
 
+                    <div class="muted">
+                        👤 ${escapeHTML(r.name || "Sem nome")}
+                    </div>
 
-    const pending =
-        status === "Pendente";
+                </div>
 
-
-    return `
-
-        <div class="requestCard">
-
-            <div class="requestTitle">
-
-                👤 ${escapeHTML(
-                    request.name ||
-                    request.displayName ||
-                    "Sem nome"
-                )}
+                <span class="status open">
+                    PENDENTE
+                </span>
 
             </div>
 
-            <div class="infoLine">
-                🎭 Personagem:
-                ${escapeHTML(request.character || "—")}
-            </div>
-
-            <div class="infoLine">
-                ⛩️ Anime:
-                ${escapeHTML(request.anime || "—")}
-            </div>
-
-            <div class="infoLine">
-                🎂 Idade:
-                ${escapeHTML(request.age || "—")}
-            </div>
-
-            <div class="infoLine">
-                💬 Mensagem:
-                ${escapeHTML(request.message || "—")}
-            </div>
-
-            <div class="infoLine">
-                📌 Status:
-                <strong>${escapeHTML(status)}</strong>
-            </div>
-
+            <p class="muted">
+                🎬 ${escapeHTML(r.anime || "Anime não informado")}
+            </p>
 
             ${
-                pending
+                r.age
                 ?
-
-                `
-
-                <div class="requestActions">
-
-                    <button
-                        class="approveBtn"
-                        onclick="approveRequest('${request.id}')"
-                    >
-                        ✅ Aprovar
-                    </button>
-
-                    <button
-                        class="rejectBtn"
-                        onclick="rejectRequest('${request.id}')"
-                    >
-                        ❌ Recusar
-                    </button>
-
-                    <button
-                        class="actionBtn deleteBtn"
-                        onclick="deleteRequest('${request.id}')"
-                    >
-                        🗑️ Excluir
-                    </button>
-
-                </div>
-
-                `
-
+                `<p>🎂 Idade: ${escapeHTML(r.age)}</p>`
                 :
-
-                `
-
-                <div class="requestActions">
-
-                    <button
-                        class="actionBtn deleteBtn"
-                        onclick="deleteRequest('${request.id}')"
-                    >
-                        🗑️ Excluir
-                    </button>
-
-                </div>
-
-                `
-
+                ""
             }
+
+            ${
+                r.message || r.mensagem
+                ?
+                `<p>
+                    💬 ${escapeHTML(
+                        r.message || r.mensagem
+                    )}
+                </p>`
+                :
+                ""
+            }
+
+            <small class="muted">
+                ${formatDate(r.createdAt)}
+            </small>
+
+            <div class="request-actions">
+
+                <button
+                    class="action success"
+                    onclick="approveRequest('${r.id}')">
+                    ✅ Aprovar
+                </button>
+
+                <button
+                    class="action danger"
+                    onclick="rejectRequest('${r.id}')">
+                    ❌ Recusar
+                </button>
+
+                <button
+                    class="action danger"
+                    onclick="deleteRequest('${r.id}')">
+                    🗑️ Excluir
+                </button>
+
+            </div>
 
         </div>
 
-    `;
+        `).join("");
 
-}
+};
 
 
-window.approveRequest = async function(requestId){
+window.approveRequest = async function(id){
 
     try{
 
-        const requestRef =
-            doc(db,"requests",requestId);
-
+        const ref =
+            doc(db,"requests",id);
 
         const snap =
-            await getDoc(requestRef);
-
+            await getDoc(ref);
 
         if(!snap.exists()){
 
-            showToast(
-                "Solicitação não encontrada.",
-                "error"
-            );
+            toast("Solicitação não encontrada.");
 
             return;
 
@@ -3761,32 +2496,25 @@ window.approveRequest = async function(requestId){
             snap.data();
 
 
-        if(request.status &&
-            request.status !== "Pendente"){
+        const character =
+            request.character ||
+            request.personagem;
 
-            showToast(
-                "Essa solicitação já foi processada.",
-                "error"
-            );
+
+        if(!character){
+
+            toast("A solicitação não possui personagem.");
 
             return;
 
         }
 
 
-        const character =
-            request.character || "";
-
-
-        const key =
-            normalizeCharacter(character);
-
-
         const occupiedRef =
             doc(
                 db,
                 "occupiedCharacters",
-                key
+                normalize(character)
             );
 
 
@@ -3796,10 +2524,7 @@ window.approveRequest = async function(requestId){
 
         if(occupiedSnap.exists()){
 
-            showToast(
-                "Esse personagem já está ocupado.",
-                "error"
-            );
+            toast("Esse personagem já está ocupado.");
 
             return;
 
@@ -3807,398 +2532,346 @@ window.approveRequest = async function(requestId){
 
 
         await setDoc(
-
             occupiedRef,
-
             {
                 character,
                 anime:request.anime || "",
-                member:
-                    request.name ||
-                    request.displayName ||
-                    "Membro",
-                requestId,
-                createdAt:serverTimestamp()
+                member:request.name || "",
+                approvedBy:currentAdm?.name || "",
+                approvedAt:serverTimestamp()
             }
-
         );
 
 
         await addDoc(
-
             collection(db,"members"),
-
             {
-                name:
-                    request.name ||
-                    request.displayName ||
-                    "Membro",
-
-                character,
-
-                anime:request.anime || "",
-
+                name:request.name || "",
                 age:request.age || "",
-
-                message:request.message || "",
-
+                character,
+                anime:request.anime || "",
                 createdAt:serverTimestamp(),
-
-                approvedBy:
-                    currentAdm?.name || "ADM"
-
+                approvedBy:currentAdm?.name || ""
             }
-
         );
 
 
-        /*
-            Se já existe uma vaga,
-            ela fica fechada.
-        */
-
-        const existingVaga =
-            vagasData.find(vaga =>
-                normalizeCharacter(
-                    vaga.character
-                ) === key
+        const vaga =
+            vagasData.find(
+                v =>
+                    normalize(v.character) ===
+                    normalize(character)
             );
 
 
-        if(existingVaga){
+        if(vaga){
 
             await updateDoc(
-
-                doc(
-                    db,
-                    "vagas",
-                    existingVaga.id
-                ),
-
+                doc(db,"vagas",vaga.id),
                 {
                     status:"Fechada",
-
-                    member:
-                        request.name ||
-                        request.displayName ||
-                        "Membro",
-
+                    member:request.name || "Ocupado",
                     updatedAt:serverTimestamp()
-
                 }
-
             );
 
         }
 
 
         await updateDoc(
-
-            requestRef,
-
+            ref,
             {
                 status:"Aprovada",
-                approvedBy:
-                    currentAdm?.name || "ADM",
+                approvedBy:currentAdm?.name || "",
                 approvedAt:serverTimestamp()
             }
-
         );
 
 
-        showToast(
-            "✅ Solicitação aprovada!"
-        );
-
+        toast("Solicitação aprovada!");
 
     }catch(error){
 
         console.error(error);
 
-        showToast(
-            "Erro ao aprovar solicitação.",
-            "error"
-        );
+        toast("Erro ao aprovar solicitação.");
 
     }
 
 };
 
 
-window.rejectRequest = async function(requestId){
+window.rejectRequest = async function(id){
 
     try{
 
         await updateDoc(
-
-            doc(
-                db,
-                "requests",
-                requestId
-            ),
-
+            doc(db,"requests",id),
             {
                 status:"Recusada",
-                rejectedBy:
-                    currentAdm?.name || "ADM",
+                rejectedBy:currentAdm?.name || "",
                 rejectedAt:serverTimestamp()
             }
-
         );
 
-
-        showToast(
-            "❌ Solicitação recusada."
-        );
-
+        toast("Solicitação recusada.");
 
     }catch(error){
 
         console.error(error);
 
-        showToast(
-            "Erro ao recusar solicitação.",
-            "error"
-        );
+        toast("Erro ao recusar.");
 
     }
 
 };
 
 
-window.deleteRequest = async function(requestId){
+window.deleteRequest = async function(id){
 
-    const confirmed =
-        confirm(
-            "Tem certeza que deseja excluir esta solicitação?"
-        );
-
-
-    if(!confirmed){
-        return;
-    }
+    if(
+        !confirm(
+            "Excluir esta solicitação permanentemente?"
+        )
+    ) return;
 
 
     try{
 
         await deleteDoc(
-
-            doc(
-                db,
-                "requests",
-                requestId
-            )
-
+            doc(db,"requests",id)
         );
 
-
-        showToast(
-            "🗑️ Solicitação excluída."
-        );
-
+        toast("Solicitação excluída.");
 
     }catch(error){
 
         console.error(error);
 
-        showToast(
-            "Erro ao excluir solicitação.",
-            "error"
-        );
+        toast("Erro ao excluir solicitação.");
 
     }
 
 };
 
 
-document
-.getElementById("requestSearch")
-.addEventListener(
-    "input",
-    renderRequests
-);
+/* ================= MEMBERS ================= */
 
+window.renderMembers = function(){
 
-/* =========================
-   MEMBERS
-========================= */
-
-function renderMembers(){
-
-    const container =
-        document.getElementById("membersList");
-
+    const grid =
+        document.getElementById("membersGrid");
 
     const search =
-        document
-        .getElementById("memberSearch")
-        .value
-        .trim()
-        .toLowerCase();
+        normalize(
+            document.getElementById("memberSearch")?.value
+        );
 
 
-    let members =
-        [...membersData];
-
-
-    members.sort((a,b) =>
-        String(a.name || "")
-        .localeCompare(
-            String(b.name || ""),
-            "pt-BR"
+    const data =
+        membersData
+        .filter(m =>
+            !search ||
+            normalize(m.name).includes(search) ||
+            normalize(m.character).includes(search)
         )
-    );
+        .sort(
+            (a,b)=>
+                String(a.name || "")
+                .localeCompare(String(b.name || ""))
+        );
 
 
-    if(search){
+    if(!data.length){
 
-        members =
-            members.filter(member => {
-
-                const text = [
-
-                    member.name,
-
-                    member.character,
-
-                    member.anime
-
-                ]
-                .join(" ")
-                .toLowerCase();
-
-
-                return text.includes(search);
-
-            });
-
-    }
-
-
-    if(!members.length){
-
-        container.innerHTML = `
-
-            <div class="empty">
-
-                <div class="emptyIcon">
-                    👥
-                </div>
-
-                Nenhum membro encontrado.
-
-            </div>
-
-        `;
+        grid.innerHTML =
+            `<div class="empty">
+                👥 Nenhum membro encontrado.
+            </div>`;
 
         return;
 
     }
 
 
-    container.innerHTML =
-        members.map(member => `
+    grid.innerHTML =
+        data.map(m=>`
 
-            <div class="memberCard">
+        <div class="member">
 
-                <div class="memberTitle">
-                    👤 ${escapeHTML(member.name || "Sem nome")}
-                </div>
+            <button
+                class="member-delete"
+                onclick="deleteMember('${m.id}')">
+                🗑️
+            </button>
 
-                <div class="infoLine">
-                    🎭 Personagem:
-                    ${escapeHTML(member.character || "—")}
-                </div>
+            <h3>
+                👤 ${escapeHTML(m.name || "Sem nome")}
+            </h3>
 
-                <div class="infoLine">
-                    ⛩️ Anime:
-                    ${escapeHTML(member.anime || "—")}
-                </div>
+            ${
+                m.age
+                ?
+                `<p>🎂 ${escapeHTML(m.age)} anos</p>`
+                :
+                ""
+            }
 
-                <div class="infoLine">
-                    🎂 Idade:
-                    ${escapeHTML(member.age || "—")}
-                </div>
+            <p>
+                🎭 ${escapeHTML(
+                    m.character || "Sem personagem"
+                )}
+            </p>
 
-            </div>
+            <p>
+                🎬 ${escapeHTML(
+                    m.anime || "Não informado"
+                )}
+            </p>
+
+            <small class="muted">
+                ${formatDate(m.createdAt)}
+            </small>
+
+        </div>
 
         `).join("");
 
-}
+};
 
 
-document
-.getElementById("memberSearch")
-.addEventListener(
-    "input",
-    renderMembers
-);
+window.deleteMember = async function(id){
+
+    if(
+        !confirm(
+            "Tem certeza que deseja excluir este membro?"
+        )
+    ) return;
 
 
-/* =========================
-   ADMINS
-========================= */
+    try{
+
+        const ref =
+            doc(db,"members",id);
+
+        const snap =
+            await getDoc(ref);
+
+        if(!snap.exists()) return;
+
+        const member =
+            snap.data();
+
+
+        await deleteDoc(ref);
+
+
+        if(member.character){
+
+            const occupiedRef =
+                doc(
+                    db,
+                    "occupiedCharacters",
+                    normalize(member.character)
+                );
+
+            const occupiedSnap =
+                await getDoc(occupiedRef);
+
+            if(occupiedSnap.exists()){
+
+                await deleteDoc(occupiedRef);
+
+            }
+
+
+            const vaga =
+                vagasData.find(
+                    v =>
+                        normalize(v.character) ===
+                        normalize(member.character)
+                );
+
+
+            if(vaga){
+
+                await updateDoc(
+                    doc(db,"vagas",vaga.id),
+                    {
+                        status:"Aberta",
+                        member:"Livre",
+                        updatedAt:serverTimestamp()
+                    }
+                );
+
+            }
+
+        }
+
+
+        toast("Membro excluído e personagem liberado.");
+
+    }catch(error){
+
+        console.error(error);
+
+        toast("Erro ao excluir membro.");
+
+    }
+
+};
+
+
+/* ================= ADMINS ================= */
 
 function renderAdmins(){
 
-    const container =
-        document.getElementById("adminsList");
+    const grid =
+        document.getElementById("adminsGrid");
 
 
-    container.innerHTML =
-        ADMINS.map(adm => {
+    grid.innerHTML =
+        ADMINS.map(adm=>{
 
             const online =
-                adminsOnlineData.some(item =>
-
-                    item.name &&
-                    item.name.toLowerCase() ===
-                    adm.name.toLowerCase() &&
-                    item.online === true
-
+                adminsOnlineData.some(
+                    a =>
+                        normalize(a.name) ===
+                        normalize(adm.name) &&
+                        a.online === true
                 );
 
 
             return `
 
-                <div class="adminCard">
+            <div class="admin-card">
 
-                    <div class="adminTitle">
+                <h3>
+                    ${
+                        adm.role === "Dono"
+                        ? "👑"
+                        : adm.role === "Sub-dono"
+                        ? "⭐"
+                        : "🛡️"
+                    }
 
-                        🛡️ ${escapeHTML(adm.name)}
+                    ${escapeHTML(adm.name)}
+                </h3>
 
-                    </div>
+                <p>
 
-                    <div class="infoLine">
+                    <span class="online-dot ${online ? "on":""}">
+                    </span>
 
-                        Cargo:
-                        ${escapeHTML(adm.role)}
+                    ${online ? "Online":"Offline"}
 
-                    </div>
+                </p>
 
-                    <div class="infoLine">
+                <small class="muted">
+                    ${escapeHTML(adm.role)}
+                </small>
 
-                        Status:
-
-                        ${
-                            online
-
-                            ?
-
-                            `<span class="badge badgeOnline">
-                                🟢 Online
-                            </span>`
-
-                            :
-
-                            `<span class="badge badgeOffline">
-                                ⚫ Offline
-                            </span>`
-                        }
-
-                    </div>
-
-                </div>
+            </div>
 
             `;
 
@@ -4207,35 +2880,30 @@ function renderAdmins(){
 }
 
 
-/* =========================
-   ACCESS LOGS
-========================= */
+/* ================= LOGS ================= */
 
-function renderAccessLogs(logs){
+function renderLogs(){
 
     const container =
         document.getElementById("accessLogs");
 
 
-    logs.sort((a,b) =>
-        getTimestampValue(b.createdAt) -
-        getTimestampValue(a.createdAt)
-    );
+    const data =
+        [...logsData]
+        .sort(
+            (a,b)=>
+                dateValue(b.createdAt) -
+                dateValue(a.createdAt)
+        )
+        .slice(0,15);
 
 
-    logs =
-        logs.slice(0,15);
+    if(!data.length){
 
-
-    if(!logs.length){
-
-        container.innerHTML = `
-
-            <div class="empty">
-                Nenhum acesso registrado.
-            </div>
-
-        `;
+        container.innerHTML =
+            `<div class="empty">
+                Nenhum registro ainda.
+            </div>`;
 
         return;
 
@@ -4243,68 +2911,52 @@ function renderAccessLogs(logs){
 
 
     container.innerHTML =
-        logs.map(log => `
+        data.map(log=>`
 
-            <div class="adminCard">
+        <div class="log">
 
-                <div class="adminTitle">
+            <b>
+                ${escapeHTML(log.name || "ADM")}
+            </b>
 
-                    ${
-                        log.action === "Login"
-                        ? "🟢"
-                        : "🔴"
-                    }
+            — ${escapeHTML(log.action || "Acesso")}
 
-                    ${escapeHTML(log.name || "ADM")}
+            <br>
 
-                </div>
+            <small>
+                ${formatDate(log.createdAt)}
+            </small>
 
-                <div class="infoLine">
-
-                    ${escapeHTML(log.action || "")}
-
-                    ·
-
-                    ${escapeHTML(log.role || "")}
-
-                    ·
-
-                    ${formatDate(log.createdAt)}
-
-                </div>
-
-            </div>
+        </div>
 
         `).join("");
 
 }
 
 
-/* =========================
-   CHAT
-========================= */
+/* ================= CHAT ================= */
 
-function renderChat(messages){
+function renderChat(){
 
     const container =
         document.getElementById("chatMessages");
 
 
-    messages.sort((a,b) =>
-        getTimestampValue(a.createdAt) -
-        getTimestampValue(b.createdAt)
-    );
+    const data =
+        [...chatData]
+        .sort(
+            (a,b)=>
+                dateValue(a.createdAt) -
+                dateValue(b.createdAt)
+        );
 
 
-    if(!messages.length){
+    if(!data.length){
 
-        container.innerHTML = `
-
-            <div class="empty">
-                Nenhuma mensagem ainda.
-            </div>
-
-        `;
+        container.innerHTML =
+            `<div class="empty">
+                💬 Nenhuma mensagem ainda.
+            </div>`;
 
         return;
 
@@ -4312,25 +2964,34 @@ function renderChat(messages){
 
 
     container.innerHTML =
-        messages.map(message => `
+        data.map(msg=>{
 
-            <div class="chatMessage">
+            const me =
+                normalize(msg.name) ===
+                normalize(currentAdm?.name);
 
-                <strong>
-                    ${escapeHTML(message.name || "ADM")}
-                </strong>
 
-                <span class="chatTime">
-                    ${formatDate(message.createdAt)}
-                </span>
+            return `
 
-                <div style="margin-top:7px">
-                    ${escapeHTML(message.message || "")}
+            <div class="message ${me ? "me":""}">
+
+                <b>
+                    ${escapeHTML(msg.name || "ADM")}
+                </b>
+
+                <div>
+                    ${escapeHTML(msg.text || "")}
                 </div>
+
+                <small>
+                    ${formatDate(msg.createdAt)}
+                </small>
 
             </div>
 
-        `).join("");
+            `;
+
+        }).join("");
 
 
     container.scrollTop =
@@ -4339,113 +3000,42 @@ function renderChat(messages){
 }
 
 
-document
-.getElementById("chatForm")
-.addEventListener(
-    "submit",
-    async event => {
+window.sendMessage = async function(event){
 
-        event.preventDefault();
+    event.preventDefault();
 
+    const input =
+        document.getElementById("chatInput");
 
-        const input =
-            document.getElementById("chatInput");
+    const text =
+        input.value.trim();
 
-
-        const message =
-            input.value.trim();
+    if(!text || !currentAdm) return;
 
 
-        if(!message){
-            return;
-        }
+    try{
 
-
-        try{
-
-            await addDoc(
-
-                collection(db,"adminChat"),
-
-                {
-                    name:currentAdm?.name || "ADM",
-                    role:currentAdm?.role || "",
-                    message,
-                    createdAt:serverTimestamp()
-                }
-
-            );
-
-
-            input.value = "";
-
-
-        }catch(error){
-
-            console.error(error);
-
-            showToast(
-                "Não foi possível enviar.",
-                "error"
-            );
-
-        }
-
-    }
-);
-
-
-/* =========================
-   ATUALIZAR
-========================= */
-
-document
-.getElementById("refreshBtn")
-.addEventListener("click",() => {
-
-    loadData();
-
-    showToast(
-        "↻ Dados atualizados."
-    );
-
-});
-
-
-/* =========================
-   FINAL
-========================= */
-
-window.addEventListener(
-    "beforeunload",
-    () => {
-
-        if(!currentAdm || !db){
-            return;
-        }
-
-
-        setDoc(
-
-            doc(
-                db,
-                "adminsOnline",
-                normalizeCharacter(currentAdm.name)
-            ),
-
+        await addDoc(
+            collection(db,"adminChat"),
             {
-                online:false,
-                updatedAt:serverTimestamp()
-            },
-
-            {
-                merge:true
+                name:currentAdm.name,
+                role:currentAdm.role,
+                text,
+                createdAt:serverTimestamp()
             }
-
         );
 
+        input.value = "";
+
+    }catch(error){
+
+        console.error(error);
+
+        toast("Não foi possível enviar.");
+
     }
-);
+
+};
 
 </script>
 
