@@ -305,7 +305,7 @@ window.approveRequest=async function(id){
    if(occ.exists())throw new Error("Esse personagem já foi ocupado.");
    const freshMembers=membersData.filter(m=>normalize(m.name)===normalize(name));
    if(freshMembers.length>=2)throw new Error("Este membro já possui 2 personagens.");
-   tx.set(occRef,{character,anime:r.anime||r.obra||"",obra:r.obra||r.anime||"",member:name,imageUrl,imagePublicId,approvedBy:currentAdm?.name||"",approvedAt:serverTimestamp()});
+   tx.set(occRef,{character,anime:r.anime||r.obra||"",obra:r.obra||r.anime||"",member:name,imageUrl,imagePublicId,photoUrl:r.photoUrl||"",photoPublicId:r.photoPublicId||"",approvedBy:currentAdm?.name||"",approvedAt:serverTimestamp()});
    const memberRef=doc(collection(db,"members"));
    tx.set(memberRef,{name,age:r.age||"",character,anime:r.anime||r.obra||"",obra:r.obra||r.anime||"",slot:freshMembers.length+1,photoUrl:r.photoUrl||"",photoPublicId:r.photoPublicId||"",createdAt:serverTimestamp(),approvedBy:currentAdm?.name||""});
    if(vaga)tx.update(doc(db,"vagas",vaga.id),{status:"Fechada",member:name,updatedAt:serverTimestamp()});
