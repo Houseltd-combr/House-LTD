@@ -137,7 +137,9 @@ window.login=async function(){
   if(!auth.currentUser) await signInAnonymously(auth);
  }catch(e){
   console.error("Firebase Auth:",e);
-  error.textContent="Não foi possível autenticar no Firebase. Verifique se o Login Anônimo está ativado.";
+  const code=e?.code||"erro-desconhecido";
+  const msg=e?.message||"Falha ao autenticar.";
+  error.textContent=`Firebase: ${code}. ${msg}`;
   return;
  }
  currentAdm=adm;error.textContent="";document.getElementById("loginScreen").style.display="none";document.getElementById("app").style.display="block";
