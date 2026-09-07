@@ -64,8 +64,8 @@ main{margin-left:245px;padding:28px;max-width:1500px}.page{display:none}.page.ac
 <section id="vagas" class="page"><div class="page-title"><h1>🎭 Personagens / Vagas</h1><p>Abra, feche, edite ou exclua vagas da House.</p></div>
 <div class="card"><h3>➕ Adicionar nova vaga</h3>
 <div class="field"><label>Personagem</label><input id="vagaCharacter" placeholder="Ex.: Varesa"></div>
-<div class="field"><label>Anime</label><input id="vagaAnime" placeholder="Ex.: Genshin Impact"></div>
-<div class="field"><label>Foto do personagem (opcional)</label><input id="vagaImage" type="file" accept="image/*"></div>
+<div class="field"><label>Obra</label><input id="vagaAnime" placeholder="Ex.: Genshin Impact"></div>
+<div class="field"><label>📸 Foto do personagem (opcional)</label><input id="vagaImage" type="file" accept="image/*"></div>
 <div class="field"><label>Status inicial</label><select id="vagaStatus"><option value="Aberta">🟢 Aberta</option><option value="Fechada">🔴 Fechada</option></select></div>
 <button class="primary" onclick="addVaga()">Adicionar vaga</button></div>
 <div class="toolbar"><input id="vagaSearch" placeholder="🔎 Procurar personagem..." oninput="renderVagas()"></div><div id="vagasGrid" class="grid"></div></section>
@@ -83,8 +83,8 @@ main{margin-left:245px;padding:28px;max-width:1500px}.page{display:none}.page.ac
 
 <div id="editModal" class="modal"><div class="modal-box"><h2>✏️ Editar vaga</h2><input type="hidden" id="editId">
 <div class="field"><label>Personagem</label><input id="editCharacter"></div>
-<div class="field"><label>Anime</label><input id="editAnime"></div>
-<div class="field"><label>Trocar foto (opcional)</label><input id="editImage" type="file" accept="image/*"></div>
+<div class="field"><label>Obra</label><input id="editAnime"></div>
+<div class="field"><label>📸 Trocar foto (opcional)</label><input id="editImage" type="file" accept="image/*"></div>
 <div class="field"><label>Status</label><select id="editStatus"><option value="Aberta">🟢 Aberta</option><option value="Fechada">🔴 Fechada</option></select></div>
 <div class="modal-actions"><button class="action" onclick="closeModal()">Cancelar</button><button class="primary" onclick="saveEdit()">Salvar</button></div></div></div>
 <div id="toastContainer" class="toast-container"></div>
@@ -92,10 +92,11 @@ main{margin-left:245px;padding:28px;max-width:1500px}.page{display:none}.page.ac
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import {getFirestore,collection,addDoc,onSnapshot,serverTimestamp,doc,setDoc,deleteDoc,updateDoc,getDoc,runTransaction} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-import {getStorage,ref as storageRef,uploadBytes,getDownloadURL,deleteObject} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
+import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-const firebaseConfig={apiKey:"AIzaSyAg4h7phK_shSp4oUT-PJMH_iK6cjJ82Q",authDomain:"house-6dfc9.firebaseapp.com",projectId:"house-6dfc9",storageBucket:"house-6dfc9.firebasestorage.app",messagingSenderId:"184001079413",appId:"1:184001079413:web:de4df4327d2cabdd30703c"};
-const app=initializeApp(firebaseConfig),db=getFirestore(app),storage=getStorage(app);
+const firebaseConfig={apiKey:"AIzaSyAg4h7phK_shSp4oUT-PJMH_iK6cjJ82Q",authDomain:"house-6dfc9.firebaseapp.com",projectId:"house-6dfc9",messagingSenderId:"184001079413",appId:"1:184001079413:web:de4df4327d2cabdd30703c"};
+const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app);
+const CLOUDINARY_CLOUD_NAME="gsqmelxb",CLOUDINARY_UPLOAD_PRESET="House LTD";
 
 const ADMINS=[
 {name:"Aiko",password:"YM7JQ7",role:"Dono"},{name:"Helo",password:"Ilovekillua",role:"Adm"},
@@ -110,16 +111,19 @@ function normalize(v){return String(v??"").trim().toLowerCase().normalize("NFD")
 function dateValue(t){if(!t)return 0;if(typeof t.toMillis==="function")return t.toMillis();if(t.seconds)return t.seconds*1000;return 0}
 function formatDate(t){const v=dateValue(t);return v?new Date(v).toLocaleString("pt-BR"):"agora"}
 function toast(message){const c=document.getElementById("toastContainer"),e=document.createElement("div");e.className="toast";e.textContent=message;c.appendChild(e);setTimeout(()=>e.remove(),3000)}
-function fileExt(file){return (file?.name?.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg"}
-
-async function uploadImage(file,path){
+async function uploadImage(file,folder){
  if(!file)return null;
+ if(!file.type.startsWith("image/"))throw new Error("Escolha uma imagem válida.");
  if(file.size>5*1024*1024)throw new Error("A imagem deve ter no máximo 5 MB.");
- const ref=storageRef(storage,`${path}-${Date.now()}.${fileExt(file)}`);
- await uploadBytes(ref,file);
- return {imageUrl:await getDownloadURL(ref),imagePath:ref.fullPath};
+ const data=new FormData();
+ data.append("file",file);
+ data.append("upload_preset",CLOUDINARY_UPLOAD_PRESET);
+ if(folder)data.append("folder",folder);
+ const response=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,{method:"POST",body:data});
+ const result=await response.json();
+ if(!response.ok||!result.secure_url)throw new Error(result?.error?.message||"Não foi possível enviar a imagem.");
+ return {imageUrl:result.secure_url,imagePublicId:result.public_id||""};
 }
-async function removeStorageFile(path){if(!path)return;try{await deleteObject(storageRef(storage,path))}catch(e){}}
 
 let progress=0;
 const loadingMessages=["INICIANDO SISTEMA...","CONECTANDO AO FIREBASE...","CARREGANDO ADMINISTRAÇÃO...","PREPARANDO PAINEL...","SISTEMA PRONTO!"];
@@ -130,6 +134,7 @@ window.login=async function(){
  const adm=ADMINS.find(a=>a.name.toLowerCase()===name.toLowerCase()&&a.password===password);
  if(!adm){error.textContent="Nome ou senha incorretos.";return}
  currentAdm=adm;error.textContent="";document.getElementById("loginScreen").style.display="none";document.getElementById("app").style.display="block";
+ try{await signInAnonymously(auth)}catch(e){console.error("Auth anônimo:",e);toast("Ative o Login Anônimo no Firebase para usar o painel.")}
  document.getElementById("currentAdmName").textContent=adm.name;document.getElementById("currentAdmRole").textContent=adm.role==="Dono"?"👑 Dono da House":adm.role==="Sub-dono"?"⭐ Sub-dono":"🛡️ Administrador";
  try{
   await setDoc(doc(db,"adminsOnline",normalize(adm.name)),{name:adm.name,role:adm.role,online:true,updatedAt:serverTimestamp()});
@@ -181,7 +186,7 @@ window.renderVagas=function(){
   const closed=["fechada","fechado","ocupado"].includes(normalize(v.status));
   return `<div class="vaga ${closed?"closed":""}">
   ${v.imageUrl?`<img src="${escapeHTML(v.imageUrl)}" alt="${escapeHTML(v.character)}">`:""}
-  <h3>${escapeHTML(v.character)}</h3><div class="anime">${escapeHTML(v.anime||"Anime não informado")}</div>
+  <h3>${escapeHTML(v.character)}</h3><div class="anime">${escapeHTML(v.anime||"Obra não informada")}</div>
   <span class="status ${closed?"closed-status":"open"}">${closed?"🔒 FECHADA":"🟢 ABERTA"}</span>
   <p class="muted">👤 ${escapeHTML(v.member||"Livre")}</p>
   <div class="vaga-actions">
@@ -197,8 +202,8 @@ window.addVaga=async function(){
  if(mergedVagas().some(v=>normalize(v.character)===normalize(character))){toast("Esse personagem já está cadastrado.");return}
  try{
   const image=await uploadImage(file,`vagas/${normalize(character).replace(/[^a-z0-9_-]/g,"-")}`);
-  await addDoc(collection(db,"vagas"),{character,anime,status,member:status==="Aberta"?"Livre":"Ocupado",...(image||{}),createdAt:serverTimestamp(),createdBy:currentAdm?.name||""});
-  if(status==="Fechada")await setDoc(doc(db,"occupiedCharacters",normalize(character)),{character,anime,member:"Ocupado",...(image||{}),createdAt:serverTimestamp()});
+  await addDoc(collection(db,"vagas"),{character,anime,obra:anime,status,member:status==="Aberta"?"Livre":"Ocupado",...(image||{}),createdAt:serverTimestamp(),createdBy:currentAdm?.name||""});
+  if(status==="Fechada")await setDoc(doc(db,"occupiedCharacters",normalize(character)),{character,anime,obra:anime,member:"Ocupado",...(image||{}),createdAt:serverTimestamp()});
   document.getElementById("vagaCharacter").value="";document.getElementById("vagaAnime").value="";document.getElementById("vagaImage").value="";document.getElementById("vagaStatus").value="Aberta";toast("Vaga adicionada!");
  }catch(e){console.error(e);toast(e.message||"Erro ao adicionar vaga.")}
 };
@@ -207,7 +212,7 @@ window.openVaga=async function(id,type){
  try{
   if(type==="occupied"){
    const ref=doc(db,"occupiedCharacters",id),snap=await getDoc(ref);if(!snap.exists())return;const d=snap.data();
-   await addDoc(collection(db,"vagas"),{character:d.character||d.name,anime:d.anime||"",status:"Aberta",member:"Livre",imageUrl:d.imageUrl||"",imagePath:d.imagePath||"",createdAt:serverTimestamp(),createdBy:currentAdm?.name||""});
+   await addDoc(collection(db,"vagas"),{character:d.character||d.name,anime:d.anime||d.obra||"",obra:d.obra||d.anime||"",status:"Aberta",member:"Livre",imageUrl:d.imageUrl||"",imagePublicId:d.imagePublicId||"",createdAt:serverTimestamp(),createdBy:currentAdm?.name||""});
    await deleteDoc(ref);
   }else{
    const ref=doc(db,"vagas",id),snap=await getDoc(ref);if(!snap.exists())return;const d=snap.data();
@@ -223,7 +228,7 @@ window.closeVaga=async function(id,type){
  try{
   const ref=doc(db,"vagas",id),snap=await getDoc(ref);if(!snap.exists())return;const d=snap.data();
   await updateDoc(ref,{status:"Fechada",member:"Ocupado",updatedAt:serverTimestamp()});
-  await setDoc(doc(db,"occupiedCharacters",normalize(d.character)),{character:d.character,anime:d.anime||"",member:"Ocupado",imageUrl:d.imageUrl||"",imagePath:d.imagePath||"",updatedAt:serverTimestamp()});
+  await setDoc(doc(db,"occupiedCharacters",normalize(d.character)),{character:d.character,anime:d.anime||d.obra||"",obra:d.obra||d.anime||"",member:"Ocupado",imageUrl:d.imageUrl||"",imagePublicId:d.imagePublicId||"",updatedAt:serverTimestamp()});
   toast("Vaga fechada!");
  }catch(e){console.error(e);toast("Não foi possível fechar a vaga.")}
 };
@@ -234,7 +239,7 @@ window.deleteVaga=async function(id,type){
   let data=null;
   if(type==="occupied"){const ref=doc(db,"occupiedCharacters",id),snap=await getDoc(ref);if(snap.exists())data=snap.data();await deleteDoc(ref)}
   else{const ref=doc(db,"vagas",id),snap=await getDoc(ref);if(snap.exists()){data=snap.data();await deleteDoc(ref);await deleteDoc(doc(db,"occupiedCharacters",normalize(data.character)))}} 
-  if(data?.imagePath)await removeStorageFile(data.imagePath);toast("Vaga excluída!");
+  toast("Vaga excluída!");
  }catch(e){console.error(e);toast("Erro ao excluir vaga.")}
 };
 
@@ -252,11 +257,11 @@ window.saveEdit=async function(){
  try{
   const ref=doc(db,"vagas",id),snap=await getDoc(ref);if(!snap.exists())return;const old=snap.data();
   if(mergedVagas().some(v=>v.id!==id&&normalize(v.character)===normalize(character))){toast("Esse personagem já está cadastrado.");return}
-  let image={imageUrl:old.imageUrl||"",imagePath:old.imagePath||""};
-  if(file){const uploaded=await uploadImage(file,`vagas/${normalize(character).replace(/[^a-z0-9_-]/g,"-")}`);image=uploaded;await removeStorageFile(old.imagePath)}
-  await updateDoc(ref,{character,anime,status,member:status==="Aberta"?"Livre":old.member||"Ocupado",...image,updatedAt:serverTimestamp()});
+  let image={imageUrl:old.imageUrl||"",imagePublicId:old.imagePublicId||""};
+  if(file){const uploaded=await uploadImage(file,`vagas/${normalize(character).replace(/[^a-z0-9_-]/g,"-")}`);image=uploaded}
+  await updateDoc(ref,{character,anime,obra:anime,status,member:status==="Aberta"?"Livre":old.member||"Ocupado",...image,updatedAt:serverTimestamp()});
   if(old.character&&normalize(old.character)!==normalize(character))await deleteDoc(doc(db,"occupiedCharacters",normalize(old.character)));
-  if(status==="Fechada")await setDoc(doc(db,"occupiedCharacters",normalize(character)),{character,anime,member:old.member||"Ocupado",...image,updatedAt:serverTimestamp()});
+  if(status==="Fechada")await setDoc(doc(db,"occupiedCharacters",normalize(character)),{character,anime,obra:anime,member:old.member||"Ocupado",...image,updatedAt:serverTimestamp()});
   else await deleteDoc(doc(db,"occupiedCharacters",normalize(character)));
   closeModal();toast("Vaga atualizada!");
  }catch(e){console.error(e);toast(e.message||"Erro ao editar vaga.")}
@@ -264,10 +269,10 @@ window.saveEdit=async function(){
 
 window.renderRequests=function(){
  const c=document.getElementById("requestsList"),search=normalize(document.getElementById("requestSearch")?.value);
- const data=requestsData.filter(r=>normalize(r.status||"Pendente")==="pendente").filter(r=>!search||normalize(r.name).includes(search)||normalize(r.character).includes(search)||normalize(r.anime).includes(search)).sort((a,b)=>dateValue(b.createdAt)-dateValue(a.createdAt));
+ const data=requestsData.filter(r=>normalize(r.status||"Pendente")==="pendente").filter(r=>!search||normalize(r.name).includes(search)||normalize(r.character).includes(search)||normalize(r.obra||r.anime).includes(search)).sort((a,b)=>dateValue(b.createdAt)-dateValue(a.createdAt));
  if(!data.length){c.innerHTML='<div class="empty">📭 Nenhuma solicitação pendente.</div>';return}
- c.innerHTML=data.map(r=>`<div class="request"><div class="request-head"><div><h3>🎭 ${escapeHTML(r.character||"Personagem")}</h3><div class="muted">👤 ${escapeHTML(r.name||"Sem nome")}</div></div><span class="status open">${escapeHTML(r.requestType||"Pendente")}</span></div>
- <p class="muted">🎬 ${escapeHTML(r.anime||"Anime não informado")}</p>${r.age?`<p>🎂 Idade: ${escapeHTML(r.age)}</p>`:""}${r.message?`<p>💬 ${escapeHTML(r.message)}</p>`:""}<small class="muted">${formatDate(r.createdAt)}</small>
+ c.innerHTML=data.map(r=>`<div class="request">${r.photoUrl?`<img src="${escapeHTML(r.photoUrl)}" alt="Foto de ${escapeHTML(r.name||"membro")}" style="width:90px;height:90px;object-fit:cover;border-radius:12px;margin-bottom:10px">`:""}<div class="request-head"><div><h3>🎭 ${escapeHTML(r.character||"Personagem")}</h3><div class="muted">👤 ${escapeHTML(r.name||"Sem nome")}</div></div><span class="status open">${escapeHTML(r.requestType||"Pendente")}</span></div>
+ <p class="muted">🎬 ${escapeHTML(r.obra||r.anime||"Obra não informada")}</p>${r.age?`<p>🎂 Idade: ${escapeHTML(r.age)}</p>`:""}${r.message?`<p>💬 ${escapeHTML(r.message)}</p>`:""}<small class="muted">${formatDate(r.createdAt)}</small>
  <div class="request-actions"><button class="action success" onclick="approveRequest('${r.id}')">✅ Aprovar</button><button class="action danger" onclick="rejectRequest('${r.id}')">❌ Recusar</button><button class="action danger" onclick="deleteRequest('${r.id}')">🗑️ Excluir</button></div></div>`).join("");
 };
 
@@ -286,15 +291,15 @@ window.approveRequest=async function(id){
   if(characterAlreadyTaken(character)){toast("🔒 Esse personagem já está ocupado/fechado. Aprovação bloqueada.");return}
 
   const vaga=vagasData.find(v=>normalize(v.character)===normalize(character));
-  const imageUrl=vaga?.imageUrl||"",imagePath=vaga?.imagePath||"";
+  const imageUrl=vaga?.imageUrl||"",imagePublicId=vaga?.imagePublicId||"";
   await runTransaction(db,async tx=>{
    const occRef=doc(db,"occupiedCharacters",normalize(character)),occ=await tx.get(occRef);
    if(occ.exists())throw new Error("Esse personagem já foi ocupado.");
    const freshMembers=membersData.filter(m=>normalize(m.name)===normalize(name));
    if(freshMembers.length>=2)throw new Error("Este membro já possui 2 personagens.");
-   tx.set(occRef,{character,anime:r.anime||"",member:name,imageUrl,imagePath,approvedBy:currentAdm?.name||"",approvedAt:serverTimestamp()});
+   tx.set(occRef,{character,anime:r.anime||r.obra||"",obra:r.obra||r.anime||"",member:name,imageUrl,imagePublicId,approvedBy:currentAdm?.name||"",approvedAt:serverTimestamp()});
    const memberRef=doc(collection(db,"members"));
-   tx.set(memberRef,{name,age:r.age||"",character,anime:r.anime||"",slot:freshMembers.length+1,createdAt:serverTimestamp(),approvedBy:currentAdm?.name||""});
+   tx.set(memberRef,{name,age:r.age||"",character,anime:r.anime||r.obra||"",obra:r.obra||r.anime||"",slot:freshMembers.length+1,photoUrl:r.photoUrl||"",photoPublicId:r.photoPublicId||"",createdAt:serverTimestamp(),approvedBy:currentAdm?.name||""});
    if(vaga)tx.update(doc(db,"vagas",vaga.id),{status:"Fechada",member:name,updatedAt:serverTimestamp()});
    tx.update(requestRef,{status:"Aprovada",approvedBy:currentAdm?.name||"",approvedAt:serverTimestamp()});
   });
@@ -309,7 +314,7 @@ window.renderMembers=function(){
  const grid=document.getElementById("membersGrid"),search=normalize(document.getElementById("memberSearch")?.value);
  const data=membersData.filter(m=>!search||normalize(m.name).includes(search)||normalize(m.character).includes(search)).sort((a,b)=>String(a.name||"").localeCompare(String(b.name||"")));
  if(!data.length){grid.innerHTML='<div class="empty">👥 Nenhum membro encontrado.</div>';return}
- grid.innerHTML=data.map(m=>`<div class="member"><button class="member-delete" onclick="deleteMember('${m.id}')">🗑️</button><h3>👤 ${escapeHTML(m.name||"Sem nome")}</h3>${m.age?`<p>🎂 ${escapeHTML(m.age)} anos</p>`:""}<p>🎭 ${escapeHTML(m.character||"Sem personagem")}</p><p>🎬 ${escapeHTML(m.anime||"Não informado")}</p><small class="muted">Personagem ${escapeHTML(m.slot||"—")} • ${formatDate(m.createdAt)}</small></div>`).join("");
+ grid.innerHTML=data.map(m=>`<div class="member">${m.photoUrl?`<img src="${escapeHTML(m.photoUrl)}" alt="Foto" style="width:70px;height:70px;object-fit:cover;border-radius:50%;margin-bottom:10px">`:""}<button class="member-delete" onclick="deleteMember('${m.id}')">🗑️</button><h3>👤 ${escapeHTML(m.name||"Sem nome")}</h3>${m.age?`<p>🎂 ${escapeHTML(m.age)} anos</p>`:""}<p>🎭 ${escapeHTML(m.character||"Sem personagem")}</p><p>🎬 ${escapeHTML(m.anime||"Não informado")}</p><small class="muted">Personagem ${escapeHTML(m.slot||"—")} • ${formatDate(m.createdAt)}</small></div>`).join("");
 };
 
 window.deleteMember=async function(id){
@@ -336,9 +341,8 @@ function renderMyProfile(){
 async function saveAdminPhoto(){
  if(!currentAdm)return;const file=document.getElementById("adminPhoto").files[0];if(!file){toast("Escolha uma foto.");return}
  try{
-  const ref=doc(db,"adminProfiles",normalize(currentAdm.name)),old=await getDoc(ref),oldData=old.exists()?old.data():{},uploaded=await uploadImage(file,`admins/${normalize(currentAdm.name).replace(/[^a-z0-9_-]/g,"-")}`);
-  await setDoc(ref,{name:currentAdm.name,role:currentAdm.role,photoUrl:uploaded.imageUrl,photoPath:uploaded.imagePath,updatedAt:serverTimestamp()},{merge:true});
-  if(oldData.photoPath)await removeStorageFile(oldData.photoPath);
+  const ref=doc(db,"adminProfiles",normalize(currentAdm.name)),uploaded=await uploadImage(file,`admins/${normalize(currentAdm.name).replace(/[^a-z0-9_-]/g,"-")}`);
+  await setDoc(ref,{name:currentAdm.name,role:currentAdm.role,photoUrl:uploaded.imageUrl,photoPublicId:uploaded.imagePublicId||"",updatedAt:serverTimestamp()},{merge:true});
   document.getElementById("adminPhoto").value="";toast("Foto de perfil salva!");
  }catch(e){console.error(e);toast(e.message||"Não foi possível salvar a foto.")}
 }

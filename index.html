@@ -5,193 +5,63 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Recepção • House LTD</title>
 <style>
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;font-family:Inter,Arial,sans-serif;background:#0d0b13;color:#f7f3fb;line-height:1.5}
-a{color:inherit;text-decoration:none}
-.hero{min-height:72vh;background:radial-gradient(circle at 75% 20%,#123b78 0,transparent 35%),linear-gradient(135deg,#0c0912,#1c1026);position:relative;overflow:hidden}
-.hero:after{content:"";position:absolute;width:420px;height:420px;border:1px solid #ffffff18;border-radius:50%;right:-100px;bottom:-180px;box-shadow:0 0 0 80px #ffffff05,0 0 0 160px #ffffff03}
-nav{height:72px;display:flex;align-items:center;gap:26px;padding:0 7%;border-bottom:1px solid #ffffff10;position:relative;z-index:2}
-.logo{font-weight:900;letter-spacing:2px;margin-right:auto}.logo span,.hero h1 span{color:#79b8ff}
-.hero-content{max-width:800px;padding:110px 7%;position:relative;z-index:1}
-.eyebrow{font-size:12px;letter-spacing:3px;color:#8fc7ff;font-weight:800}
-.hero h1{font-size:clamp(48px,8vw,90px);line-height:.95;margin:18px 0}
-.subtitle{font-size:18px;color:#c9c2d0;max-width:560px}
-.button{display:inline-block;border:0;border-radius:12px;padding:14px 22px;background:#3d9bff;color:#06121f;font-weight:900;cursor:pointer;transition:.2s}
-.button:hover{transform:translateY(-2px);filter:brightness(1.08)}
-.button:disabled{opacity:.6;cursor:not-allowed;transform:none}
-.section{padding:90px 7%;max-width:1200px;margin:auto}.alt{max-width:none;background:#120e19;padding-left:7%;padding-right:7%}
-.section-title{margin-bottom:35px}.section-title h2{font-size:42px;margin:5px 0}.section-title p:not(.eyebrow){color:#aaa1b3}
-.card{background:#17121f;border:1px solid #ffffff12;border-radius:18px;padding:24px;box-shadow:0 15px 50px #00000025}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-label{font-weight:700;font-size:14px;color:#d9d1df}
-input,select,textarea{width:100%;margin-top:8px;background:#0e0b13;color:#fff;border:1px solid #ffffff16;border-radius:10px;padding:13px;font:inherit;outline:none}
-input:focus,select:focus,textarea:focus{border-color:#3d9bff}
-textarea{min-height:100px;resize:vertical}.full{grid-column:1/-1}
-.status{margin:0;color:#8fc7ff;font-weight:700}.success{color:#a6ffe0}.error{color:#ffb9c8}
-.character-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;max-width:1200px;margin:auto}
-.character{padding:20px;border-radius:16px;border:1px solid #ffffff12;background:#17121f;overflow:hidden}
-.character img{width:100%;height:190px;object-fit:cover;border-radius:12px;margin-bottom:14px;background:#0e0b13}
-.character h3{margin:0 0 4px}.character p{margin:0;color:#9f97a7;font-size:13px}
-.badge{display:inline-block;margin-top:14px;padding:5px 9px;border-radius:99px;font-size:11px;font-weight:900}
-.occupied{background:#5a2938;color:#ffb9c8}.open{background:#173d35;color:#a6ffe0}
-.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.rules b{font-size:32px;color:#3d9bff}
-.notice{margin-top:22px;padding:18px;border-left:3px solid #3d9bff;background:#17121f;color:#bdb4c4;border-radius:8px}
-.member-info{grid-column:1/-1;padding:14px;border-radius:12px;background:#101523;border:1px solid #ffffff12;color:#bdb4c4}
-.member-info strong{color:#fff}.second-option{display:flex;align-items:center;gap:10px;padding:13px;border-radius:12px;background:#101523;border:1px solid #ffffff12;color:#d9d1df;cursor:pointer}
-.second-option input{width:auto;margin:0}.second-option.disabled{opacity:.55;cursor:not-allowed}
-footer{text-align:center;padding:35px;border-top:1px solid #ffffff10;color:#776f80;font-size:12px;letter-spacing:2px}
-@media(max-width:700px){
-nav a{display:none}.admin-link{display:inline-block!important;background:#3d9bff;color:#06121f;padding:9px 12px;border-radius:10px;font-size:12px;font-weight:900}
-.hero-content{padding-top:80px}.form-grid,.rules{grid-template-columns:1fr}.full{grid-column:auto}.section{padding:65px 5%}.alt{padding-left:5%;padding-right:5%}.section-title h2{font-size:34px}
-}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,Arial,sans-serif;background:#0d0b13;color:#f7f3fb;line-height:1.5}a{color:inherit;text-decoration:none}.hero{min-height:72vh;background:radial-gradient(circle at 75% 20%,#123b78 0,transparent 35%),linear-gradient(135deg,#0c0912,#1c1026);position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:420px;height:420px;border:1px solid #ffffff18;border-radius:50%;right:-100px;bottom:-180px;box-shadow:0 0 0 80px #ffffff05,0 0 0 160px #ffffff03}nav{height:72px;display:flex;align-items:center;gap:26px;padding:0 7%;border-bottom:1px solid #ffffff10;position:relative;z-index:2}.logo{font-weight:900;letter-spacing:2px;margin-right:auto}.logo span,.hero h1 span{color:#79b8ff}.hero-content{max-width:800px;padding:110px 7%;position:relative;z-index:1}.eyebrow{font-size:12px;letter-spacing:3px;color:#8fc7ff;font-weight:800}.hero h1{font-size:clamp(48px,8vw,90px);line-height:.95;margin:18px 0}.subtitle{font-size:18px;color:#c9c2d0;max-width:560px}.button{display:inline-block;border:0;border-radius:12px;padding:14px 22px;background:#3d9bff;color:#06121f;font-weight:900;cursor:pointer;transition:.2s}.button:hover{transform:translateY(-2px);filter:brightness(1.08)}.button:disabled{opacity:.6;cursor:not-allowed;transform:none}.section{padding:90px 7%;max-width:1200px;margin:auto}.alt{max-width:none;background:#120e19;padding-left:7%;padding-right:7%}.section-title{margin-bottom:35px}.section-title h2{font-size:42px;margin:5px 0}.section-title p:not(.eyebrow){color:#aaa1b3}.card{background:#17121f;border:1px solid #ffffff12;border-radius:18px;padding:24px;box-shadow:0 15px 50px #00000025}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}label{font-weight:700;font-size:14px;color:#d9d1df}input,select,textarea{width:100%;margin-top:8px;background:#0e0b13;color:#fff;border:1px solid #ffffff16;border-radius:10px;padding:13px;font:inherit;outline:none}input:focus,select:focus,textarea:focus{border-color:#3d9bff}textarea{min-height:100px;resize:vertical}.full{grid-column:1/-1}.status{margin:0;color:#8fc7ff;font-weight:700}.success{color:#a6ffe0}.error{color:#ffb9c8}.character-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;max-width:1200px;margin:auto}.character{padding:20px;border-radius:16px;border:1px solid #ffffff12;background:#17121f;overflow:hidden}.character img{width:100%;height:190px;object-fit:cover;border-radius:12px;margin-bottom:14px;background:#0e0b13}.character h3{margin:0 0 4px}.character p{margin:0;color:#9f97a7;font-size:13px}.badge{display:inline-block;margin-top:14px;padding:5px 9px;border-radius:99px;font-size:11px;font-weight:900}.occupied{background:#5a2938;color:#ffb9c8}.open{background:#173d35;color:#a6ffe0}.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.rules b{font-size:32px;color:#3d9bff}.notice{margin-top:22px;padding:18px;border-left:3px solid #3d9bff;background:#17121f;color:#bdb4c4;border-radius:8px}.member-info{grid-column:1/-1;padding:14px;border-radius:12px;background:#101523;border:1px solid #ffffff12;color:#bdb4c4}.member-info strong{color:#fff}.second-panel{display:none;margin-top:20px}.second-panel.show{display:block}.second-title{margin-top:0}.photo-note{font-size:12px;color:#8e8497;margin-top:6px}.divider{height:1px;background:#ffffff10;margin:8px 0 20px}footer{text-align:center;padding:35px;border-top:1px solid #ffffff10;color:#776f80;font-size:12px;letter-spacing:2px}@media(max-width:700px){nav a{display:none}.admin-link{display:inline-block!important;background:#3d9bff;color:#06121f;padding:9px 12px;border-radius:10px;font-size:12px;font-weight:900}.hero-content{padding-top:80px}.form-grid,.rules{grid-template-columns:1fr}.full{grid-column:auto}.section{padding:65px 5%}.alt{padding-left:5%;padding-right:5%}.section-title h2{font-size:34px}}
 </style>
 </head>
 <body>
-<header class="hero">
-<nav>
-<div class="logo">HOUSE <span>ALL</span></div>
-<a href="#recepcao">Recepção</a><a href="#personagens">Personagens</a><a href="#regras">Como funciona</a>
-<a class="admin-link" href="administracao.html">🔐 Administração</a>
-</nav>
-<div class="hero-content">
-<p class="eyebrow">✦ CENTRAL DE RECEPÇÃO ✦</p>
-<h1>Bem-vindo à<br><span>House LTD</span></h1>
-<p class="subtitle">Faça sua ficha e escolha livremente o personagem que deseja representar.</p>
-<a class="button" href="#recepcao">Fazer minha ficha</a>
-</div>
-</header>
-
+<header class="hero"><nav><div class="logo">HOUSE <span>ALL</span></div><a href="#recepcao">Recepção</a><a href="#personagens">Personagens</a><a href="#regras">Como funciona</a><a class="admin-link" href="administracao.html">🔐 Administração</a></nav><div class="hero-content"><p class="eyebrow">✦ CENTRAL DE RECEPÇÃO ✦</p><h1>Bem-vindo à<br><span>House LTD</span></h1><p class="subtitle">Faça sua ficha e escolha livremente o personagem que deseja representar.</p><a class="button" href="#recepcao">Fazer minha ficha</a></div></header>
 <main>
-<section id="recepcao" class="section">
-<div class="section-title"><p class="eyebrow">01 • ENTRADA</p><h2>Ficha de recepção</h2><p>Preencha os dados abaixo para registrar sua entrada na House.</p></div>
+<section id="recepcao" class="section"><div class="section-title"><p class="eyebrow">01 • ENTRADA</p><h2>Ficha de recepção</h2><p>Preencha os dados abaixo para registrar sua entrada na House.</p></div>
 <form id="receptionForm" class="card form-grid">
 <label>Nome / apelido<input id="nome" required maxlength="30" placeholder="Como devemos te chamar?"></label>
 <label>Idade<input id="idade" type="number" min="10" max="99" required placeholder="Ex.: 16"></label>
 <label>Personagem<input id="personagem" required maxlength="60" placeholder="Digite o personagem que deseja usar"></label>
-<label>Anime<input id="anime" required maxlength="50" placeholder="Ex.: Naruto"></label>
-<div id="memberInfo" class="member-info full">Digite seu nome para verificar quantos personagens você possui.</div>
-<label id="secondOptionWrap" class="second-option full disabled">
-<input type="checkbox" id="addAnotherCharacter" disabled>
-<span>➕ Quero adicionar outro personagem</span>
-</label>
+<label>Obra<input id="obra" required maxlength="50" placeholder="Ex.: Naruto"></label>
+<div id="memberInfo" class="member-info">Digite seu nome para verificar quantos personagens você possui.</div>
+<label class="full">📸 Sua foto<input id="memberPhoto" type="file" accept="image/*"><div class="photo-note">A foto será enviada automaticamente e poderá aparecer para a administração e no seu perfil.</div></label>
 <label class="full">Mensagem de entrada<textarea id="mensagem" maxlength="180" placeholder="Deixe uma mensagem para a recepção..."></textarea></label>
-<button class="button full" type="submit" id="submitButton">Confirmar recepção ✦</button>
-<p id="status" class="status full"></p>
+<button class="button full" type="submit" id="submitButton">Confirmar recepção ✦</button><p id="status" class="status full"></p>
 </form>
+<div id="secondPanel" class="card second-panel"><h2 class="second-title">➕ Segunda ficha</h2><p>Você já possui 1 personagem. Use esta ficha separada para solicitar o seu 2º personagem.</p><form id="secondForm" class="form-grid"><label>Nome / apelido<input id="nome2" readonly></label><label>Idade<input id="idade2" type="number" readonly></label><label>Personagem<input id="personagem2" required maxlength="60" placeholder="Digite o segundo personagem"></label><label>Obra<input id="obra2" required maxlength="50" placeholder="Ex.: Naruto"></label><label class="full">📸 Foto<input id="memberPhoto2" type="file" accept="image/*"></label><label class="full">Mensagem<textarea id="mensagem2" maxlength="180" placeholder="Deixe uma mensagem..."></textarea></label><button class="button full" type="submit" id="submitButton2">Enviar segunda ficha ✦</button><p id="status2" class="status full"></p></form></div>
 </section>
-
-<section class="section">
-<div class="section-title"><p class="eyebrow">02 • DISPONÍVEIS</p><h2>🟢 Vagas abertas</h2><p>Personagens atualmente disponíveis na House.</p></div>
-<div id="openCharacters" class="character-grid"><p class="status">Carregando vagas...</p></div>
-</section>
-
-<section id="personagens" class="section alt">
-<div class="section-title"><p class="eyebrow">03 • FECHADOS</p><h2>🔒 Personagens Fechados</h2><p>Aqui aparecem automaticamente os personagens fechados pela administração.</p></div>
-<div id="closedCharacters" class="character-grid"><p class="status">Carregando...</p></div>
-</section>
-
-<section id="regras" class="section">
-<div class="section-title"><p class="eyebrow">04 • RECEPÇÃO</p><h2>Como funciona?</h2></div>
-<div class="rules">
-<article class="card"><b>01</b><h3>Preencha a ficha</h3><p>Informe seu nome, idade, personagem e anime.</p></article>
-<article class="card"><b>02</b><h3>Envie sua recepção</h3><p>Sua ficha será enviada para a administração analisar.</p></article>
-<article class="card"><b>03</b><h3>Aguarde a aprovação</h3><p>O personagem só ficará fechado depois que a administração aprovar sua ficha.</p></article>
-</div>
-<div class="notice"><strong>Importante:</strong> sua ficha será enviada para a administração. O personagem só ficará <strong>🔒 FECHADO</strong> depois da aprovação. Cada membro pode ter no máximo <strong>2 personagens</strong>.</div>
-</section>
-</main>
-<footer>HOUSE LTD • CENTRAL DE RECEPÇÃO</footer>
-
+<section class="section"><div class="section-title"><p class="eyebrow">02 • DISPONÍVEIS</p><h2>🟢 Vagas abertas</h2><p>Personagens atualmente disponíveis na House.</p></div><div id="openCharacters" class="character-grid"><p class="status">Carregando vagas...</p></div></section>
+<section id="personagens" class="section alt"><div class="section-title"><p class="eyebrow">03 • FECHADOS</p><h2>🔒 Personagens Fechados</h2><p>Aqui aparecem automaticamente os personagens fechados pela administração.</p></div><div id="closedCharacters" class="character-grid"><p class="status">Carregando...</p></div></section>
+<section id="regras" class="section"><div class="section-title"><p class="eyebrow">04 • RECEPÇÃO</p><h2>Como funciona?</h2></div><div class="rules"><article class="card"><b>01</b><h3>Preencha a ficha</h3><p>Informe seu nome, idade, personagem e obra.</p></article><article class="card"><b>02</b><h3>Envie sua recepção</h3><p>Sua ficha será enviada para a administração analisar.</p></article><article class="card"><b>03</b><h3>Aguarde a aprovação</h3><p>O personagem só ficará fechado depois que a administração aprovar sua ficha.</p></article></div><div class="notice"><strong>Importante:</strong> cada membro pode ter no máximo <strong>2 personagens</strong>. A segunda solicitação é feita por uma ficha separada.</div></section>
+</main><footer>HOUSE LTD • CENTRAL DE RECEPÇÃO</footer>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import {getFirestore,collection,addDoc,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
-const firebaseConfig={apiKey:"AIzaSyAg4h7phK_shSp4oUT-PJMH_iK6cjJ82Q",authDomain:"house-6dfc9.firebaseapp.com",projectId:"house-6dfc9",storageBucket:"house-6dfc9.firebasestorage.app",messagingSenderId:"184001079413",appId:"1:184001079413:web:de4df4327d2cabdd30703c"};
-const app=initializeApp(firebaseConfig),db=getFirestore(app);
-
-const form=document.getElementById("receptionForm"),nameInput=document.getElementById("nome"),characterInput=document.getElementById("personagem"),animeInput=document.getElementById("anime");
-const status=document.getElementById("status"),closedCharacters=document.getElementById("closedCharacters"),openCharacters=document.getElementById("openCharacters"),submitButton=document.getElementById("submitButton");
-const memberInfo=document.getElementById("memberInfo"),secondWrap=document.getElementById("secondOptionWrap"),secondCheckbox=document.getElementById("addAnotherCharacter");
-
-let occupied=[],openVacancies=[],membersData=[];
-
-function escapeHTML(value){return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
-function normalize(value){return String(value??"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
-function showStatus(message,type="normal"){status.textContent=message;status.className="status full";if(type==="success")status.classList.add("success");if(type==="error")status.classList.add("error")}
+import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+const firebaseConfig={apiKey:"AIzaSyAg4h7phK_shSp4oUT-PJMH_iK6cjJ82Q",authDomain:"house-6dfc9.firebaseapp.com",projectId:"house-6dfc9",messagingSenderId:"184001079413",appId:"1:184001079413:web:de4df4327d2cabdd30703c"};
+const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app);
+const CLOUDINARY_CLOUD_NAME="gsqmelxb",CLOUDINARY_UPLOAD_PRESET="House LTD";
+const form=document.getElementById("receptionForm"),secondForm=document.getElementById("secondForm"),nameInput=document.getElementById("nome"),characterInput=document.getElementById("personagem"),obraInput=document.getElementById("obra"),status=document.getElementById("status"),status2=document.getElementById("status2"),openCharacters=document.getElementById("openCharacters"),closedCharacters=document.getElementById("closedCharacters"),submitButton=document.getElementById("submitButton"),submitButton2=document.getElementById("submitButton2"),memberInfo=document.getElementById("memberInfo"),secondPanel=document.getElementById("secondPanel");
+let occupied=[],openVacancies=[],membersData=[],requestsData=[];
+function escapeHTML(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+function normalize(v){return String(v??"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
+function showStatus(el,message,type="normal"){el.textContent=message;el.className="status full";if(type==="success")el.classList.add("success");if(type==="error")el.classList.add("error")}
 function countMemberCharacters(name){const n=normalize(name);return membersData.filter(m=>normalize(m.name)===n).length}
-function isCharacterOccupied(character){
- const n=normalize(character);
- return occupied.some(x=>normalize(x.character)===n) ||
-        membersData.some(x=>normalize(x.character)===n) ||
-        openVacancies.some(x=>normalize(x.character)===n && normalize(x.status)==="fechada");
+function isCharacterOccupied(character){const n=normalize(character);return occupied.some(x=>normalize(x.character||x.name)===n)||membersData.some(x=>normalize(x.character)===n)||openVacancies.some(x=>normalize(x.character)===n&&normalize(x.status)==="fechada")}
+function pendingCharacter(character){const n=normalize(character);return requestsData.some(r=>normalize(r.character)===n&&normalize(r.status||"Pendente")==="pendente")}
+function updateMemberLimit(){const name=nameInput.value.trim(),count=countMemberCharacters(name);if(!name){memberInfo.innerHTML="Digite seu nome para verificar quantos personagens você possui.";secondPanel.classList.remove("show");submitButton.disabled=false;return}if(count>=2){memberInfo.innerHTML="❌ <strong>Você já possui 2 personagens.</strong> O limite máximo da House é 2.";secondPanel.classList.remove("show");submitButton.disabled=true}else if(count===1){memberInfo.innerHTML="✅ Você já possui <strong>1 personagem</strong>. Para o segundo, use a <strong>Segunda ficha</strong> abaixo.";document.getElementById("nome2").value=name;document.getElementById("idade2").value=document.getElementById("idade").value||"";secondPanel.classList.add("show");submitButton.disabled=true}else{memberInfo.innerHTML="✅ Você ainda não possui personagem aprovado. Esta será sua <strong>1ª ficha</strong>.";secondPanel.classList.remove("show");submitButton.disabled=false}}
+nameInput.addEventListener("input",updateMemberLimit);nameInput.addEventListener("change",updateMemberLimit);document.getElementById("idade").addEventListener("input",()=>{document.getElementById("idade2").value=document.getElementById("idade").value});
+function renderOpenVacancies(){if(!openVacancies.length){openCharacters.innerHTML='<p class="status">📭 Nenhuma vaga foi cadastrada como aberta.</p>';return}openCharacters.innerHTML=openVacancies.map(v=>`<article class="character">${v.imageUrl?`<img src="${escapeHTML(v.imageUrl)}" alt="${escapeHTML(v.character)}">`:""}<h3>${escapeHTML(v.character||"Sem nome")}</h3><p>${escapeHTML(v.obra||v.anime||"Obra não informada")}</p><span class="badge open">🟢 VAGA ABERTA</span></article>`).join("")}
+function renderClosedCharacters(){if(!occupied.length){closedCharacters.innerHTML='<p class="status">📭 Nenhum personagem foi fechado ainda.</p>';return}closedCharacters.innerHTML=occupied.map(v=>`<article class="character">${v.imageUrl?`<img src="${escapeHTML(v.imageUrl)}" alt="${escapeHTML(v.character)}">`:""}<h3>${escapeHTML(v.character||"Sem nome")}</h3><p>${escapeHTML(v.obra||v.anime||"Obra não informada")}</p><span class="badge occupied">🔒 FECHADO</span></article>`).join("")}
+async function uploadPhoto(file,folder){
+ if(!file)return null;
+ if(!file.type.startsWith("image/"))throw new Error("Escolha uma imagem válida.");
+ if(file.size>5*1024*1024)throw new Error("A foto deve ter no máximo 5 MB.");
+ const data=new FormData();
+ data.append("file",file);
+ data.append("upload_preset",CLOUDINARY_UPLOAD_PRESET);
+ if(folder)data.append("folder",folder);
+ const response=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,{method:"POST",body:data});
+ const result=await response.json();
+ if(!response.ok||!result.secure_url)throw new Error(result?.error?.message||"Não foi possível enviar a foto.");
+ return{photoUrl:result.secure_url,photoPublicId:result.public_id||""};
 }
-function updateMemberLimit(){
- const name=nameInput.value.trim(),count=countMemberCharacters(name);
- secondCheckbox.checked=false;
- if(!name){memberInfo.innerHTML="Digite seu nome para verificar quantos personagens você possui.";secondCheckbox.disabled=true;secondWrap.classList.add("disabled");submitButton.disabled=false;return}
- if(count>=2){
-   memberInfo.innerHTML="❌ <strong>Você já possui 2 personagens.</strong> O limite máximo da House é 2.";
-   secondCheckbox.disabled=true;secondWrap.classList.add("disabled");submitButton.disabled=true;
- }else if(count===1){
-   memberInfo.innerHTML="✅ Você já possui <strong>1 personagem</strong>. Esta ficha poderá ser seu <strong>2º personagem</strong>.";
-   secondCheckbox.disabled=false;secondWrap.classList.remove("disabled");submitButton.disabled=false;
- }else{
-   memberInfo.innerHTML="✅ Você ainda não possui personagem aprovado. Esta será sua <strong>1ª ficha</strong>.";
-   secondCheckbox.disabled=true;secondWrap.classList.add("disabled");submitButton.disabled=false;
- }
-}
-nameInput.addEventListener("input",updateMemberLimit);nameInput.addEventListener("change",updateMemberLimit);
-
-function renderOpenVacancies(){
- if(!openVacancies.length){openCharacters.innerHTML='<p class="status">📭 Nenhuma vaga foi cadastrada como aberta.</p>';return}
- openCharacters.innerHTML=openVacancies.map(v=>`<article class="character">
- ${v.imageUrl?`<img src="${escapeHTML(v.imageUrl)}" alt="${escapeHTML(v.character)}">`:""}
- <h3>${escapeHTML(v.character||"Sem nome")}</h3><p>${escapeHTML(v.anime||"Anime não informado")}</p>
- <span class="badge open">🟢 VAGA ABERTA</span></article>`).join("");
-}
-function renderClosedCharacters(){
- if(!occupied.length){closedCharacters.innerHTML='<p class="status">📭 Nenhum personagem foi fechado ainda.</p>';return}
- closedCharacters.innerHTML=occupied.map(v=>`<article class="character">
- ${v.imageUrl?`<img src="${escapeHTML(v.imageUrl)}" alt="${escapeHTML(v.character)}">`:""}
- <h3>${escapeHTML(v.character||"Sem nome")}</h3><p>${escapeHTML(v.anime||"Anime não informado")}</p>
- <span class="badge occupied">🔒 FECHADO</span></article>`).join("");
-}
-
-onSnapshot(collection(db,"vagas"),snapshot=>{
- openVacancies=snapshot.docs.map(d=>({id:d.id,...d.data()})).filter(v=>v.character&&normalize(v.status)==="aberta");
- renderOpenVacancies();
-});
-onSnapshot(collection(db,"occupiedCharacters"),snapshot=>{
- occupied=snapshot.docs.map(d=>({id:d.id,...d.data(),character:d.data().character||d.id}));
- renderClosedCharacters();updateMemberLimit();
-});
-onSnapshot(collection(db,"members"),snapshot=>{
- membersData=snapshot.docs.map(d=>({id:d.id,...d.data()}));updateMemberLimit();
-});
-
-form.addEventListener("submit",async event=>{
- event.preventDefault();
- const name=nameInput.value.trim(),age=document.getElementById("idade").value,character=characterInput.value.trim(),anime=animeInput.value.trim(),message=document.getElementById("mensagem").value.trim();
- const count=countMemberCharacters(name);
- if(!name||!age||!character||!anime){showStatus("⚠ Preencha todos os campos obrigatórios.","error");return}
- if(count>=2){showStatus("❌ Você já possui 2 personagens. Não é possível solicitar um terceiro.","error");updateMemberLimit();return}
- if(count===1&&!secondCheckbox.checked){showStatus("⚠ Você já possui 1 personagem. Marque a opção de segundo personagem para enviar esta ficha.","error");return}
- if(count===0&&secondCheckbox.checked){showStatus("⚠ A opção de segundo personagem só fica disponível para quem já possui 1 personagem.","error");secondCheckbox.checked=false;return}
- if(isCharacterOccupied(character)){showStatus("🔒 Esse personagem já está ocupado ou fechado. Escolha outro.","error");return}
-
- submitButton.disabled=true;submitButton.textContent="Enviando...";
- try{
-   await addDoc(collection(db,"requests"),{
-     name,age:Number(age),character,anime,message,status:"Pendente",
-     slot:count+1,requestType:count===1?"Segundo personagem":"Primeiro personagem",
-     addAnotherCharacter:count===1,createdAt:serverTimestamp()
-   });
-   showStatus(`✓ Solicitação enviada! ${character} aguarda a aprovação da administração.`,"success");
-   form.reset();secondCheckbox.checked=false;updateMemberLimit();
- }catch(error){console.error(error);showStatus("❌ Não foi possível enviar sua ficha. Tente novamente.","error")}
- submitButton.textContent="Confirmar recepção ✦";if(countMemberCharacters(name)<2)submitButton.disabled=false;
-});
-</script>
-</body>
-</html>
+async function sendRequest({name,age,character,obra,message,file,slot,second=false,statusEl,button}){if(!name||!age||!character||!obra){showStatus(statusEl,"⚠ Preencha todos os campos obrigatórios.","error");return}const count=countMemberCharacters(name);if(count>=2){showStatus(statusEl,"❌ Você já possui 2 personagens. Não é possível solicitar outro.","error");return}if(second&&count!==1){showStatus(statusEl,"⚠ A segunda ficha só pode ser usada quando você já possui 1 personagem aprovado.","error");return}if(!second&&count!==0){showStatus(statusEl,"⚠ Você já possui um personagem. Use a Segunda ficha.","error");return}if(isCharacterOccupied(character)){showStatus(statusEl,"🔒 Esse personagem já está ocupado ou fechado. Escolha outro.","error");return}if(pendingCharacter(character)){showStatus(statusEl,"⏳ Já existe uma solicitação pendente para esse personagem.","error");return}button.disabled=true;button.textContent="Enviando...";try{const photo=await uploadPhoto(file,`members/${normalize(name).replace(/[^a-z0-9_-]/g,"-")}`);await addDoc(collection(db,"requests"),{name,age:Number(age),character,obra,anime:obra,message,status:"Pendente",slot:second?2:1,requestType:second?"Segundo personagem":"Primeiro personagem",addAnotherCharacter:second,photoUrl:photo?.photoUrl||"",photoPublicId:photo?.photoPublicId||"",createdAt:serverTimestamp()});showStatus(statusEl,`✓ Solicitação enviada! ${character} aguarda a aprovação da administração.` ,"success");return true}catch(error){console.error(error);showStatus(statusEl,"❌ Não foi possível enviar sua ficha: "+error.message,"error");return false}finally{button.disabled=false;button.textContent=second?"Enviar segunda ficha ✦":"Confirmar recepção ✦"}}
+form.addEventListener("submit",async e=>{e.preventDefault();const ok=await sendRequest({name:nameInput.value.trim(),age:document.getElementById("idade").value,character:characterInput.value.trim(),obra:obraInput.value.trim(),message:document.getElementById("mensagem").value.trim(),file:document.getElementById("memberPhoto").files[0],slot:1,statusEl:status,button:submitButton});if(ok){form.reset();updateMemberLimit()}});
+secondForm.addEventListener("submit",async e=>{e.preventDefault();const name=document.getElementById("nome2").value.trim(),age=document.getElementById("idade2").value;const ok=await sendRequest({name,age,character:document.getElementById("personagem2").value.trim(),obra:document.getElementById("obra2").value.trim(),message:document.getElementById("mensagem2").value.trim(),file:document.getElementById("memberPhoto2").files[0],slot:2,second:true,statusEl:status2,button:submitButton2});if(ok){secondForm.reset();document.getElementById("nome2").value=name;document.getElementById("idade2").value=age;showStatus(status2,"✓ Segunda ficha enviada com sucesso!","success")}});
+(async()=>{try{await signInAnonymously(auth);onSnapshot(collection(db,"vagas"),s=>{openVacancies=s.docs.map(d=>({id:d.id,...d.data()})).filter(v=>v.character&&normalize(v.status)==="aberta");renderOpenVacancies()});onSnapshot(collection(db,"occupiedCharacters"),s=>{occupied=s.docs.map(d=>({id:d.id,...d.data(),character:d.data().character||d.id}));renderClosedCharacters();updateMemberLimit()});onSnapshot(collection(db,"members"),s=>{membersData=s.docs.map(d=>({id:d.id,...d.data()}));updateMemberLimit()});onSnapshot(collection(db,"requests"),s=>{requestsData=s.docs.map(d=>({id:d.id,...d.data()}))})}catch(e){showStatus(status,"❌ Não foi possível conectar ao Firebase. Verifique se o Login Anônimo está ativado.","error")}})();
+</script></body></html>
