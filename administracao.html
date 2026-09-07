@@ -92,9 +92,10 @@ main{margin-left:245px;padding:28px;max-width:1500px}.page{display:none}.page.ac
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import {getFirestore,collection,addDoc,onSnapshot,serverTimestamp,doc,setDoc,deleteDoc,updateDoc,getDoc,runTransaction} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 const firebaseConfig={apiKey:"AIzaSyAg4h7phK_shSp4oUT-PJMH_iK6cjJ82Q",authDomain:"house-6dfc9.firebaseapp.com",projectId:"house-6dfc9",messagingSenderId:"184001079413",appId:"1:184001079413:web:de4df4327d2cabdd30703c"};
-const app=initializeApp(firebaseConfig),db=getFirestore(app);
+const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app);
 const CLOUDINARY_CLOUD_NAME="gsqmelxb",CLOUDINARY_UPLOAD_PRESET="House LTD";
 
 const ADMINS=[
@@ -132,6 +133,13 @@ window.login=async function(){
  const name=document.getElementById("loginName").value.trim(),password=document.getElementById("loginPassword").value,error=document.getElementById("loginError");
  const adm=ADMINS.find(a=>a.name.toLowerCase()===name.toLowerCase()&&a.password===password);
  if(!adm){error.textContent="Nome ou senha incorretos.";return}
+ try{
+  if(!auth.currentUser) await signInAnonymously(auth);
+ }catch(e){
+  console.error("Firebase Auth:",e);
+  error.textContent="Não foi possível autenticar no Firebase. Verifique se o Login Anônimo está ativado.";
+  return;
+ }
  currentAdm=adm;error.textContent="";document.getElementById("loginScreen").style.display="none";document.getElementById("app").style.display="block";
   document.getElementById("currentAdmName").textContent=adm.name;document.getElementById("currentAdmRole").textContent=adm.role==="Dono"?"👑 Dono da House":adm.role==="Sub-dono"?"⭐ Sub-dono":"🛡️ Administrador";
  try{
@@ -238,7 +246,7 @@ window.deleteVaga=async function(id,type){
   if(type==="occupied"){const ref=doc(db,"occupiedCharacters",id),snap=await getDoc(ref);if(snap.exists())data=snap.data();await deleteDoc(ref)}
   else{const ref=doc(db,"vagas",id),snap=await getDoc(ref);if(snap.exists()){data=snap.data();await deleteDoc(ref);await deleteDoc(doc(db,"occupiedCharacters",normalize(data.character)))}} 
   toast("Vaga excluída!");
- }catch(e){console.error(e);toast("Erro ao excluir vaga.")}
+ }catch(e){console.error(e);toast(e.code==="permission-denied"?"Sem permissão no Firestore para excluir esta vaga.":"Erro ao excluir vaga.")}
 };
 
 window.editVaga=async function(id,type){
@@ -262,7 +270,7 @@ window.saveEdit=async function(){
   if(status==="Fechada")await setDoc(doc(db,"occupiedCharacters",normalize(character)),{character,anime,obra:anime,member:old.member||"Ocupado",...image,updatedAt:serverTimestamp()});
   else await deleteDoc(doc(db,"occupiedCharacters",normalize(character)));
   closeModal();toast("Vaga atualizada!");
- }catch(e){console.error(e);toast(e.message||"Erro ao editar vaga.")}
+ }catch(e){console.error(e);toast(e.code==="permission-denied"?"Sem permissão no Firestore para editar esta vaga.":(e.message||"Erro ao editar vaga."))}
 };
 
 window.renderRequests=function(){
