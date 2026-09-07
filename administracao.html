@@ -92,10 +92,9 @@ main{margin-left:245px;padding:28px;max-width:1500px}.page{display:none}.page.ac
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import {getFirestore,collection,addDoc,onSnapshot,serverTimestamp,doc,setDoc,deleteDoc,updateDoc,getDoc,runTransaction} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 const firebaseConfig={apiKey:"AIzaSyAg4h7phK_shSp4oUT-PJMH_iK6cjJ82Q",authDomain:"house-6dfc9.firebaseapp.com",projectId:"house-6dfc9",messagingSenderId:"184001079413",appId:"1:184001079413:web:de4df4327d2cabdd30703c"};
-const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app);
+const app=initializeApp(firebaseConfig),db=getFirestore(app);
 const CLOUDINARY_CLOUD_NAME="gsqmelxb",CLOUDINARY_UPLOAD_PRESET="House LTD";
 
 const ADMINS=[
@@ -134,8 +133,7 @@ window.login=async function(){
  const adm=ADMINS.find(a=>a.name.toLowerCase()===name.toLowerCase()&&a.password===password);
  if(!adm){error.textContent="Nome ou senha incorretos.";return}
  currentAdm=adm;error.textContent="";document.getElementById("loginScreen").style.display="none";document.getElementById("app").style.display="block";
- try{await signInAnonymously(auth)}catch(e){console.error("Auth anônimo:",e);toast("Ative o Login Anônimo no Firebase para usar o painel.")}
- document.getElementById("currentAdmName").textContent=adm.name;document.getElementById("currentAdmRole").textContent=adm.role==="Dono"?"👑 Dono da House":adm.role==="Sub-dono"?"⭐ Sub-dono":"🛡️ Administrador";
+  document.getElementById("currentAdmName").textContent=adm.name;document.getElementById("currentAdmRole").textContent=adm.role==="Dono"?"👑 Dono da House":adm.role==="Sub-dono"?"⭐ Sub-dono":"🛡️ Administrador";
  try{
   await setDoc(doc(db,"adminsOnline",normalize(adm.name)),{name:adm.name,role:adm.role,online:true,updatedAt:serverTimestamp()});
   await addDoc(collection(db,"accessLogs"),{name:adm.name,role:adm.role,action:"Entrou na administração",createdAt:serverTimestamp()});
