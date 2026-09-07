@@ -30,10 +30,11 @@
 </main><footer>HOUSE LTD • CENTRAL DE RECEPÇÃO</footer>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import {getFirestore,collection,addDoc,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-const firebaseConfig={apiKey:"AIzaSyAg4h7phK_shSp4oUT-PJMH_iK6cjJ82Q",authDomain:"house-6dfc9.firebaseapp.com",projectId:"house-6dfc9",storageBucket:"house-6dfc9.firebasestorage.app",messagingSenderId:"184001079413",appId:"1:184001079413:web:de4df4327d2cabdd30703c"};
+import {getFirestore,collection,addDoc,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyAg4h7phK_shSp4oUT-PJMH_iKu6cjJ82Q",authDomain:"house-6dfc9.firebaseapp.com",projectId:"house-6dfc9",storageBucket:"house-6dfc9.firebasestorage.app",messagingSenderId:"184001079413",appId:"1:184001079413:web:de4df4327d2cabdd30703c"};
 const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app);
+const authReady=signInAnonymously(auth).catch(error=>{console.error("Autenticação anônima:",error);return null});
 const CLOUDINARY_CLOUD_NAME="gsqmelxb",CLOUDINARY_UPLOAD_PRESET="House LTD";
 const form=document.getElementById("receptionForm"),secondForm=document.getElementById("secondForm"),nameInput=document.getElementById("nome"),characterInput=document.getElementById("personagem"),obraInput=document.getElementById("obra"),status=document.getElementById("status"),status2=document.getElementById("status2"),openCharacters=document.getElementById("openCharacters"),closedCharacters=document.getElementById("closedCharacters"),submitButton=document.getElementById("submitButton"),submitButton2=document.getElementById("submitButton2"),memberInfo=document.getElementById("memberInfo"),secondPanel=document.getElementById("secondPanel");
 let occupied=[],openVacancies=[],membersData=[],requestsData=[];
@@ -64,17 +65,20 @@ async function sendRequest({name,age,character,obra,message,file,slot,second=fal
 form.addEventListener("submit",async e=>{e.preventDefault();const ok=await sendRequest({name:nameInput.value.trim(),age:document.getElementById("idade").value,character:characterInput.value.trim(),obra:obraInput.value.trim(),message:document.getElementById("mensagem").value.trim(),file:document.getElementById("memberPhoto").files[0],slot:1,statusEl:status,button:submitButton});if(ok){form.reset();updateMemberLimit()}});
 secondForm.addEventListener("submit",async e=>{e.preventDefault();const name=document.getElementById("nome2").value.trim(),age=document.getElementById("idade2").value;const ok=await sendRequest({name,age,character:document.getElementById("personagem2").value.trim(),obra:document.getElementById("obra2").value.trim(),message:document.getElementById("mensagem2").value.trim(),file:document.getElementById("memberPhoto2").files[0],slot:2,second:true,statusEl:status2,button:submitButton2});if(ok){secondForm.reset();document.getElementById("nome2").value=name;document.getElementById("idade2").value=age;showStatus(status2,"✓ Segunda ficha enviada com sucesso!","success")}});
 async function startFirebase(){
- try{
-   if(!auth.currentUser) await signInAnonymously(auth);
-   onSnapshot(collection(db,"vagas"),s=>{openVacancies=s.docs.map(d=>({id:d.id,...d.data()})).filter(v=>v.character&&normalize(v.status)==="aberta");renderOpenVacancies()},e=>{console.error("vagas:",e);openCharacters.innerHTML='<p class="status error">❌ Não foi possível carregar as vagas abertas. Verifique as regras do Firestore.</p>'});
+ await authReady;
+ const attach=()=>{
+   onSnapshot(collection(db,"vagas"),s=>{
+     openVacancies=s.docs.map(d=>({id:d.id,...d.data()})).filter(v=>v.character && ["aberta","aberto","disponivel","disponível","livre"].includes(normalize(v.status||"")));
+     renderOpenVacancies();
+   },e=>{console.error("vagas:",e);openCharacters.innerHTML='<p class="status error">❌ Não foi possível carregar as vagas abertas. Verifique as regras do Firestore.</p>'});
    onSnapshot(collection(db,"occupiedCharacters"),s=>{occupied=s.docs.map(d=>({id:d.id,...d.data(),character:d.data().character||d.id}));renderClosedCharacters();updateMemberLimit()},e=>{console.error("occupiedCharacters:",e);closedCharacters.innerHTML='<p class="status error">❌ Não foi possível carregar os personagens fechados. Verifique as regras do Firestore.</p>'});
    onSnapshot(collection(db,"members"),s=>{membersData=s.docs.map(d=>({id:d.id,...d.data()}));renderClosedCharacters();updateMemberLimit()},e=>console.error("members:",e));
    onSnapshot(collection(db,"requests"),s=>{requestsData=s.docs.map(d=>({id:d.id,...d.data()}))},e=>console.error("requests:",e));
- }catch(error){
-   console.error("Firebase Auth:",error);
-   openCharacters.innerHTML='<p class="status error">❌ Não foi possível conectar ao sistema. Verifique se o Login Anônimo está ativado no Firebase.</p>';
-   closedCharacters.innerHTML='<p class="status error">❌ Não foi possível conectar ao sistema. Verifique se o Login Anônimo está ativado no Firebase.</p>';
- }
+ };
+ // O projeto antigo não usa autenticação anônima. As regras do Firestore
+ // do projeto antigo permitem o acesso necessário ao site, então conectamos
+ // diretamente, sem depender do Firebase Authentication.
+ attach();
 }
 startFirebase();
 </script></body></html>

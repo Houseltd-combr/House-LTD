@@ -91,11 +91,12 @@ main{margin-left:245px;padding:28px;max-width:1500px}.page{display:none}.page.ac
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import {getFirestore,collection,addDoc,onSnapshot,serverTimestamp,doc,setDoc,deleteDoc,updateDoc,getDoc,runTransaction} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import {getFirestore,collection,addDoc,onSnapshot,serverTimestamp,doc,setDoc,deleteDoc,updateDoc,getDoc,runTransaction} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-const firebaseConfig={apiKey:"AIzaSyAg4h7phK_shSp4oUT-PJMH_iK6cjJ82Q",authDomain:"house-6dfc9.firebaseapp.com",projectId:"house-6dfc9",storageBucket:"house-6dfc9.firebasestorage.app",messagingSenderId:"184001079413",appId:"1:184001079413:web:de4df4327d2cabdd30703c"};
+const firebaseConfig={apiKey:"AIzaSyAg4h7phK_shSp4oUT-PJMH_iKu6cjJ82Q",authDomain:"house-6dfc9.firebaseapp.com",projectId:"house-6dfc9",storageBucket:"house-6dfc9.firebasestorage.app",messagingSenderId:"184001079413",appId:"1:184001079413:web:de4df4327d2cabdd30703c"};
 const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app);
+const authReady=signInAnonymously(auth).catch(error=>{console.error("Autenticação anônima:",error);return null});
 const CLOUDINARY_CLOUD_NAME="gsqmelxb",CLOUDINARY_UPLOAD_PRESET="House LTD";
 
 const ADMINS=[
@@ -127,29 +128,30 @@ async function uploadImage(file,folder){
 
 let progress=0;
 const loadingMessages=["INICIANDO SISTEMA...","CONECTANDO AO FIREBASE...","CARREGANDO ADMINISTRAÇÃO...","PREPARANDO PAINEL...","SISTEMA PRONTO!"];
-const loadingInterval=setInterval(()=>{progress+=20;document.getElementById("progressBar").style.width=progress+"%";document.getElementById("loadingText").textContent=loadingMessages[Math.min(progress/20,5)-1]||"SISTEMA PRONTO!";if(progress>=100){clearInterval(loadingInterval);setTimeout(()=>{document.getElementById("loadingScreen").style.display="none";document.getElementById("loginScreen").style.display="flex"},500)}},300);
+const loadingInterval=setInterval(()=>{progress+=20;document.getElementById("progressBar").style.width=progress+"%";document.getElementById("loadingText").textContent=loadingMessages[Math.min(progress/20,5)-1]||"SISTEMA PRONTO!";if(progress>=100){clearInterval(loadingInterval);setTimeout(()=>{document.getElementById("loadingScreen").style.display="none";document.getElementById("loginScreen").style.display="flex"},150)}},180);
+setTimeout(()=>{document.getElementById("loadingScreen").style.display="none";document.getElementById("loginScreen").style.display="flex"},2500);
 
 window.login=async function(){
- const name=document.getElementById("loginName").value.trim(),password=document.getElementById("loginPassword").value,error=document.getElementById("loginError");
- const adm=ADMINS.find(a=>a.name.toLowerCase()===name.toLowerCase()&&a.password===password);
- if(!adm){error.textContent="Nome ou senha incorretos.";return}
- try{
-  if(!auth.currentUser) await signInAnonymously(auth);
- }catch(e){
-  console.error("Firebase Auth:",e);
-  const code=e?.code||"erro-desconhecido";
-  const msg=e?.message||"Falha ao autenticar.";
-  error.textContent=`Firebase: ${code}. ${msg}`;
-  return;
- }
- currentAdm=adm;error.textContent="";document.getElementById("loginScreen").style.display="none";document.getElementById("app").style.display="block";
-  document.getElementById("currentAdmName").textContent=adm.name;document.getElementById("currentAdmRole").textContent=adm.role==="Dono"?"👑 Dono da House":adm.role==="Sub-dono"?"⭐ Sub-dono":"🛡️ Administrador";
+ await authReady;
+ const name=document.getElementById("loginName").value.trim(),password=document.getElementById("loginPassword").value.trim(),error=document.getElementById("loginError");
+ const adm=ADMINS.find(a=>normalize(a.name)===normalize(name)&&a.password===password);
+ if(!adm){error.textContent="Nome ou senha incorretos.";return false}
+ currentAdm=adm;
+ error.textContent="";
+ document.getElementById("loginScreen").style.display="none";
+ document.getElementById("app").style.display="block";
+ document.getElementById("currentAdmName").textContent=adm.name;
+ document.getElementById("currentAdmRole").textContent=adm.role==="Dono"?"👑 Dono da House":adm.role==="Sub-dono"?"⭐ Sub-dono":"🛡️ Administrador";
  try{
   await setDoc(doc(db,"adminsOnline",normalize(adm.name)),{name:adm.name,role:adm.role,online:true,updatedAt:serverTimestamp()});
   await addDoc(collection(db,"accessLogs"),{name:adm.name,role:adm.role,action:"Entrou na administração",createdAt:serverTimestamp()});
- }catch(e){console.error(e)}
- loadData();toast("Bem-vindo(a), "+adm.name+"!");
+ }catch(e){console.warn("Registro de acesso não disponível:",e)}
+ loadData();
+ toast("Bem-vindo(a), "+adm.name+"!");
+ return true;
 };
+const loginButton=document.querySelector('#loginScreen button[onclick="login()"]');
+if(loginButton)loginButton.onclick=window.login;
 document.getElementById("loginPassword").addEventListener("keydown",e=>{if(e.key==="Enter")window.login()});
 
 window.logout=async function(){
