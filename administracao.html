@@ -65,7 +65,7 @@ main{margin-left:245px;padding:28px;max-width:1500px}.page{display:none}.page.ac
 <div class="card"><h3>➕ Adicionar nova vaga</h3>
 <div class="field"><label>Personagem</label><input id="vagaCharacter" placeholder="Ex.: Varesa"></div>
 <div class="field"><label>Obra</label><input id="vagaAnime" placeholder="Ex.: Genshin Impact"></div>
-<div class="field"><label>📸 Foto do personagem (opcional)</label><input id="vagaImage" type="file" accept="image/*"></div>
+<div class="field"><label>📸 Foto do personagem <b style="color:#ff5b6e">*</b></label><input id="vagaImage" type="file" accept="image/*" required></div>
 <div class="field"><label>Status inicial</label><select id="vagaStatus"><option value="Aberta">🟢 Aberta</option><option value="Fechada">🔴 Fechada</option></select></div>
 <button class="primary" onclick="addVaga()">Adicionar vaga</button></div>
 <div class="toolbar"><input id="vagaSearch" placeholder="🔎 Procurar personagem..." oninput="renderVagas()"></div><div id="vagasGrid" class="grid"></div></section>
@@ -84,7 +84,7 @@ main{margin-left:245px;padding:28px;max-width:1500px}.page{display:none}.page.ac
 <div id="editModal" class="modal"><div class="modal-box"><h2>✏️ Editar vaga</h2><input type="hidden" id="editId">
 <div class="field"><label>Personagem</label><input id="editCharacter"></div>
 <div class="field"><label>Obra</label><input id="editAnime"></div>
-<div class="field"><label>📸 Trocar foto (opcional)</label><input id="editImage" type="file" accept="image/*"></div>
+<div class="field"><label>📸 Trocar foto (se necessário)</label><input id="editImage" type="file" accept="image/*"></div>
 <div class="field"><label>Status</label><select id="editStatus"><option value="Aberta">🟢 Aberta</option><option value="Fechada">🔴 Fechada</option></select></div>
 <div class="modal-actions"><button class="action" onclick="closeModal()">Cancelar</button><button class="primary" onclick="saveEdit()">Salvar</button></div></div></div>
 <div id="toastContainer" class="toast-container"></div>
@@ -195,7 +195,7 @@ window.renderVagas=function(){
  grid.innerHTML=data.map(v=>{
   const closed=["fechada","fechado","ocupado"].includes(normalize(v.status));
   return `<div class="vaga ${closed?"closed":""}">
-  ${v.imageUrl?`<img src="${escapeHTML(v.imageUrl)}" alt="${escapeHTML(v.character)}">`:""}
+  ${(v.imageUrl||v.photoUrl)?`<img src="${escapeHTML(v.imageUrl||v.photoUrl)}" alt="${escapeHTML(v.character)}">`:""}
   <h3>${escapeHTML(v.character)}</h3><div class="anime">${escapeHTML(v.anime||"Obra não informada")}</div>
   <span class="status ${closed?"closed-status":"open"}">${closed?"🔒 FECHADA":"🟢 ABERTA"}</span>
   <p class="muted">👤 ${escapeHTML(v.member||"Livre")}</p>
@@ -209,11 +209,14 @@ window.renderVagas=function(){
 window.addVaga=async function(){
  const character=document.getElementById("vagaCharacter").value.trim(),anime=document.getElementById("vagaAnime").value.trim(),status=document.getElementById("vagaStatus").value,file=document.getElementById("vagaImage").files[0];
  if(!character){toast("Digite o nome do personagem.");return}
+ if(!anime){toast("Informe a obra.");return}
+ if(!file){toast("Envie a foto do personagem.");return}
  if(mergedVagas().some(v=>normalize(v.character)===normalize(character))){toast("Esse personagem já está cadastrado.");return}
  try{
   const image=await uploadImage(file,`vagas/${normalize(character).replace(/[^a-z0-9_-]/g,"-")}`);
-  await addDoc(collection(db,"vagas"),{character,anime,obra:anime,status,member:status==="Aberta"?"Livre":"Ocupado",...(image||{}),createdAt:serverTimestamp(),createdBy:currentAdm?.name||""});
-  if(status==="Fechada")await setDoc(doc(db,"occupiedCharacters",normalize(character)),{character,anime,obra:anime,member:"Ocupado",...(image||{}),createdAt:serverTimestamp()});
+  const savedImage={...(image||{}),photoUrl:image?.imageUrl||"",photoPublicId:image?.imagePublicId||""};
+  await addDoc(collection(db,"vagas"),{character,anime,obra:anime,status,member:status==="Aberta"?"Livre":"Ocupado",...savedImage,createdAt:serverTimestamp(),createdBy:currentAdm?.name||""});
+  if(status==="Fechada")await setDoc(doc(db,"occupiedCharacters",normalize(character)),{character,anime,obra:anime,member:"Ocupado",...savedImage,createdAt:serverTimestamp()});
   document.getElementById("vagaCharacter").value="";document.getElementById("vagaAnime").value="";document.getElementById("vagaImage").value="";document.getElementById("vagaStatus").value="Aberta";toast("Vaga adicionada!");
  }catch(e){console.error(e);toast(e.message||"Erro ao adicionar vaga.")}
 };
@@ -267,8 +270,8 @@ window.saveEdit=async function(){
  try{
   const ref=doc(db,"vagas",id),snap=await getDoc(ref);if(!snap.exists())return;const old=snap.data();
   if(mergedVagas().some(v=>v.id!==id&&normalize(v.character)===normalize(character))){toast("Esse personagem já está cadastrado.");return}
-  let image={imageUrl:old.imageUrl||"",imagePublicId:old.imagePublicId||""};
-  if(file){const uploaded=await uploadImage(file,`vagas/${normalize(character).replace(/[^a-z0-9_-]/g,"-")}`);image=uploaded}
+  let image={imageUrl:old.imageUrl||old.photoUrl||"",imagePublicId:old.imagePublicId||old.photoPublicId||"",photoUrl:old.photoUrl||old.imageUrl||"",photoPublicId:old.photoPublicId||old.imagePublicId||""};
+  if(file){const uploaded=await uploadImage(file,`vagas/${normalize(character).replace(/[^a-z0-9_-]/g,"-")}`);image={...uploaded,photoUrl:uploaded.imageUrl||"",photoPublicId:uploaded.imagePublicId||""}}
   await updateDoc(ref,{character,anime,obra:anime,status,member:status==="Aberta"?"Livre":old.member||"Ocupado",...image,updatedAt:serverTimestamp()});
   if(old.character&&normalize(old.character)!==normalize(character))await deleteDoc(doc(db,"occupiedCharacters",normalize(old.character)));
   if(status==="Fechada")await setDoc(doc(db,"occupiedCharacters",normalize(character)),{character,anime,obra:anime,member:old.member||"Ocupado",...image,updatedAt:serverTimestamp()});
@@ -301,16 +304,16 @@ window.approveRequest=async function(id){
   if(characterAlreadyTaken(character)){toast("🔒 Esse personagem já está ocupado/fechado. Aprovação bloqueada.");return}
 
   const vaga=vagasData.find(v=>normalize(v.character)===normalize(character));
-  const imageUrl=vaga?.imageUrl||"",imagePublicId=vaga?.imagePublicId||"";
+  const imageUrl=r.photoUrl||vaga?.imageUrl||vaga?.photoUrl||"",imagePublicId=r.photoPublicId||vaga?.imagePublicId||vaga?.photoPublicId||"";
   await runTransaction(db,async tx=>{
    const occRef=doc(db,"occupiedCharacters",normalize(character)),occ=await tx.get(occRef);
    if(occ.exists())throw new Error("Esse personagem já foi ocupado.");
    const freshMembers=membersData.filter(m=>normalize(m.name)===normalize(name));
    if(freshMembers.length>=2)throw new Error("Este membro já possui 2 personagens.");
-   tx.set(occRef,{character,anime:r.anime||r.obra||"",obra:r.obra||r.anime||"",member:name,imageUrl,imagePublicId,photoUrl:r.photoUrl||"",photoPublicId:r.photoPublicId||"",approvedBy:currentAdm?.name||"",approvedAt:serverTimestamp()});
+   tx.set(occRef,{character,anime:r.anime||r.obra||"",obra:r.obra||r.anime||"",member:name,imageUrl,imagePublicId,photoUrl:imageUrl,photoPublicId:imagePublicId,approvedBy:currentAdm?.name||"",approvedAt:serverTimestamp()});
    const memberRef=doc(collection(db,"members"));
-   tx.set(memberRef,{name,age:r.age||"",character,anime:r.anime||r.obra||"",obra:r.obra||r.anime||"",slot:freshMembers.length+1,photoUrl:r.photoUrl||"",photoPublicId:r.photoPublicId||"",createdAt:serverTimestamp(),approvedBy:currentAdm?.name||""});
-   if(vaga)tx.update(doc(db,"vagas",vaga.id),{status:"Fechada",member:name,updatedAt:serverTimestamp()});
+   tx.set(memberRef,{name,age:r.age||"",character,anime:r.anime||r.obra||"",obra:r.obra||r.anime||"",slot:freshMembers.length+1,photoUrl:imageUrl,photoPublicId:imagePublicId,createdAt:serverTimestamp(),approvedBy:currentAdm?.name||""});
+   if(vaga)tx.update(doc(db,"vagas",vaga.id),{status:"Fechada",member:name,imageUrl,photoUrl:imageUrl,imagePublicId,photoPublicId,updatedAt:serverTimestamp()});
    tx.update(requestRef,{status:"Aprovada",approvedBy:currentAdm?.name||"",approvedAt:serverTimestamp()});
   });
   toast("Solicitação aprovada!");
