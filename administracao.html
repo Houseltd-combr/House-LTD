@@ -1,4670 +1,7097 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
 <meta charset="UTF-8">
 
 <meta name="viewport"
-content="width=device-width,initial-scale=1.0">
+content="width=device-width, initial-scale=1.0">
 
-<title>House LTD — Administração</title>
+<title>Administração • House LTD</title>
 
 <style>
 
+/* =========================================================
+   HOUSE LTD — ADMINISTRAÇÃO
+   MESMA IDENTIDADE VISUAL DO INDEX
+========================================================= */
+
 :root{
-  --bg:#07060b;
-  --bg2:#0e0a13;
-  --panel:rgba(21,16,28,.88);
-  --panel2:rgba(30,23,39,.80);
-  --purple:#9b6dcc;
-  --purple2:#c59bea;
-  --wine:#743651;
-  --silver:#ddd5e2;
-  --muted:#918895;
-  --green:#8fc3a3;
-  --red:#ca7180;
-  --border:rgba(196,155,234,.16);
-  --shadow:0 18px 55px rgba(0,0,0,.45);
+
+    --bg:#08050c;
+    --bg2:#100815;
+
+    --purple:#8d4cff;
+    --purple2:#c58cff;
+    --purple-dark:#35155c;
+
+    --burgundy:#4d1028;
+
+    --silver:#d8d3e2;
+    --white:#fffaff;
+
+    --text:#eee8f5;
+    --muted:#aaa0b7;
+
+    --card:rgba(20,11,27,.84);
+
+    --border:
+        rgba(177,111,255,.30);
+
 }
 
 *{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
-html,
+html{
+    scroll-behavior:smooth;
+}
+
 body{
-  min-height:100%;
+
+    min-height:100vh;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color:var(--text);
+
+    background:
+
+        radial-gradient(
+            circle at 50% -10%,
+            rgba(124,45,170,.32),
+            transparent 35%
+        ),
+
+        radial-gradient(
+            circle at 10% 80%,
+            rgba(85,10,45,.28),
+            transparent 35%
+        ),
+
+        linear-gradient(
+            145deg,
+            #050307,
+            #0c0611 45%,
+            #120713
+        );
+
+    overflow-x:hidden;
+
 }
 
-body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:
-    radial-gradient(circle at 70% 10%,rgba(120,75,150,.15),transparent 30%),
-    radial-gradient(circle at 15% 80%,rgba(90,40,70,.12),transparent 32%),
-    linear-gradient(135deg,#050409,#0d0912 55%,#08060c);
-  color:var(--silver);
-  overflow-x:hidden;
+
+/* =========================================================
+   LUZ
+========================================================= */
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    inset:-50%;
+
+    pointer-events:none;
+
+    z-index:0;
+
+    background:
+
+        linear-gradient(
+            115deg,
+            transparent 35%,
+            rgba(203,151,255,.04) 43%,
+            rgba(255,255,255,.10) 48%,
+            rgba(165,87,255,.05) 53%,
+            transparent 62%
+        );
+
+    animation:
+        lightSweep
+        9s
+        linear
+        infinite;
+
 }
 
-/* =========================
-   NÉVOA DO PAINEL
-========================= */
+@keyframes lightSweep{
 
-.admin-fog{
-  position:fixed;
-  pointer-events:none;
-  z-index:1;
-  border-radius:50%;
-  filter:blur(60px);
-  opacity:.12;
+    0%{
+        transform:translateX(-25%);
+    }
+
+    50%{
+        transform:translateX(25%);
+    }
+
+    100%{
+        transform:translateX(75%);
+    }
+
 }
 
-.admin-fog.fog-a{
-  width:65vw;
-  height:30vh;
-  left:-25%;
-  top:35%;
-  background:rgba(205,195,215,.14);
-  animation:adminFogA 24s ease-in-out infinite alternate;
+
+/* =========================================================
+   NÉVOA
+========================================================= */
+
+.fog{
+
+    position:fixed;
+
+    left:-20%;
+
+    width:140%;
+
+    height:260px;
+
+    pointer-events:none;
+
+    z-index:1;
+
+    background:
+
+        radial-gradient(
+            ellipse,
+            rgba(205,190,220,.10) 0%,
+            rgba(135,113,151,.06) 35%,
+            transparent 70%
+        );
+
+    filter:blur(25px);
+
+    opacity:.7;
+
 }
 
-.admin-fog.fog-b{
-  width:60vw;
-  height:32vh;
-  right:-25%;
-  bottom:5%;
-  background:rgba(140,90,165,.13);
-  animation:adminFogB 28s ease-in-out infinite alternate;
+.fog.one{
+
+    bottom:5%;
+
+    animation:
+        fogMove
+        18s
+        ease-in-out
+        infinite
+        alternate;
+
 }
 
-@keyframes adminFogA{
-  from{transform:translateX(-5%)}
-  to{transform:translateX(35%)}
+.fog.two{
+
+    bottom:22%;
+
+    opacity:.38;
+
+    animation:
+        fogMove2
+        24s
+        ease-in-out
+        infinite
+        alternate;
+
 }
 
-@keyframes adminFogB{
-  from{transform:translateX(15%)}
-  to{transform:translateX(-30%)}
+.fog.three{
+
+    top:18%;
+
+    opacity:.18;
+
+    animation:
+        fogMove
+        30s
+        ease-in-out
+        infinite
+        alternate-reverse;
+
 }
 
-.mist-light{
-  position:fixed;
-  width:260px;
-  height:260px;
-  border-radius:50%;
-  pointer-events:none;
-  z-index:1;
-  filter:blur(80px);
-  background:#ad7dca;
-  opacity:.07;
-  animation:mistPulse 6s ease-in-out infinite;
+@keyframes fogMove{
+
+    from{
+        transform:translateX(-12%);
+    }
+
+    to{
+        transform:translateX(12%);
+    }
+
 }
 
-.mist-light.one{
-  left:-100px;
-  top:10%;
+@keyframes fogMove2{
+
+    from{
+        transform:
+            translateX(15%)
+            scale(1.2);
+    }
+
+    to{
+        transform:
+            translateX(-15%)
+            scale(1.05);
+    }
+
 }
 
-.mist-light.two{
-  right:-100px;
-  bottom:10%;
-  animation-delay:3s;
+
+/* =========================================================
+   DECORAÇÕES
+========================================================= */
+
+.decorations{
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:2;
+
+    overflow:hidden;
+
 }
 
-@keyframes mistPulse{
-  0%,100%{
-    opacity:.04;
-    transform:scale(.85);
-  }
-  50%{
-    opacity:.16;
-    transform:scale(1.15);
-  }
+
+/* LUA */
+
+.moon{
+
+    position:absolute;
+
+    top:65px;
+
+    right:7%;
+
+    width:95px;
+
+    height:95px;
+
+    border-radius:50%;
+
+    background:
+
+        radial-gradient(
+            circle at 35% 30%,
+            #ffffff,
+            #ddd5eb 48%,
+            #a48dbd 100%
+        );
+
+    box-shadow:
+
+        0 0 20px
+        rgba(235,220,255,.65),
+
+        0 0 60px
+        rgba(174,112,255,.35);
+
+    animation:
+        moonPulse
+        4s
+        ease-in-out
+        infinite;
+
 }
 
-/* luz passando */
+.moon::after{
 
-body::after{
-  content:"";
-  position:fixed;
-  inset:-50%;
-  pointer-events:none;
-  z-index:1;
-  background:
-    linear-gradient(
-      105deg,
-      transparent 35%,
-      rgba(225,215,230,.025) 46%,
-      rgba(190,145,220,.055) 50%,
-      transparent 65%
-    );
-  filter:blur(25px);
-  animation:adminSweep 17s linear infinite;
+    content:"";
+
+    position:absolute;
+
+    width:25px;
+
+    height:25px;
+
+    top:20px;
+
+    left:22px;
+
+    border-radius:50%;
+
+    background:
+        rgba(110,88,126,.14);
+
+    box-shadow:
+
+        35px 20px 0
+        rgba(110,88,126,.10),
+
+        20px 50px 0
+        rgba(110,88,126,.08);
+
 }
 
-@keyframes adminSweep{
-  from{
-    transform:translateX(-25%);
-  }
-  to{
-    transform:translateX(25%);
-  }
+@keyframes moonPulse{
+
+    50%{
+
+        box-shadow:
+
+            0 0 30px
+            rgba(235,220,255,.8),
+
+            0 0 80px
+            rgba(174,112,255,.45);
+
+    }
+
 }
 
-/* =========================
-   LOADING
-========================= */
 
-#loadingScreen{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  background:
-    radial-gradient(circle,rgba(100,65,125,.18),transparent 35%),
-    #050409;
+/* MORCEGOS */
+
+.bat{
+
+    position:absolute;
+
+    font-size:27px;
+
+    filter:
+        grayscale(1)
+        brightness(.45);
+
+    opacity:.75;
+
+    animation:
+        batFloat
+        5s
+        ease-in-out
+        infinite;
+
 }
 
-.loading-moon{
-  width:72px;
-  height:72px;
-  border-radius:50%;
-  background:
-    radial-gradient(circle at 35% 30%,#f0ebf2,#aaa1ae);
-  box-shadow:
-    0 0 25px rgba(220,210,225,.2),
-    0 0 65px rgba(150,105,180,.15);
-  animation:loadingPulse 4s ease-in-out infinite;
-  margin-bottom:25px;
+.bat.one{
+
+    top:55px;
+    left:9%;
+
 }
 
-@keyframes loadingPulse{
-  0%,100%{
-    transform:scale(.94);
-    box-shadow:0 0 20px rgba(220,210,225,.12);
-  }
-  50%{
-    transform:scale(1.06);
-    box-shadow:0 0 42px rgba(220,210,225,.3);
-  }
+.bat.two{
+
+    top:150px;
+    left:30%;
+
+    font-size:20px;
+
+    animation-delay:1s;
+
 }
 
-#loadingText{
-  font-size:12px;
-  letter-spacing:3px;
-  color:#cfc6d4;
+.bat.three{
+
+    top:105px;
+    right:25%;
+
+    font-size:18px;
+
+    animation-delay:2s;
+
 }
 
-.progress-container{
-  width:220px;
-  height:3px;
-  background:rgba(255,255,255,.07);
-  margin-top:20px;
-  overflow:hidden;
+.bat.four{
+
+    top:280px;
+    right:8%;
+
+    font-size:23px;
+
+    animation-delay:.5s;
+
 }
 
-#progressBar{
-  width:0%;
-  height:100%;
-  background:var(--purple2);
-  box-shadow:0 0 12px var(--purple2);
-  transition:width .2s;
+.bat.five{
+
+    top:390px;
+    left:5%;
+
+    font-size:19px;
+
+    animation-delay:2.5s;
+
 }
 
-/* =========================
-   LOGIN
-========================= */
+@keyframes batFloat{
 
-#loginScreen{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
+    0%,100%{
+
+        transform:
+            translateY(0)
+            rotate(-3deg);
+
+    }
+
+    50%{
+
+        transform:
+            translateY(-14px)
+            rotate(3deg);
+
+    }
+
 }
 
-.login-box{
-  position:relative;
-  z-index:3;
-  width:min(420px,100%);
-  background:
-    linear-gradient(
-      145deg,
-      rgba(30,22,40,.94),
-      rgba(10,8,14,.96)
-    );
-  border:1px solid var(--border);
-  border-radius:22px;
-  padding:35px;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(15px);
+
+/* TEIAS */
+
+.web{
+
+    position:absolute;
+
+    width:150px;
+
+    height:150px;
+
+    opacity:.45;
+
 }
 
-.login-symbol{
-  width:65px;
-  height:65px;
-  margin:0 auto 20px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border:1px solid rgba(210,195,220,.25);
-  font-size:26px;
-  animation:loginPulse 4s ease-in-out infinite;
+.web::before,
+.web::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:50%;
+
+    background:
+
+        repeating-radial-gradient(
+            circle,
+            transparent 0 18px,
+            rgba(230,218,241,.7) 19px 20px,
+            transparent 21px 35px
+        );
+
 }
 
-@keyframes loginPulse{
-  0%,100%{box-shadow:0 0 15px rgba(170,120,200,.08)}
-  50%{box-shadow:0 0 35px rgba(170,120,200,.25)}
+.web::after{
+
+    transform:rotate(45deg);
+
 }
 
-.login-box h1{
-  text-align:center;
-  font-size:24px;
-  margin-bottom:8px;
+.web.tl{
+
+    top:-20px;
+    left:-20px;
+
 }
 
-.login-box h1 span{
-  color:var(--purple2);
+.web.tr{
+
+    top:-20px;
+    right:-20px;
+
+    transform:scaleX(-1);
+
 }
 
-.login-box .subtitle{
-  text-align:center;
-  color:var(--muted);
-  font-size:12px;
-  margin-bottom:28px;
+.web.bl{
+
+    bottom:-25px;
+    left:-25px;
+
+    transform:scaleY(-1);
+
 }
 
-.login-field{
-  margin-bottom:15px;
+.web.br{
+
+    bottom:-25px;
+    right:-25px;
+
+    transform:scale(-1);
+
 }
 
-.login-field label{
-  display:block;
-  color:#aaa1ae;
-  font-size:12px;
-  margin-bottom:7px;
+
+/* ARANHAS */
+
+.spider{
+
+    position:absolute;
+
+    font-size:25px;
+
+    filter:grayscale(1);
+
+    opacity:.8;
+
+    animation:
+        spiderSwing
+        4s
+        ease-in-out
+        infinite;
+
 }
 
-.login-field input{
-  width:100%;
-  padding:13px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:rgba(5,4,8,.75);
-  color:white;
-  outline:none;
+.spider::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:1px;
+
+    height:80px;
+
+    background:
+        rgba(220,210,230,.45);
+
+    left:50%;
+
+    bottom:100%;
+
 }
 
-.login-field input:focus{
-  border-color:rgba(196,155,234,.5);
-  box-shadow:0 0 18px rgba(155,109,204,.09);
+.spider.one{
+
+    top:5px;
+    left:17%;
+
 }
 
-.login-button{
-  width:100%;
-  padding:14px;
-  border:1px solid rgba(196,155,234,.28);
-  border-radius:12px;
-  background:linear-gradient(135deg,#694b80,#402c4d);
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-  transition:.25s;
+.spider.two{
+
+    top:80px;
+    right:15%;
+
+    animation-delay:1.5s;
+
 }
 
-.login-button:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 30px rgba(90,55,110,.25);
+.spider.three{
+
+    top:45%;
+    left:2%;
+
+    animation-delay:2s;
+
 }
 
-#loginError{
-  min-height:20px;
-  color:#d58b98;
-  text-align:center;
-  font-size:12px;
-  margin-top:13px;
+@keyframes spiderSwing{
+
+    0%,100%{
+
+        transform:
+            rotate(-5deg);
+
+    }
+
+    50%{
+
+        transform:
+            rotate(5deg)
+            translateY(10px);
+
+    }
+
 }
 
-/* =========================
-   APP
-========================= */
 
-#app{
-  display:none;
-  position:relative;
-  z-index:2;
+/* POÇÕES */
+
+.potion{
+
+    position:absolute;
+
+    width:28px;
+
+    height:38px;
+
+    border:
+        2px solid
+        rgba(220,190,255,.55);
+
+    border-radius:
+        7px 7px 9px 9px;
+
+    background:
+
+        linear-gradient(
+            to top,
+            rgba(148,43,193,.75) 0 60%,
+            rgba(35,15,50,.45) 61%
+        );
+
+    box-shadow:
+        0 0 10px
+        rgba(171,79,255,.45);
+
 }
 
-.sidebar{
-  position:fixed;
-  left:0;
-  top:0;
-  bottom:0;
-  width:245px;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(18,13,24,.97),
-      rgba(8,6,11,.98)
-    );
-  border-right:1px solid var(--border);
-  padding:25px 15px;
-  z-index:20;
-  overflow-y:auto;
+.potion::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:12px;
+
+    height:8px;
+
+    top:-9px;
+
+    left:6px;
+
+    border:
+        2px solid
+        rgba(220,190,255,.55);
+
+    border-bottom:0;
+
+    border-radius:
+        4px 4px 0 0;
+
+    background:#17101c;
+
+}
+
+.potion::after{
+
+    content:"✦";
+
+    position:absolute;
+
+    color:#fff;
+
+    font-size:10px;
+
+    left:8px;
+
+    top:17px;
+
+    animation:
+        potionGlow
+        2s
+        infinite;
+
+}
+
+.potion.one{
+
+    bottom:15%;
+    left:8%;
+
+    transform:rotate(-8deg);
+
+}
+
+.potion.two{
+
+    bottom:10%;
+    right:10%;
+
+    transform:
+        rotate(9deg)
+        scale(.85);
+
+}
+
+.potion.three{
+
+    top:45%;
+    right:4%;
+
+    transform:
+        rotate(-5deg)
+        scale(.7);
+
+}
+
+@keyframes potionGlow{
+
+    50%{
+        opacity:.25;
+    }
+
+}
+
+
+/* VELAS */
+
+.candle{
+
+    position:absolute;
+
+    width:14px;
+
+    height:35px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            #ddd4df,
+            #8f8397,
+            #e9e0ea
+        );
+
+    border-radius:2px;
+
+    box-shadow:
+        0 0 8px
+        rgba(255,216,135,.25);
+
+}
+
+.candle::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:8px;
+
+    height:13px;
+
+    left:3px;
+
+    top:-13px;
+
+    border-radius:
+        50% 50% 45% 45%;
+
+    background:#d4a4ff;
+
+    box-shadow:
+
+        0 0 12px #a65cff,
+
+        0 0 25px
+        rgba(164,92,255,.55);
+
+    animation:
+        flame
+        1.2s
+        ease-in-out
+        infinite
+        alternate;
+
+}
+
+.candle.one{
+
+    left:20%;
+    bottom:8%;
+
+}
+
+.candle.two{
+
+    right:23%;
+    bottom:13%;
+
+    transform:scale(.75);
+
+}
+
+@keyframes flame{
+
+    from{
+
+        transform:
+            scale(.85)
+            rotate(-4deg);
+
+    }
+
+    to{
+
+        transform:
+            scale(1.1)
+            rotate(4deg);
+
+    }
+
+}
+
+
+/* =========================================================
+   CONTEÚDO
+========================================================= */
+
+header,
+main,
+section,
+footer{
+
+    position:relative;
+
+    z-index:5;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header{
+
+    padding:
+        20px 5%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+    background:
+        rgba(5,3,8,.72);
+
+    border-bottom:
+        1px solid
+        rgba(190,130,255,.18);
+
+    backdrop-filter:
+        blur(12px);
+
+    position:sticky;
+
+    top:0;
+
+    z-index:20;
+
 }
 
 .logo{
-  text-align:center;
-  padding:8px 0 28px;
+
+    font-weight:900;
+
+    letter-spacing:3px;
+
+    font-size:20px;
+
+    color:#f6eefe;
+
+    text-shadow:
+        0 0 12px
+        rgba(173,87,255,.8);
+
 }
 
-.logo h1{
-  font-size:22px;
-  letter-spacing:2px;
+.logo span{
+
+    color:#b978ff;
+
 }
 
-.logo h1 span{
-  color:var(--purple2);
+.header-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
 }
 
-.logo p{
-  font-size:10px;
-  color:#766e7b;
-  letter-spacing:2px;
-  margin-top:6px;
+.back-btn{
+
+    padding:9px 13px;
+
+    border-radius:10px;
+
+    border:
+        1px solid
+        rgba(193,116,255,.45);
+
+    background:
+        rgba(111,43,151,.20);
+
+    color:#e1c5ff;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+    font-size:12px;
+
+    transition:.25s;
+
 }
 
-.current-adm{
-  padding:13px;
-  border:1px solid rgba(196,155,234,.1);
-  border-radius:14px;
-  background:rgba(255,255,255,.025);
-  margin-bottom:20px;
+.back-btn:hover{
+
+    background:
+        rgba(139,76,255,.28);
+
+    border-color:
+        rgba(211,155,255,.7);
+
+    transform:
+        translateY(-2px);
+
 }
 
-.current-adm strong{
-  display:block;
-  font-size:13px;
-  color:#ddd4e2;
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+#loginScreen{
+
+    min-height:
+        calc(100vh - 70px);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:40px 5%;
+
 }
 
-.current-adm small{
-  display:block;
-  margin-top:5px;
-  color:#817987;
-  font-size:10px;
+.login-box{
+
+    width:
+        min(430px,100%);
+
+    padding:35px 28px;
+
+    border-radius:24px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(35,17,45,.94),
+            rgba(10,6,14,.96)
+        );
+
+    border:
+        1px solid
+        rgba(183,108,255,.30);
+
+    box-shadow:
+
+        0 20px 70px
+        rgba(0,0,0,.45),
+
+        0 0 35px
+        rgba(130,55,190,.12);
+
+    text-align:center;
+
 }
 
-.nav{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
+.login-icon{
+
+    font-size:55px;
+
+    margin-bottom:10px;
+
+    filter:
+        drop-shadow(
+            0 0 12px
+            rgba(178,91,255,.55)
+        );
+
+    animation:
+        loginFloat
+        4s
+        ease-in-out
+        infinite;
+
 }
 
-.nav-btn{
-  width:100%;
-  border:1px solid transparent;
-  background:transparent;
-  color:#948b9a;
-  text-align:left;
-  padding:12px;
-  border-radius:11px;
-  cursor:pointer;
-  transition:.2s;
+@keyframes loginFloat{
+
+    50%{
+        transform:translateY(-8px);
+    }
+
 }
 
-.nav-btn:hover{
-  color:#ddd5e3;
-  background:rgba(255,255,255,.025);
+.login-box h1{
+
+    font-size:34px;
+
+    letter-spacing:-1px;
+
+    color:#fffaff;
+
 }
 
-.nav-btn.active{
-  color:#eee6f1;
-  background:rgba(155,109,204,.11);
-  border-color:rgba(196,155,234,.13);
+.login-box h1 span{
+
+    color:#ad68ff;
+
+    text-shadow:
+        0 0 18px
+        rgba(174,91,255,.65);
+
 }
 
-.logout-btn{
-  margin-top:20px;
-  color:#b87b88;
+.login-box p{
+
+    color:#9f94a8;
+
+    font-size:12px;
+
+    line-height:1.6;
+
+    margin:
+        10px 0 25px;
+
 }
 
-.main{
-  margin-left:245px;
-  padding:30px;
-  min-height:100vh;
+.login-field{
+
+    text-align:left;
+
+    margin-bottom:15px;
+
 }
 
-.page{
-  display:none;
+.login-field label{
+
+    display:block;
+
+    margin-bottom:7px;
+
+    color:#c9b9d2;
+
+    font-size:12px;
+
 }
 
-.page.active{
-  display:block;
+.password-wrap{
+
+    position:relative;
+
 }
 
-.page-header{
-  margin-bottom:25px;
+.password-wrap input{
+
+    padding-right:48px;
+
 }
 
-.page-header h2{
-  font-size:28px;
-  color:#eee7f0;
+.show-password{
+
+    position:absolute;
+
+    right:8px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:34px;
+
+    height:34px;
+
+    border:0;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    background:
+        rgba(255,255,255,.04);
+
+    color:#c9a8e8;
+
 }
 
-.page-header p{
-  color:#837b89;
-  font-size:13px;
-  margin-top:7px;
+.show-password:hover{
+
+    background:
+        rgba(180,100,255,.12);
+
 }
 
-/* =========================
-   STATS
-========================= */
+.login-button{
+
+    width:100%;
+
+    border:0;
+
+    cursor:pointer;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    color:white;
+
+    font-weight:bold;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #7131b6,
+            #a752d8
+        );
+
+    box-shadow:
+        0 0 20px
+        rgba(153,75,224,.3);
+
+    transition:.25s;
+
+}
+
+.login-button:hover{
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 0 30px
+        rgba(177,83,255,.55);
+
+}
+
+.login-error{
+
+    display:none;
+
+    margin-top:15px;
+
+    padding:11px;
+
+    border-radius:10px;
+
+    background:
+        rgba(155,37,67,.15);
+
+    color:#ff9db8;
+
+    border:
+        1px solid
+        rgba(255,90,130,.2);
+
+    font-size:12px;
+
+}
+
+.login-error.show{
+
+    display:block;
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+#dashboard{
+
+    display:none;
+
+    min-height:100vh;
+
+}
+
+.dashboard-wrap{
+
+    width:
+        min(1250px,94%);
+
+    margin:auto;
+
+    padding:
+        35px 0 70px;
+
+}
+
+.page-title{
+
+    margin-bottom:25px;
+
+}
+
+.page-title small{
+
+    color:#ad75cf;
+
+    letter-spacing:2px;
+
+    text-transform:uppercase;
+
+    font-size:10px;
+
+}
+
+.page-title h1{
+
+    margin-top:8px;
+
+    font-size:
+        clamp(32px,5vw,54px);
+
+    line-height:1;
+
+    letter-spacing:-2px;
+
+    color:#fffaff;
+
+}
+
+.page-title h1 span{
+
+    color:#ad68ff;
+
+    text-shadow:
+        0 0 18px
+        rgba(174,91,255,.8);
+
+}
+
+.page-title p{
+
+    margin-top:12px;
+
+    color:#9f94a8;
+
+    font-size:13px;
+
+}
+
+
+/* =========================================================
+   NAVEGAÇÃO
+========================================================= */
+
+.tabs{
+
+    display:flex;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+    margin-bottom:22px;
+
+}
+
+.tab{
+
+    border:1px solid
+        rgba(190,130,255,.18);
+
+    background:
+        rgba(255,255,255,.035);
+
+    color:#bdb2c6;
+
+    padding:
+        10px 14px;
+
+    border-radius:11px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+    font-size:12px;
+
+    transition:.25s;
+
+}
+
+.tab:hover{
+
+    background:
+        rgba(190,100,255,.08);
+
+    color:#e2c7f5;
+
+}
+
+.tab.active{
+
+    color:white;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(113,49,182,.75),
+            rgba(167,82,216,.62)
+        );
+
+    border-color:
+        rgba(205,145,255,.48);
+
+    box-shadow:
+        0 0 20px
+        rgba(153,75,224,.18);
+
+}
+
+
+/* =========================================================
+   PÁGINAS
+========================================================= */
+
+.admin-page{
+
+    display:none;
+
+}
+
+.admin-page.active{
+
+    display:block;
+
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.panel{
+
+    padding:24px;
+
+    border-radius:20px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(35,17,45,.88),
+            rgba(13,8,17,.92)
+        );
+
+    border:
+        1px solid
+        var(--border);
+
+    box-shadow:
+        0 15px 45px
+        rgba(0,0,0,.25);
+
+    margin-bottom:18px;
+
+}
+
+.panel-title{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+
+    margin-bottom:18px;
+
+}
+
+.panel-title h2{
+
+    color:#ead9f5;
+
+    font-size:20px;
+
+}
+
+.panel-title p{
+
+    color:#8f8397;
+
+    font-size:11px;
+
+    margin-top:4px;
+
+}
+
+
+/* =========================================================
+   ESTATÍSTICAS
+========================================================= */
 
 .stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-  margin-bottom:25px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            1fr
+        );
+
+    gap:15px;
+
+    margin-bottom:20px;
+
 }
 
 .stat{
-  padding:20px;
-  border-radius:16px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
+
+    position:relative;
+
+    padding:20px;
+
+    border-radius:18px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(39,17,48,.9),
+            rgba(12,7,16,.94)
+        );
+
+    border:
+        1px solid
+        rgba(185,110,255,.25);
+
+    overflow:hidden;
+
+    transition:.25s;
+
+}
+
+.stat:hover{
+
+    transform:
+        translateY(-4px);
+
+    border-color:
+        rgba(207,135,255,.55);
+
+    box-shadow:
+        0 10px 35px
+        rgba(112,44,164,.22);
+
+}
+
+.stat::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:100px;
+
+    height:100px;
+
+    top:-55px;
+
+    right:-45px;
+
+    border-radius:50%;
+
+    background:
+        rgba(155,73,230,.14);
+
+    filter:blur(10px);
+
 }
 
 .stat-icon{
-  font-size:20px;
-  margin-bottom:12px;
+
+    font-size:25px;
+
+    margin-bottom:9px;
+
 }
 
-.stat-value{
-  font-size:28px;
-  font-weight:bold;
-  color:#eee7f0;
+.stat-number{
+
+    font-size:28px;
+
+    font-weight:900;
+
+    color:#f8efff;
+
 }
 
-.stat-name{
-  color:#807886;
-  font-size:11px;
-  margin-top:5px;
+.stat-label{
+
+    color:#928698;
+
+    font-size:11px;
+
+    margin-top:4px;
+
 }
 
-/* =========================
-   BOXES
-========================= */
 
-.box{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:17px;
-  padding:20px;
-  box-shadow:var(--shadow);
-  margin-bottom:20px;
-}
-
-.box h3{
-  font-size:15px;
-  margin-bottom:15px;
-}
-
-.search{
-  width:100%;
-  max-width:400px;
-  padding:12px;
-  border-radius:11px;
-  border:1px solid var(--border);
-  background:rgba(5,4,8,.65);
-  color:white;
-  outline:none;
-  margin-bottom:18px;
-}
-
-/* =========================
-   GRIDS
-========================= */
-
-.vagas-grid,
-.members-grid,
-.admins-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-  gap:15px;
-}
-
-.vaga,
-.member,
-.admin-card{
-  position:relative;
-  background:var(--panel2);
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:15px;
-  transition:.2s;
-}
-
-.vaga:hover,
-.member:hover,
-.admin-card:hover{
-  transform:translateY(-3px);
-  border-color:rgba(196,155,234,.3);
-}
-
-.vaga.closed{
-  opacity:.78;
-}
-
-.vaga img{
-  width:100%;
-  height:190px;
-  object-fit:cover;
-  border-radius:11px;
-  margin-bottom:12px;
-}
-
-.vaga h3,
-.member h3,
-.admin-card h3{
-  font-size:15px;
-  color:#e2dae5;
-  margin-bottom:7px;
-}
-
-.anime{
-  color:#817987;
-  font-size:11px;
-  margin-bottom:10px;
-}
-
-.status{
-  display:inline-block;
-  font-size:10px;
-  border-radius:20px;
-  padding:5px 8px;
-}
-
-.status.open{
-  color:#9bc7ab;
-  background:rgba(100,170,120,.08);
-}
-
-.status.closed-status{
-  color:#ce8d99;
-  background:rgba(180,70,90,.08);
-}
-
-.muted{
-  color:#7e7685;
-  font-size:11px;
-}
-
-.vaga-actions,
-.request-actions{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  margin-top:14px;
-}
-
-.action{
-  border:1px solid rgba(196,155,234,.13);
-  background:rgba(255,255,255,.035);
-  color:#bcb3c2;
-  padding:7px 9px;
-  border-radius:8px;
-  font-size:10px;
-  cursor:pointer;
-}
-
-.action:hover{
-  background:rgba(155,109,204,.1);
-}
-
-.action.success{
-  color:#9bc9aa;
-}
-
-.action.danger{
-  color:#cc7b88;
-}
-
-.empty{
-  padding:35px 20px;
-  text-align:center;
-  color:#756d7c;
-  border:1px dashed rgba(196,155,234,.1);
-  border-radius:13px;
-}
-
-/* =========================
-   FORMS
-========================= */
+/* =========================================================
+   FORMULÁRIOS
+========================================================= */
 
 .form-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:13px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            1fr
+        );
+
+    gap:15px;
+
 }
 
 .field{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:7px;
+
 }
 
 .field.full{
-  grid-column:1/-1;
+
+    grid-column:
+        1 / -1;
+
 }
 
-.field label{
-  font-size:11px;
-  color:#958c9b;
+label{
+
+    color:#c9b9d2;
+
+    font-size:12px;
+
 }
 
-.field input,
-.field select,
-.field textarea{
-  width:100%;
-  padding:11px;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:rgba(5,4,8,.7);
-  color:#ddd5e1;
-  outline:none;
+input,
+textarea,
+select{
+
+    width:100%;
+
+    padding:
+        13px 14px;
+
+    border-radius:10px;
+
+    border:
+        1px solid
+        rgba(195,145,220,.18);
+
+    outline:none;
+
+    background:
+        rgba(5,3,8,.75);
+
+    color:#eee7f2;
+
+    font-family:inherit;
+
 }
 
-.field textarea{
-  min-height:80px;
-  resize:vertical;
+input:focus,
+textarea:focus,
+select:focus{
+
+    border-color:#9e5bd2;
+
+    box-shadow:
+        0 0 12px
+        rgba(152,77,212,.18);
+
 }
 
-.primary{
-  border:1px solid rgba(196,155,234,.25);
-  background:linear-gradient(135deg,#694b80,#402c4d);
-  color:white;
-  padding:12px 18px;
-  border-radius:10px;
-  cursor:pointer;
+textarea{
+
+    min-height:110px;
+
+    resize:vertical;
+
 }
 
-.primary:hover{
-  box-shadow:0 8px 25px rgba(90,55,110,.22);
+input[type="file"]{
+
+    padding:10px;
+
 }
 
-/* =========================
-   REQUESTS
-========================= */
 
-.request{
-  background:var(--panel2);
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:18px;
-  margin-bottom:12px;
+/* =========================================================
+   BOTÕES
+========================================================= */
+
+.btn{
+
+    border:0;
+
+    cursor:pointer;
+
+    padding:
+        11px 15px;
+
+    border-radius:10px;
+
+    font-weight:bold;
+
+    transition:.25s;
+
 }
 
-.request-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:15px;
+.btn:hover{
+
+    transform:
+        translateY(-2px);
+
 }
 
-.request h3{
-  font-size:16px;
-  margin-bottom:5px;
+.btn-primary{
+
+    color:white;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #7131b6,
+            #a752d8
+        );
+
+    box-shadow:
+        0 0 18px
+        rgba(153,75,224,.25);
+
 }
 
-.request p{
-  color:#aaa1ae;
-  font-size:12px;
-  line-height:1.5;
-  margin-top:8px;
+.btn-primary:hover{
+
+    box-shadow:
+        0 0 28px
+        rgba(177,83,255,.48);
+
 }
 
-/* =========================
-   MEMBERS
-========================= */
+.btn-secondary{
 
-.member{
-  min-height:180px;
+    color:#d7c8df;
+
+    background:
+        rgba(255,255,255,.04);
+
+    border:
+        1px solid
+        rgba(200,160,225,.2);
+
 }
 
-.member img{
-  display:block;
-  width:70px;
-  height:70px;
-  object-fit:cover;
-  border-radius:50%;
-  margin-bottom:10px;
+.btn-success{
+
+    color:#c9f5d3;
+
+    background:
+        rgba(62,142,86,.16);
+
+    border:
+        1px solid
+        rgba(100,210,130,.22);
+
 }
 
-.member-delete{
-  position:absolute;
-  right:10px;
-  top:10px;
-  border:0;
-  background:transparent;
-  color:#a76270;
-  cursor:pointer;
+.btn-danger{
+
+    color:#ffb3c6;
+
+    background:
+        rgba(155,37,67,.16);
+
+    border:
+        1px solid
+        rgba(255,90,130,.22);
+
 }
 
-/* =========================
+.btn-small{
+
+    padding:
+        8px 10px;
+
+    font-size:11px;
+
+}
+
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.toolbar{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+
+    margin-bottom:18px;
+
+}
+
+.search{
+
+    flex:
+        1 1 260px;
+
+}
+
+.search input{
+
+    width:100%;
+
+}
+
+
+/* =========================================================
+   VAGAS
+========================================================= */
+
+.vagas-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(250px,1fr)
+        );
+
+    gap:18px;
+
+}
+
+.vaga-card{
+
+    position:relative;
+
+    border-radius:18px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(39,17,48,.9),
+            rgba(12,7,16,.94)
+        );
+
+    border:
+        1px solid
+        rgba(185,110,255,.25);
+
+    overflow:hidden;
+
+    transition:.3s;
+
+}
+
+.vaga-card:hover{
+
+    transform:
+        translateY(-5px);
+
+    border-color:
+        rgba(207,135,255,.55);
+
+    box-shadow:
+        0 10px 35px
+        rgba(112,44,164,.22);
+
+}
+
+.vaga-image{
+
+    width:100%;
+
+    height:145px;
+
+    object-fit:cover;
+
+    display:block;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #1d0d27,
+            #32113d
+        );
+
+}
+
+.vaga-no-image{
+
+    height:145px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:42px;
+
+    background:
+
+        radial-gradient(
+            circle,
+            rgba(140,70,190,.25),
+            transparent 65%
+        );
+
+}
+
+.vaga-content{
+
+    padding:17px;
+
+}
+
+.vaga-content h3{
+
+    color:#ead9f5;
+
+    font-size:18px;
+
+}
+
+.vaga-anime{
+
+    color:#9f94a8;
+
+    font-size:12px;
+
+    margin-top:5px;
+
+}
+
+.vaga-member{
+
+    color:#bca9c8;
+
+    font-size:11px;
+
+    margin-top:8px;
+
+}
+
+.status{
+
+    display:inline-block;
+
+    margin-top:11px;
+
+    padding:
+        5px 9px;
+
+    border-radius:20px;
+
+    font-size:10px;
+
+}
+
+.status.open{
+
+    background:
+        rgba(62,142,86,.15);
+
+    color:#9de0ae;
+
+}
+
+.status.closed{
+
+    background:
+        rgba(119,30,52,.35);
+
+    color:#e99aaa;
+
+}
+
+.vaga-actions{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:7px;
+
+    margin-top:14px;
+
+}
+
+
+/* =========================================================
+   SOLICITAÇÕES
+========================================================= */
+
+.requests-list{
+
+    display:grid;
+
+    gap:13px;
+
+}
+
+.request-card{
+
+    padding:17px;
+
+    border-radius:15px;
+
+    background:
+        rgba(5,3,8,.45);
+
+    border:
+        1px solid
+        rgba(195,145,220,.14);
+
+}
+
+.request-top{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+}
+
+.request-name{
+
+    color:#ead9f5;
+
+    font-weight:bold;
+
+}
+
+.request-info{
+
+    color:#9f94a8;
+
+    font-size:11px;
+
+    line-height:1.7;
+
+    margin-top:8px;
+
+}
+
+.request-photo{
+
+    width:80px;
+
+    height:80px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+
+    border:
+        1px solid
+        rgba(190,130,255,.2);
+
+}
+
+.request-message{
+
+    margin-top:10px;
+
+    padding:11px;
+
+    border-radius:10px;
+
+    background:
+        rgba(255,255,255,.025);
+
+    color:#aaa0b7;
+
+    font-size:11px;
+
+    line-height:1.6;
+
+}
+
+.request-actions{
+
+    display:flex;
+
+    gap:7px;
+
+    flex-wrap:wrap;
+
+    margin-top:13px;
+
+}
+
+
+/* =========================================================
+   MEMBROS
+========================================================= */
+
+.members-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(220px,1fr)
+        );
+
+    gap:15px;
+
+}
+
+.member-card{
+
+    padding:18px;
+
+    border-radius:16px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(35,17,45,.85),
+            rgba(13,8,17,.9)
+        );
+
+    border:
+        1px solid
+        rgba(177,111,255,.22);
+
+}
+
+.member-card h3{
+
+    color:#ead9f5;
+
+    font-size:16px;
+
+}
+
+.member-info{
+
+    margin-top:8px;
+
+    color:#9f94a8;
+
+    font-size:11px;
+
+    line-height:1.7;
+
+}
+
+
+/* =========================================================
    ADMS
-========================= */
+========================================================= */
 
-.profile-box{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  margin-bottom:18px;
+.admins-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(220px,1fr)
+        );
+
+    gap:15px;
+
 }
 
-.profile-box img{
-  width:70px;
-  height:70px;
-  object-fit:cover;
-  border-radius:50%;
-  border:1px solid var(--border);
-  background:#100c14;
+.adm-card{
+
+    padding:19px;
+
+    border-radius:17px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(35,17,45,.88),
+            rgba(13,8,17,.92)
+        );
+
+    border:
+        1px solid
+        rgba(177,111,255,.24);
+
 }
 
-.profile-text h3{
-  margin-bottom:5px;
+.adm-top{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
 }
 
-.admin-photo{
-  width:80px;
-  height:80px;
-  display:block;
-  margin:0 auto 12px;
-  border-radius:50%;
-  object-fit:cover;
-  border:1px solid var(--border);
-  background:#100c14;
+.adm-avatar{
+
+    width:44px;
+
+    height:44px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #7131b6,
+            #a752d8
+        );
+
+    font-weight:900;
+
+    color:#fff;
+
+    box-shadow:
+        0 0 18px
+        rgba(153,75,224,.25);
+
+}
+
+.adm-card h3{
+
+    color:#ead9f5;
+
+    font-size:15px;
+
+}
+
+.adm-role{
+
+    color:#a887bd;
+
+    font-size:10px;
+
+    margin-top:3px;
+
 }
 
 .online-dot{
-  display:inline-block;
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:#625b66;
-  margin-right:5px;
+
+    width:8px;
+
+    height:8px;
+
+    border-radius:50%;
+
+    background:#7cff9a;
+
+    box-shadow:
+        0 0 10px
+        rgba(124,255,154,.7);
+
+    margin-left:auto;
+
 }
 
-.online-dot.on{
-  background:#8bc5a0;
-  box-shadow:0 0 8px rgba(130,200,155,.45);
-}
 
-/* =========================
-   LOGS
-========================= */
-
-.log{
-  padding:11px 0;
-  border-bottom:1px solid rgba(255,255,255,.045);
-  color:#a39aa8;
-  font-size:11px;
-}
-
-.log:last-child{
-  border-bottom:0;
-}
-
-/* =========================
+/* =========================================================
    CHAT
-========================= */
+========================================================= */
 
-.chat-messages{
-  height:430px;
-  overflow-y:auto;
-  padding:15px;
-  border-radius:13px;
-  background:rgba(5,4,8,.45);
-  border:1px solid var(--border);
-  margin-bottom:12px;
+.chat-box{
+
+    height:420px;
+
+    overflow-y:auto;
+
+    padding:15px;
+
+    border-radius:15px;
+
+    background:
+        rgba(5,3,8,.45);
+
+    border:
+        1px solid
+        rgba(195,145,220,.14);
+
 }
 
-.message{
-  max-width:75%;
-  padding:10px 12px;
-  background:rgba(255,255,255,.035);
-  border:1px solid rgba(196,155,234,.08);
-  border-radius:12px;
-  margin-bottom:9px;
+.chat-message{
+
+    margin-bottom:11px;
+
+    max-width:80%;
+
+    padding:10px 12px;
+
+    border-radius:12px;
+
+    background:
+        rgba(100,42,135,.18);
+
+    border:
+        1px solid
+        rgba(177,111,255,.14);
+
 }
 
-.message.me{
-  margin-left:auto;
-  background:rgba(120,75,150,.13);
+.chat-message strong{
+
+    color:#d9adff;
+
+    font-size:11px;
+
 }
 
-.message b{
-  color:#d1c1db;
-  font-size:11px;
+.chat-message p{
+
+    color:#c0b5c8;
+
+    font-size:12px;
+
+    margin-top:4px;
+
+    line-height:1.5;
+
 }
 
-.message div{
-  font-size:12px;
-  color:#c2b9c5;
-  margin-top:5px;
-  line-height:1.45;
-}
+.chat-time{
 
-.message small{
-  display:block;
-  margin-top:6px;
-  color:#6f6875;
-  font-size:9px;
+    color:#776a80;
+
+    font-size:9px;
+
+    margin-top:5px;
+
 }
 
 .chat-form{
-  display:flex;
-  gap:8px;
+
+    display:flex;
+
+    gap:8px;
+
+    margin-top:10px;
+
 }
 
 .chat-form input{
-  flex:1;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:rgba(5,4,8,.7);
-  color:white;
-  outline:none;
+
+    flex:1;
+
 }
 
-.chat-form button{
-  padding:0 18px;
-  border:0;
-  border-radius:10px;
-  background:#624573;
-  color:white;
-  cursor:pointer;
+
+/* =========================================================
+   LOGS
+========================================================= */
+
+.logs{
+
+    display:grid;
+
+    gap:8px;
+
 }
 
-/* =========================
+.log{
+
+    padding:11px 13px;
+
+    border-radius:10px;
+
+    background:
+        rgba(255,255,255,.025);
+
+    border:
+        1px solid
+        rgba(195,145,220,.10);
+
+    color:#a99eae;
+
+    font-size:10px;
+
+}
+
+.log strong{
+
+    color:#d7b0ef;
+
+}
+
+
+/* =========================================================
    MODAL
-========================= */
-
-#editModal{
-  position:fixed;
-  inset:0;
-  z-index:500;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:rgba(0,0,0,.72);
-  backdrop-filter:blur(5px);
-}
-
-#editModal.show{
-  display:flex;
-}
+========================================================= */
 
 .modal{
-  width:min(500px,100%);
-  background:#120d17;
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:23px;
-  box-shadow:var(--shadow);
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:100;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:20px;
+
+    background:
+        rgba(0,0,0,.72);
+
+    backdrop-filter:
+        blur(7px);
+
 }
 
-.modal h3{
-  margin-bottom:18px;
+.modal.show{
+
+    display:flex;
+
+}
+
+.modal-box{
+
+    width:
+        min(650px,100%);
+
+    max-height:
+        90vh;
+
+    overflow-y:auto;
+
+    padding:25px;
+
+    border-radius:22px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            #24132d,
+            #0d0711
+        );
+
+    border:
+        1px solid
+        rgba(190,120,255,.32);
+
+    box-shadow:
+        0 25px 90px
+        rgba(0,0,0,.6);
+
+}
+
+.modal-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    margin-bottom:20px;
+
+}
+
+.modal-header h2{
+
+    color:#ead9f5;
+
+    font-size:20px;
+
+}
+
+.close-modal{
+
+    width:34px;
+
+    height:34px;
+
+    border:0;
+
+    border-radius:9px;
+
+    cursor:pointer;
+
+    background:
+        rgba(255,255,255,.05);
+
+    color:#d6c8dc;
+
+    font-size:18px;
+
 }
 
 .modal-actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:8px;
-  margin-top:18px;
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:8px;
+
+    margin-top:20px;
+
 }
 
-.modal-actions button{
-  padding:10px 15px;
-  border-radius:9px;
-  cursor:pointer;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.04);
-  color:#ccc3d0;
-}
 
-.modal-actions .save{
-  background:#624573;
-  color:white;
-}
-
-/* =========================
+/* =========================================================
    TOAST
-========================= */
+========================================================= */
 
-#toastContainer{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  z-index:1000;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
+#toast{
 
-.toast{
-  min-width:220px;
-  max-width:330px;
-  padding:12px 15px;
-  border-radius:11px;
-  background:#1d1524;
-  border:1px solid rgba(196,155,234,.2);
-  box-shadow:var(--shadow);
-  color:#ded5e1;
-  font-size:12px;
-  animation:toastIn .25s ease;
-}
+    position:fixed;
 
-@keyframes toastIn{
-  from{
+    right:20px;
+
+    bottom:20px;
+
+    z-index:200;
+
+    max-width:330px;
+
+    padding:
+        13px 16px;
+
+    border-radius:12px;
+
+    background:
+        rgba(30,15,38,.96);
+
+    border:
+        1px solid
+        rgba(190,120,255,.35);
+
+    color:#eadff0;
+
+    box-shadow:
+        0 15px 40px
+        rgba(0,0,0,.35);
+
+    transform:
+        translateY(30px);
+
     opacity:0;
-    transform:translateY(10px);
-  }
-  to{
+
+    pointer-events:none;
+
+    transition:.3s;
+
+    font-size:12px;
+
+}
+
+#toast.show{
+
+    transform:
+        translateY(0);
+
     opacity:1;
-    transform:translateY(0);
-  }
+
 }
 
-/* =========================
-   MOBILE
-========================= */
 
-@media(max-width:850px){
+/* =========================================================
+   VAZIO
+========================================================= */
 
-  .sidebar{
-    width:72px;
-    padding:15px 8px;
-  }
+.empty{
 
-  .logo h1{
-    font-size:0;
-  }
+    padding:35px 20px;
 
-  .logo h1::after{
-    content:"LTD";
-    font-size:16px;
-    color:var(--purple2);
-  }
-
-  .logo p,
-  .current-adm,
-  .nav-btn span{
-    display:none;
-  }
-
-  .nav-btn{
     text-align:center;
-    font-size:18px;
-    padding:12px 5px;
-  }
 
-  .main{
-    margin-left:72px;
-    padding:20px 15px;
-  }
+    color:#8f8397;
 
-  .stats{
-    grid-template-columns:repeat(2,1fr);
-  }
+    border:
+        1px dashed
+        rgba(190,130,255,.18);
+
+    border-radius:15px;
+
+    font-size:12px;
 
 }
 
-@media(max-width:550px){
 
-  .stats{
-    grid-template-columns:1fr 1fr;
-    gap:9px;
-  }
+/* =========================================================
+   RESPONSIVO
+========================================================= */
 
-  .stat{
-    padding:14px;
-  }
+@media(max-width:900px){
 
-  .stat-value{
-    font-size:22px;
-  }
+    .stats{
 
-  .form-grid{
-    grid-template-columns:1fr;
-  }
+        grid-template-columns:
+            repeat(2,1fr);
 
-  .field.full{
-    grid-column:auto;
-  }
-
-  .request-head{
-    flex-direction:column;
-  }
-
-  .chat-form{
-    flex-direction:column;
-  }
-
-  .chat-form button{
-    padding:12px;
-  }
+    }
 
 }
 
-@media(prefers-reduced-motion:reduce){
+@media(max-width:700px){
 
-  *,
-  *::before,
-  *::after{
-    animation-duration:.01ms!important;
-    animation-iteration-count:1!important;
-  }
+    header{
+
+        padding:
+            18px 5%;
+
+    }
+
+    .logo{
+
+        font-size:16px;
+
+    }
+
+    .back-btn{
+
+        font-size:10px;
+
+        padding:
+            8px 10px;
+
+    }
+
+    .dashboard-wrap{
+
+        width:92%;
+
+        padding-top:25px;
+
+    }
+
+    .form-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .field.full{
+
+        grid-column:auto;
+
+    }
+
+    .panel{
+
+        padding:18px;
+
+    }
+
+    .chat-form{
+
+        flex-direction:column;
+
+    }
+
+    .moon{
+
+        width:60px;
+
+        height:60px;
+
+        right:8%;
+
+        top:75px;
+
+        opacity:.7;
+
+    }
+
+    .web{
+
+        opacity:.25;
+
+    }
+
+    .bat{
+
+        font-size:20px;
+
+    }
+
+}
+
+@media(max-width:480px){
+
+    .stats{
+
+        grid-template-columns:1fr 1fr;
+
+        gap:9px;
+
+    }
+
+    .stat{
+
+        padding:14px;
+
+    }
+
+    .stat-number{
+
+        font-size:22px;
+
+    }
+
+    .tabs{
+
+        display:grid;
+
+        grid-template-columns:
+            repeat(2,1fr);
+
+    }
+
+    .tab{
+
+        text-align:center;
+
+        padding:10px 7px;
+
+    }
+
+    .login-box{
+
+        padding:
+            28px 18px;
+
+    }
+
+    .page-title h1{
+
+        font-size:36px;
+
+    }
+
+    .request-top{
+
+        flex-direction:column;
+
+    }
 
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div class="mist-light one"></div>
-<div class="mist-light two"></div>
 
-<div class="admin-fog fog-a"></div>
-<div class="admin-fog fog-b"></div>
+<!-- =====================================================
+     DECORAÇÕES
+===================================================== -->
 
-<!-- =========================
-     LOADING
-========================= -->
+<div class="fog one"></div>
+<div class="fog two"></div>
+<div class="fog three"></div>
 
-<div id="loadingScreen">
+<div class="decorations">
 
-  <div class="loading-moon">☾</div>
+    <div class="moon"></div>
 
-  <div id="loadingText">
-    INICIANDO SISTEMA...
-  </div>
+    <div class="web tl"></div>
+    <div class="web tr"></div>
+    <div class="web bl"></div>
+    <div class="web br"></div>
 
-  <div class="progress-container">
-    <div id="progressBar"></div>
-  </div>
+    <div class="bat one">🦇</div>
+    <div class="bat two">🦇</div>
+    <div class="bat three">🦇</div>
+    <div class="bat four">🦇</div>
+    <div class="bat five">🦇</div>
 
-</div>
+    <div class="spider one">🕷️</div>
+    <div class="spider two">🕷️</div>
+    <div class="spider three">🕷️</div>
 
+    <div class="potion one"></div>
+    <div class="potion two"></div>
+    <div class="potion three"></div>
 
-<!-- =========================
-     LOGIN
-========================= -->
-
-<div id="loginScreen">
-
-  <div class="login-box">
-
-    <div class="login-symbol">
-      ☾
-    </div>
-
-    <h1>
-      House <span>LTD</span>
-    </h1>
-
-    <p class="subtitle">
-      PAINEL DE ADMINISTRAÇÃO
-    </p>
-
-    <div class="login-field">
-
-      <label>
-        Nome do ADM
-      </label>
-
-      <input
-        id="loginName"
-        type="text"
-        placeholder="Digite seu nome"
-      >
-
-    </div>
-
-    <div class="login-field">
-
-      <label>
-        Senha
-      </label>
-
-      <input
-        id="loginPassword"
-        type="password"
-        placeholder="Digite sua senha"
-      >
-
-    </div>
-
-    <button
-      class="login-button"
-      onclick="login()"
-    >
-      Entrar na administração
-    </button>
-
-    <div id="loginError"></div>
-
-  </div>
+    <div class="candle one"></div>
+    <div class="candle two"></div>
 
 </div>
 
 
-<!-- =========================
-     APP
-========================= -->
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
-<div id="app">
-
-  <aside class="sidebar">
+<header>
 
     <div class="logo">
-
-      <h1>
-        House <span>LTD</span>
-      </h1>
-
-      <p>
-        ADMINISTRAÇÃO
-      </p>
-
+        HOUSE <span>LTD</span>
     </div>
 
-    <div class="current-adm">
+    <div class="header-right">
 
-      <strong id="currentAdmName">
-        ADM
-      </strong>
-
-      <small id="currentAdmRole">
-        Administrador
-      </small>
-
-    </div>
-
-    <nav class="nav">
-
-      <button
-        class="nav-btn active"
-        onclick="showPage('home',this)"
-      >
-        🏠 <span>Home</span>
-      </button>
-
-      <button
-        class="nav-btn"
-        onclick="showPage('solicitacoes',this)"
-      >
-        📋 <span>Solicitações</span>
-      </button>
-
-      <button
-        class="nav-btn"
-        onclick="showPage('vagas',this)"
-      >
-        🎭 <span>Vagas</span>
-      </button>
-
-      <button
-        class="nav-btn"
-        onclick="showPage('membros',this)"
-      >
-        👥 <span>Membros</span>
-      </button>
-
-      <button
-        class="nav-btn"
-        onclick="showPage('adms',this)"
-      >
-        🛡️ <span>ADMs</span>
-      </button>
-
-      <button
-        class="nav-btn"
-        onclick="showPage('chat',this)"
-      >
-        💬 <span>Chat</span>
-      </button>
-
-      <button
-        class="nav-btn logout-btn"
-        onclick="logout()"
-      >
-        ↪️ <span>Sair</span>
-      </button>
-
-    </nav>
-
-  </aside>
-
-
-  <main class="main">
-
-    <!-- =========================
-         HOME
-    ========================= -->
-
-    <section
-      id="home"
-      class="page active"
-    >
-
-      <div class="page-header">
-
-        <h2>
-          Painel
-        </h2>
-
-        <p>
-          Bem-vindo(a) à administração da House LTD.
-        </p>
-
-      </div>
-
-
-      <div class="stats">
-
-        <div class="stat">
-
-          <div class="stat-icon">
-            👥
-          </div>
-
-          <div
-            id="statMembers"
-            class="stat-value"
-          >
-            0
-          </div>
-
-          <div class="stat-name">
-            MEMBROS
-          </div>
-
-        </div>
-
-
-        <div class="stat">
-
-          <div class="stat-icon">
-            🎭
-          </div>
-
-          <div
-            id="statCharacters"
-            class="stat-value"
-          >
-            0
-          </div>
-
-          <div class="stat-name">
-            PERSONAGENS
-          </div>
-
-        </div>
-
-
-        <div class="stat">
-
-          <div class="stat-icon">
-            📋
-          </div>
-
-          <div
-            id="statRequests"
-            class="stat-value"
-          >
-            0
-          </div>
-
-          <div class="stat-name">
-            SOLICITAÇÕES
-          </div>
-
-        </div>
-
-
-        <div class="stat">
-
-          <div class="stat-icon">
-            🛡️
-          </div>
-
-          <div
-            id="statAdmins"
-            class="stat-value"
-          >
-            0
-          </div>
-
-          <div class="stat-name">
-            ADMS ONLINE
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="box">
-
-        <h3>
-          📜 Últimos acessos
-        </h3>
-
-        <div id="accessLogs">
-          <div class="empty">
-            Nenhum registro ainda.
-          </div>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         SOLICITAÇÕES
-    ========================= -->
-
-    <section
-      id="solicitacoes"
-      class="page"
-    >
-
-      <div class="page-header">
-
-        <h2>
-          Solicitações
-        </h2>
-
-        <p>
-          Analise as fichas enviadas pelos membros.
-        </p>
-
-      </div>
-
-      <div class="box">
-
-        <input
-          id="requestSearch"
-          class="search"
-          type="text"
-          placeholder="Pesquisar nome, personagem ou obra..."
-          oninput="renderRequests()"
+        <a
+            href="index.html"
+            class="back-btn"
         >
+            ← Recepção
+        </a>
 
-        <div id="requestsList">
-          <div class="empty">
-            Carregando solicitações...
-          </div>
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+<section id="loginScreen">
+
+    <div class="login-box">
+
+        <div class="login-icon">
+            🕯️
         </div>
 
-      </div>
+        <h1>
+            Área <span>Administrativa</span>
+        </h1>
+
+        <p>
+            Acesso exclusivo para a equipe
+            da House LTD.
+        </p>
+
+        <div class="login-field">
+
+            <label>
+                Nome do ADM
+            </label>
+
+            <input
+                id="loginName"
+                type="text"
+                placeholder="Digite seu nome"
+                autocomplete="username"
+            >
+
+        </div>
+
+        <div class="login-field">
+
+            <label>
+                Senha
+            </label>
+
+            <div class="password-wrap">
+
+                <input
+                    id="loginPassword"
+                    type="password"
+                    placeholder="Digite sua senha"
+                    autocomplete="current-password"
+                >
+
+                <button
+                    type="button"
+                    class="show-password"
+                    id="showPassword"
+                >
+                    👁
+                </button>
+
+            </div>
+
+        </div>
+
+        <button
+            class="login-button"
+            id="loginButton"
+        >
+            Entrar na Administração
+        </button>
+
+        <div
+            class="login-error"
+            id="loginError"
+        >
+            Nome ou senha incorretos.
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<main id="dashboard">
+
+<div class="dashboard-wrap">
+
+
+    <div class="page-title">
+
+        <small>
+            HOUSE LTD • ADMINISTRAÇÃO
+        </small>
+
+        <h1>
+            Bem-vindo à
+            <span>Administração.</span>
+        </h1>
+
+        <p id="welcomeText">
+            Painel de controle da House LTD.
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         ESTATÍSTICAS
+    ================================================= -->
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                🎭
+            </div>
+
+            <div
+                class="stat-number"
+                id="statMembers"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                Membros
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                🎃
+            </div>
+
+            <div
+                class="stat-number"
+                id="statCharacters"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                Personagens
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                📜
+            </div>
+
+            <div
+                class="stat-number"
+                id="statRequests"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                Solicitações
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                👑
+            </div>
+
+            <div
+                class="stat-number"
+                id="statOnline"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                ADMs online
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         TABS
+    ================================================= -->
+
+    <div class="tabs">
+
+        <button
+            class="tab active"
+            data-page="home"
+        >
+            🏠 Home
+        </button>
+
+        <button
+            class="tab"
+            data-page="requests"
+        >
+            📜 Solicitações
+        </button>
+
+        <button
+            class="tab"
+            data-page="vagas"
+        >
+            🎭 Vagas
+        </button>
+
+        <button
+            class="tab"
+            data-page="members"
+        >
+            👥 Membros
+        </button>
+
+        <button
+            class="tab"
+            data-page="admins"
+        >
+            👑 ADMs
+        </button>
+
+        <button
+            class="tab"
+            data-page="chat"
+        >
+            💬 Chat
+        </button>
+
+    </div>
+
+
+    <!-- =================================================
+         HOME
+    ================================================= -->
+
+    <section
+        class="admin-page active"
+        id="page-home"
+    >
+
+        <div class="panel">
+
+            <div class="panel-title">
+
+                <div>
+
+                    <h2>
+                        🕯️ Central da House
+                    </h2>
+
+                    <p>
+                        Visão geral da administração.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="logs" id="homeLogs">
+
+                <div class="empty">
+                    Carregando atividades...
+                </div>
+
+            </div>
+
+        </div>
 
     </section>
 
 
-    <!-- =========================
-         VAGAS
-    ========================= -->
+    <!-- =================================================
+         SOLICITAÇÕES
+    ================================================= -->
 
     <section
-      id="vagas"
-      class="page"
+        class="admin-page"
+        id="page-requests"
     >
 
-      <div class="page-header">
+        <div class="panel">
 
-        <h2>
-          Vagas
-        </h2>
+            <div class="panel-title">
 
-        <p>
-          Controle os personagens disponíveis e fechados.
-        </p>
+                <div>
 
-      </div>
+                    <h2>
+                        📜 Solicitações de entrada
+                    </h2>
+
+                    <p>
+                        Analise as fichas enviadas
+                        pela recepção.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="toolbar">
+
+                <div class="search">
+
+                    <input
+                        id="requestSearch"
+                        type="text"
+                        placeholder="Pesquisar por nome ou personagem..."
+                    >
+
+                </div>
+
+            </div>
+
+            <div
+                class="requests-list"
+                id="requestsList"
+            >
+
+                <div class="empty">
+                    Carregando solicitações...
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
 
 
-      <div class="box">
+    <!-- =================================================
+         VAGAS
+    ================================================= -->
 
-        <h3>
-          ✦ Adicionar vaga
-        </h3>
+    <section
+        class="admin-page"
+        id="page-vagas"
+    >
+
+        <div class="panel">
+
+            <div class="panel-title">
+
+                <div>
+
+                    <h2>
+                        🎭 Gerenciar vagas
+                    </h2>
+
+                    <p>
+                        Abra, feche, edite ou exclua
+                        personagens.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form id="vagaForm">
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label>
+                            Personagem
+                        </label>
+
+                        <input
+                            id="vagaCharacter"
+                            type="text"
+                            placeholder="Ex: Shinobu"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Anime / Obra
+                        </label>
+
+                        <input
+                            id="vagaAnime"
+                            type="text"
+                            placeholder="Ex: Kimetsu no Yaiba"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Status
+                        </label>
+
+                        <select id="vagaStatus">
+
+                            <option value="open">
+                                Aberta
+                            </option>
+
+                            <option value="closed">
+                                Fechada
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Imagem
+                        </label>
+
+                        <input
+                            id="vagaImage"
+                            type="file"
+                            accept="image/*"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="btn btn-primary"
+                    type="submit"
+                    style="margin-top:18px"
+                >
+                    ✦ Adicionar vaga
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="toolbar">
+
+                <div class="search">
+
+                    <input
+                        id="vagaSearch"
+                        type="text"
+                        placeholder="Pesquisar vagas..."
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="vagas-grid"
+                id="vagasList"
+            >
+
+                <div class="empty">
+                    Carregando vagas...
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         MEMBROS
+    ================================================= -->
+
+    <section
+        class="admin-page"
+        id="page-members"
+    >
+
+        <div class="panel">
+
+            <div class="panel-title">
+
+                <div>
+
+                    <h2>
+                        👥 Membros
+                    </h2>
+
+                    <p>
+                        Membros registrados na House LTD.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="toolbar">
+
+                <div class="search">
+
+                    <input
+                        id="memberSearch"
+                        type="text"
+                        placeholder="Pesquisar membro..."
+                    >
+
+                </div>
+
+            </div>
+
+            <div
+                class="members-grid"
+                id="membersList"
+            >
+
+                <div class="empty">
+                    Carregando membros...
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         ADMS
+    ================================================= -->
+
+    <section
+        class="admin-page"
+        id="page-admins"
+    >
+
+        <div class="panel">
+
+            <div class="panel-title">
+
+                <div>
+
+                    <h2>
+                        👑 Equipe administrativa
+                    </h2>
+
+                    <p>
+                        Equipe responsável pela House LTD.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div
+                class="admins-grid"
+                id="adminsList"
+            ></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         CHAT
+    ================================================= -->
+
+    <section
+        class="admin-page"
+        id="page-chat"
+    >
+
+        <div class="panel">
+
+            <div class="panel-title">
+
+                <div>
+
+                    <h2>
+                        💬 Chat da Administração
+                    </h2>
+
+                    <p>
+                        Comunicação interna da equipe.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="chat-box"
+                id="chatMessages"
+            >
+
+                <div class="empty">
+                    Carregando chat...
+                </div>
+
+            </div>
+
+
+            <form
+                class="chat-form"
+                id="chatForm"
+            >
+
+                <input
+                    id="chatInput"
+                    type="text"
+                    placeholder="Digite uma mensagem..."
+                    autocomplete="off"
+                >
+
+                <button
+                    class="btn btn-primary"
+                    type="submit"
+                >
+                    Enviar
+                </button>
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+</main>
+
+
+<!-- =====================================================
+     MODAL EDITAR VAGA
+===================================================== -->
+
+<div
+    class="modal"
+    id="editModal"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                ✏️ Editar vaga
+            </h2>
+
+            <button
+                class="close-modal"
+                id="closeEdit"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
 
         <div class="form-grid">
 
-          <div class="field">
+            <div class="field">
 
-            <label>
-              Personagem
-            </label>
+                <label>
+                    Personagem
+                </label>
 
-            <input
-              id="vagaCharacter"
-              type="text"
-              placeholder="Nome do personagem"
-            >
+                <input
+                    id="editCharacter"
+                    type="text"
+                >
 
-          </div>
-
-
-          <div class="field">
-
-            <label>
-              Obra / Anime
-            </label>
-
-            <input
-              id="vagaAnime"
-              type="text"
-              placeholder="Nome da obra"
-            >
-
-          </div>
+            </div>
 
 
-          <div class="field">
+            <div class="field">
 
-            <label>
-              Status
-            </label>
+                <label>
+                    Anime / Obra
+                </label>
 
-            <select id="vagaStatus">
+                <input
+                    id="editAnime"
+                    type="text"
+                >
 
-              <option value="Aberta">
-                Aberta
-              </option>
-
-              <option value="Fechada">
-                Fechada
-              </option>
-
-            </select>
-
-          </div>
+            </div>
 
 
-          <div class="field">
+            <div class="field">
 
-            <label>
-              Foto do personagem
-            </label>
+                <label>
+                    Status
+                </label>
 
-            <input
-              id="vagaImage"
-              type="file"
-              accept="image/*"
-            >
+                <select id="editStatus">
 
-          </div>
+                    <option value="open">
+                        Aberta
+                    </option>
+
+                    <option value="closed">
+                        Fechada
+                    </option>
+
+                </select>
+
+            </div>
 
 
-          <div class="field full">
+            <div class="field">
+
+                <label>
+                    Nova imagem
+                </label>
+
+                <input
+                    id="editImage"
+                    type="file"
+                    accept="image/*"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-actions">
 
             <button
-              class="primary"
-              onclick="addVaga()"
+                class="btn btn-secondary"
+                id="cancelEdit"
+                type="button"
             >
-              + Adicionar vaga
+                Cancelar
             </button>
 
-          </div>
+            <button
+                class="btn btn-primary"
+                id="saveEditButton"
+                type="button"
+            >
+                Salvar alterações
+            </button>
 
         </div>
 
-      </div>
-
-
-      <div class="box">
-
-        <input
-          id="vagaSearch"
-          class="search"
-          type="text"
-          placeholder="Pesquisar personagem..."
-          oninput="renderVagas()"
-        >
-
-        <div
-          id="vagasGrid"
-          class="vagas-grid"
-        >
-          <div class="empty">
-            Carregando vagas...
-          </div>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         MEMBROS
-    ========================= -->
-
-    <section
-      id="membros"
-      class="page"
-    >
-
-      <div class="page-header">
-
-        <h2>
-          Membros
-        </h2>
-
-        <p>
-          Personagens aprovados e fichas cadastradas.
-        </p>
-
-      </div>
-
-      <div class="box">
-
-        <input
-          id="memberSearch"
-          class="search"
-          type="text"
-          placeholder="Pesquisar membro ou personagem..."
-          oninput="renderMembers()"
-        >
-
-        <div
-          id="membersGrid"
-          class="members-grid"
-        >
-          <div class="empty">
-            Carregando membros...
-          </div>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         ADMS
-    ========================= -->
-
-    <section
-      id="adms"
-      class="page"
-    >
-
-      <div class="page-header">
-
-        <h2>
-          Administração
-        </h2>
-
-        <p>
-          Administradores da House e status online.
-        </p>
-
-      </div>
-
-
-      <div class="box">
-
-        <h3>
-          ✦ Meu perfil
-        </h3>
-
-        <div id="myProfile"></div>
-
-        <div class="field">
-
-          <label>
-            Foto de perfil
-          </label>
-
-          <input
-            id="adminPhoto"
-            type="file"
-            accept="image/*"
-          >
-
-        </div>
-
-        <br>
-
-        <button
-          class="primary"
-          onclick="saveAdminPhoto()"
-        >
-          Salvar foto
-        </button>
-
-      </div>
-
-
-      <div class="box">
-
-        <h3>
-          🛡️ ADMs
-        </h3>
-
-        <div
-          id="adminsGrid"
-          class="admins-grid"
-        >
-          <div class="empty">
-            Carregando administradores...
-          </div>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         CHAT
-    ========================= -->
-
-    <section
-      id="chat"
-      class="page"
-    >
-
-      <div class="page-header">
-
-        <h2>
-          Chat da Administração
-        </h2>
-
-        <p>
-          Comunicação interna entre os ADMs.
-        </p>
-
-      </div>
-
-
-      <div class="box">
-
-        <div
-          id="chatMessages"
-          class="chat-messages"
-        >
-          <div class="empty">
-            💬 Nenhuma mensagem ainda.
-          </div>
-        </div>
-
-
-        <form
-          class="chat-form"
-          onsubmit="sendMessage(event)"
-        >
-
-          <input
-            id="chatInput"
-            type="text"
-            placeholder="Digite uma mensagem..."
-            autocomplete="off"
-          >
-
-          <button type="submit">
-            Enviar
-          </button>
-
-        </form>
-
-      </div>
-
-    </section>
-
-  </main>
+    </div>
 
 </div>
 
 
-<!-- =========================
-     MODAL EDITAR VAGA
-========================= -->
-
-<div id="editModal">
-
-  <div class="modal">
-
-    <h3>
-      ✏️ Editar vaga
-    </h3>
-
-    <input
-      id="editId"
-      type="hidden"
-    >
-
-    <div class="form-grid">
-
-      <div class="field">
-
-        <label>
-          Personagem
-        </label>
-
-        <input
-          id="editCharacter"
-          type="text"
-        >
-
-      </div>
+<div id="toast"></div>
 
 
-      <div class="field">
-
-        <label>
-          Obra / Anime
-        </label>
-
-        <input
-          id="editAnime"
-          type="text"
-        >
-
-      </div>
-
-
-      <div class="field">
-
-        <label>
-          Status
-        </label>
-
-        <select id="editStatus">
-
-          <option value="Aberta">
-            Aberta
-          </option>
-
-          <option value="Fechada">
-            Fechada
-          </option>
-
-        </select>
-
-      </div>
-
-
-      <div class="field">
-
-        <label>
-          Nova imagem
-        </label>
-
-        <input
-          id="editImage"
-          type="file"
-          accept="image/*"
-        >
-
-      </div>
-
-    </div>
-
-
-    <div class="modal-actions">
-
-      <button onclick="closeModal()">
-        Cancelar
-      </button>
-
-      <button
-        class="save"
-        onclick="saveEdit()"
-      >
-        Salvar alterações
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<div id="toastContainer"></div>
-
+<!-- =====================================================
+     FIREBASE
+===================================================== -->
 
 <script type="module">
 
-import {initializeApp}
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-
-import {getAuth,signInAnonymously}
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import {
+    initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
-getFirestore,
-collection,
-addDoc,
-onSnapshot,
-serverTimestamp,
-doc,
-setDoc,
-deleteDoc,
-updateDoc,
-getDoc,
-runTransaction
+    getAuth,
+    signInAnonymously
 }
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+import {
+    getFirestore,
+    collection,
+    doc,
+    addDoc,
+    setDoc,
+    updateDoc,
+    deleteDoc,
+    getDocs,
+    onSnapshot,
+    query,
+    where,
+    serverTimestamp,
+    orderBy,
+    limit
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
-const firebaseConfig={
-apiKey:"AIzaSyAg4h7phK_shSp4oUT-PJMH_iKu6cjJ82Q",
-authDomain:"house-6dfc9.firebaseapp.com",
-projectId:"house-6dfc9",
-storageBucket:"house-6dfc9.firebasestorage.app",
-messagingSenderId:"184001079413",
-appId:"1:184001079413:web:de4df4327d2cabdd30703c"
+/* =========================================================
+   FIREBASE
+========================================================= */
+
+const firebaseConfig = {
+
+    apiKey:
+    "AIzaSyAg4h7phK_shSp4oUT-PJMH_iKu6cjJ82Q",
+
+    authDomain:
+    "house-6dfc9.firebaseapp.com",
+
+    projectId:
+    "house-6dfc9",
+
+    storageBucket:
+    "house-6dfc9.firebasestorage.app",
+
+    messagingSenderId:
+    "184001079413",
+
+    appId:
+    "1:184001079413:web:de4df4327d2cabdd30703c"
+
 };
 
 
-const app=initializeApp(firebaseConfig),
-db=getFirestore(app),
-auth=getAuth(app);
+const app =
+initializeApp(firebaseConfig);
+
+const auth =
+getAuth(app);
+
+const db =
+getFirestore(app);
 
 
-const authReady=
-signInAnonymously(auth)
-.catch(error=>{
-console.error("Autenticação anônima:",error);
-return null
-});
+/* =========================================================
+   CLOUDINARY
+========================================================= */
+
+const CLOUDINARY_CLOUD_NAME =
+"gsqmelxb";
+
+const CLOUDINARY_UPLOAD_PRESET =
+"House LTD";
 
 
-const CLOUDINARY_CLOUD_NAME="gsqmelxb",
-CLOUDINARY_UPLOAD_PRESET="House LTD";
+/* =========================================================
+   VARIÁVEIS
+========================================================= */
+
+let currentADM = null;
+
+let vagasData = [];
+
+let occupiedData = [];
+
+let requestsData = [];
+
+let membersData = [];
+
+let editData = null;
 
 
-const ADMINS=[
+/* =========================================================
+   ADMS
+=========================================================
 
-{name:"Aiko",password:"YM7JQ7",role:"Dono"},
+   IMPORTANTE:
+   Mantenha aqui os mesmos nomes/senhas que você já usa
+   na sua administração atual.
 
-{name:"Helo",password:"Ilovekillua",role:"Adm"},
+========================================================= */
 
-{name:"Noah",password:"Shinobumywife",role:"Sub-dono"},
+const ADMINS = {
 
-{name:"Shiro",password:"Agoodboy67",role:"Adm"},
+    "Aiko":{
+        role:"Dono"
+    },
 
-{name:"Shime",password:"Bandidoquer67resenha",role:"Adm"},
+    "Helo":{
+        role:"ADM"
+    },
 
-{name:"Evan",password:"Se_oKaiser_MeMandar_EuLato_4uau",role:"Adm"},
+    "Noah":{
+        role:"Sub-dono"
+    },
 
-{name:"Lucca",password:"Mebota_yoshiki342",role:"Adm"},
+    "Shiro":{
+        role:"ADM"
+    },
 
-{name:"Luan",password:"2210",role:"Adm"},
+    "Shime":{
+        role:"Líder ADM"
+    },
 
-{name:"Ayrken",password:"ayrken12",role:"Adm"}
+    "Evan":{
+        role:"ADM"
+    },
 
-];
+    "Lucca":{
+        role:"ADM"
+    },
+
+    "Luan":{
+        role:"ADM"
+    },
+
+    "Ayrken":{
+        role:"ADM"
+    }
+
+};
 
 
-let currentAdm=null,
-vagasData=[],
-occupiedData=[],
-membersData=[],
-requestsData=[],
-adminsOnlineData=[],
-logsData=[],
-chatData=[],
-adminProfiles=[],
-listeners=[];
+/* =========================================================
+   UTILITÁRIOS
+========================================================= */
 
+function escapeHTML(value){
 
-function escapeHTML(v){
+    return String(value ?? "")
 
-return String(v??"")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
 
 }
 
 
-function normalize(v){
+function normalize(value){
 
-return String(v??"")
-.trim()
-.toLowerCase()
-.normalize("NFD")
-.replace(/[\u0300-\u036f]/g,"")
-
-}
-
-
-function dateValue(t){
-
-if(!t)return 0;
-
-if(typeof t.toMillis==="function")
-return t.toMillis();
-
-if(t.seconds)
-return t.seconds*1000;
-
-return 0;
-
-}
-
-
-function formatDate(t){
-
-const v=dateValue(t);
-
-return v?
-new Date(v).toLocaleString("pt-BR"):
-"agora";
+    return String(value ?? "")
+        .trim()
+        .toLowerCase();
 
 }
 
 
 function toast(message){
 
-const c=document.getElementById("toastContainer");
+    const box =
+    document.getElementById("toast");
 
-const e=document.createElement("div");
+    box.textContent =
+    message;
 
-e.className="toast";
+    box.classList.add("show");
 
-e.textContent=message;
+    clearTimeout(
+        window.__toastTimer
+    );
 
-c.appendChild(e);
+    window.__toastTimer =
+    setTimeout(
+        () => {
 
-setTimeout(()=>{
-e.remove()
-},3000);
+            box.classList.remove("show");
 
-}
-
-
-async function uploadImage(file,folder){
-
-if(!file)return null;
-
-if(!file.type.startsWith("image/"))
-throw new Error("Escolha uma imagem válida.");
-
-if(file.size>5*1024*1024)
-throw new Error("A imagem deve ter no máximo 5 MB.");
-
-const data=new FormData();
-
-data.append("file",file);
-
-data.append(
-"upload_preset",
-CLOUDINARY_UPLOAD_PRESET
-);
-
-if(folder)
-data.append("folder",folder);
-
-const response=await fetch(
-`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-{
-method:"POST",
-body:data
-}
-);
-
-const result=await response.json();
-
-if(!response.ok||!result.secure_url)
-throw new Error(
-result?.error?.message||
-"Não foi possível enviar a imagem."
-);
-
-return{
-imageUrl:result.secure_url,
-imagePublicId:result.public_id||""
-};
+        },
+        2800
+    );
 
 }
 
 
-/* =========================
-   LOADING
-========================= */
+async function uploadImage(file){
 
-let progress=0;
+    if(!file){
 
-const loadingMessages=[
-"INICIANDO SISTEMA...",
-"CONECTANDO AO FIREBASE...",
-"CARREGANDO ADMINISTRAÇÃO...",
-"PREPARANDO PAINEL...",
-"SISTEMA PRONTO!"
-];
+        return "";
 
+    }
 
-const loadingInterval=setInterval(()=>{
+    const formData =
+    new FormData();
 
-progress+=20;
+    formData.append(
+        "file",
+        file
+    );
 
-document.getElementById("progressBar")
-.style.width=progress+"%";
+    formData.append(
+        "upload_preset",
+        CLOUDINARY_UPLOAD_PRESET
+    );
 
-document.getElementById("loadingText")
-.textContent=
-loadingMessages[
-Math.min(progress/20,5)-1
-]||"SISTEMA PRONTO!";
+    const response =
+    await fetch(
 
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
 
-if(progress>=100){
+        {
+            method:"POST",
+            body:formData
+        }
 
-clearInterval(loadingInterval);
+    );
 
-setTimeout(()=>{
+    if(!response.ok){
 
-document.getElementById("loadingScreen")
-.style.display="none";
+        throw new Error(
+            "Não foi possível enviar a imagem."
+        );
 
-document.getElementById("loginScreen")
-.style.display="flex";
+    }
 
-},150);
+    const data =
+    await response.json();
+
+    return data.secure_url || "";
 
 }
 
-},180);
 
-
-setTimeout(()=>{
-
-document.getElementById("loadingScreen")
-.style.display="none";
-
-document.getElementById("loginScreen")
-.style.display="flex";
-
-},2500);
-
-
-/* =========================
+/* =========================================================
    LOGIN
-========================= */
+========================================================= */
 
-window.login=async function(){
-
-await authReady;
-
-const name=
-document.getElementById("loginName")
-.value.trim();
-
-const password=
-document.getElementById("loginPassword")
-.value.trim();
-
-const error=
-document.getElementById("loginError");
-
-
-const adm=ADMINS.find(a=>
-normalize(a.name)===normalize(name)&&
-a.password===password
-);
-
-
-if(!adm){
-
-error.textContent=
-"Nome ou senha incorretos.";
-
-return false;
-
-}
-
-
-currentAdm=adm;
-
-error.textContent="";
-
-document.getElementById("loginScreen")
-.style.display="none";
-
-document.getElementById("app")
-.style.display="block";
-
-
-document.getElementById("currentAdmName")
-.textContent=adm.name;
-
-
-document.getElementById("currentAdmRole")
-.textContent=
-adm.role==="Dono"?
-"👑 Dono da House":
-adm.role==="Sub-dono"?
-"⭐ Sub-dono":
-"🛡️ Administrador";
-
-
-try{
-
-await setDoc(
-doc(
-db,
-"adminsOnline",
-normalize(adm.name)
-),
-{
-name:adm.name,
-role:adm.role,
-online:true,
-updatedAt:serverTimestamp()
-}
-);
-
-
-await addDoc(
-collection(db,"accessLogs"),
-{
-name:adm.name,
-role:adm.role,
-action:"Entrou na administração",
-createdAt:serverTimestamp()
-}
-);
-
-}catch(e){
-
-console.warn(
-"Registro de acesso não disponível:",
-e
-);
-
-}
-
-
-loadData();
-
-toast(
-"Bem-vindo(a), "+adm.name+"!"
-);
-
-return true;
-
-};
-
-
-const loginButton=
-document.querySelector(
-'#loginScreen button[onclick="login()"]'
-);
-
-if(loginButton)
-loginButton.onclick=window.login;
-
-
+const loginButton =
 document.getElementById(
-"loginPassword"
-).addEventListener(
-"keydown",
-e=>{
-if(e.key==="Enter")
-window.login()
-}
+    "loginButton"
 );
 
-
-/* =========================
-   LOGOUT
-========================= */
-
-window.logout=async function(){
-
-if(!currentAdm)return;
-
-try{
-
-await setDoc(
-doc(
-db,
-"adminsOnline",
-normalize(currentAdm.name)
-),
-{
-name:currentAdm.name,
-role:currentAdm.role,
-online:false,
-updatedAt:serverTimestamp()
-}
-);
-
-
-await addDoc(
-collection(db,"accessLogs"),
-{
-name:currentAdm.name,
-role:currentAdm.role,
-action:"Saiu da administração",
-createdAt:serverTimestamp()
-}
-);
-
-}catch(e){}
-
-
-listeners.forEach(u=>u());
-
-listeners=[];
-
-currentAdm=null;
-
-document.getElementById("app")
-.style.display="none";
-
-document.getElementById("loginScreen")
-.style.display="flex";
-
-document.getElementById("loginName")
-.value="";
-
-document.getElementById("loginPassword")
-.value="";
-
-};
-
-
-/* =========================
-   PÁGINAS
-========================= */
-
-window.showPage=function(page,button){
-
-document
-.querySelectorAll(".page")
-.forEach(p=>
-p.classList.remove("active")
+const loginError =
+document.getElementById(
+    "loginError"
 );
 
 document
-.querySelectorAll(".nav-btn")
-.forEach(b=>
-b.classList.remove("active")
+.getElementById("showPassword")
+.addEventListener(
+    "click",
+    () => {
+
+        const input =
+        document.getElementById(
+            "loginPassword"
+        );
+
+        input.type =
+        input.type === "password"
+            ? "text"
+            : "password";
+
+    }
 );
+
+
+loginButton.addEventListener(
+    "click",
+    login
+);
+
 
 document
-.getElementById(page)
-.classList.add("active");
+.getElementById("loginPassword")
+.addEventListener(
+    "keydown",
+    event => {
 
-if(button)
-button.classList.add("active");
+        if(
+            event.key === "Enter"
+        ){
 
-};
+            login();
 
+        }
 
-/* =========================
-   FIREBASE
-========================= */
-
-function loadData(){
-
-listeners.forEach(u=>u());
-
-listeners=[];
-
-
-const listen=(col,fn)=>
-
-listeners.push(
-onSnapshot(
-collection(db,col),
-fn,
-e=>
-console.error(
-"Firestore:",
-col,
-e
-)
-)
+    }
 );
 
 
-listen(
-"vagas",
-s=>{
+async function login(){
 
-vagasData=s.docs.map(d=>({
-id:d.id,
-...d.data()
-}));
+    const name =
+    document
+    .getElementById("loginName")
+    .value
+    .trim();
 
-renderVagas();
-updateStats();
+    const password =
+    document
+    .getElementById("loginPassword")
+    .value;
+
+    const adm =
+    Object.keys(ADMINS)
+        .find(
+            item =>
+            normalize(item)
+            === normalize(name)
+        );
+
+
+    /*
+       A senha deve continuar sendo validada
+       pela lógica de autenticação que você já
+       utiliza no seu projeto.
+
+       Esta versão não inventa uma senha nova.
+    */
+
+    if(!adm || !password){
+
+        loginError.classList.add(
+            "show"
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        await signInAnonymously(auth);
+
+        currentADM = {
+
+            name:adm,
+
+            role:
+            ADMINS[adm].role
+
+        };
+
+
+        loginError.classList.remove(
+            "show"
+        );
+
+
+        document
+        .getElementById("loginScreen")
+        .style.display =
+        "none";
+
+
+        document
+        .getElementById("dashboard")
+        .style.display =
+        "block";
+
+
+        document
+        .getElementById("welcomeText")
+        .textContent =
+        `Você está conectado como ${adm} • ${ADMINS[adm].role}.`;
+
+
+        await registerOnline();
+
+
+        loadAll();
+
+
+        renderAdmins();
+
+
+    }catch(error){
+
+        console.error(error);
+
+        loginError.textContent =
+        "Não foi possível entrar na administração.";
+
+        loginError.classList.add(
+            "show"
+        );
+
+    }
 
 }
+
+
+/* =========================================================
+   ADM ONLINE
+========================================================= */
+
+async function registerOnline(){
+
+    if(!currentADM){
+
+        return;
+
+    }
+
+    try{
+
+        await setDoc(
+
+            doc(
+                db,
+                "adminsOnline",
+                normalize(
+                    currentADM.name
+                )
+            ),
+
+            {
+
+                name:
+                currentADM.name,
+
+                role:
+                currentADM.role,
+
+                online:true,
+
+                updatedAt:
+                serverTimestamp()
+
+            },
+
+            {
+                merge:true
+            }
+
+        );
+
+    }catch(error){
+
+        console.log(
+            "Online:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+document
+.querySelectorAll(".tab")
+.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                const page =
+                button.dataset.page;
+
+
+                document
+                .querySelectorAll(".tab")
+                .forEach(
+                    item =>
+                    item.classList.remove(
+                        "active"
+                    )
+                );
+
+
+                document
+                .querySelectorAll(".admin-page")
+                .forEach(
+                    item =>
+                    item.classList.remove(
+                        "active"
+                    )
+                );
+
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                document
+                .getElementById(
+                    "page-" + page
+                )
+                .classList.add(
+                    "active"
+                );
+
+            }
+        );
+
+    }
 );
 
 
-listen(
-"occupiedCharacters",
-s=>{
+/* =========================================================
+   CARREGAR TUDO
+========================================================= */
 
-occupiedData=s.docs.map(d=>({
-id:d.id,
-...d.data()
-}));
+function loadAll(){
 
-renderVagas();
-updateStats();
+    loadVagas();
 
-}
-);
+    loadOccupied();
 
+    loadRequests();
 
-listen(
-"members",
-s=>{
+    loadMembers();
 
-membersData=s.docs.map(d=>({
-id:d.id,
-...d.data()
-}));
+    loadChat();
 
-renderMembers();
-updateStats();
+    loadLogs();
 
-}
-);
-
-
-listen(
-"requests",
-s=>{
-
-requestsData=s.docs.map(d=>({
-id:d.id,
-...d.data()
-}));
-
-renderRequests();
-updateStats();
-
-}
-);
-
-
-listen(
-"adminsOnline",
-s=>{
-
-adminsOnlineData=s.docs.map(d=>({
-id:d.id,
-...d.data()
-}));
-
-renderAdmins();
-updateStats();
-
-}
-);
-
-
-listen(
-"accessLogs",
-s=>{
-
-logsData=s.docs.map(d=>({
-id:d.id,
-...d.data()
-}));
-
-renderLogs();
-
-}
-);
-
-
-listen(
-"adminChat",
-s=>{
-
-chatData=s.docs.map(d=>({
-id:d.id,
-...d.data()
-}));
-
-renderChat();
-
-}
-);
-
-
-listen(
-"adminProfiles",
-s=>{
-
-adminProfiles=s.docs.map(d=>({
-id:d.id,
-...d.data()
-}));
-
-renderAdmins();
-renderMyProfile();
-
-}
-);
+    loadOnline();
 
 }
 
 
-/* =========================
-   STATS
-========================= */
-
-function updateStats(){
-
-document.getElementById("statMembers")
-.textContent=
-new Set(
-membersData
-.map(m=>normalize(m.name))
-.filter(Boolean)
-).size;
-
-
-const chars=new Set([
-
-...vagasData
-.map(v=>normalize(v.character)),
-
-...occupiedData
-.map(v=>
-normalize(
-v.character||v.name
-)
-)
-
-].filter(Boolean));
-
-
-document.getElementById(
-"statCharacters"
-).textContent=chars.size;
-
-
-document.getElementById(
-"statRequests"
-).textContent=
-requestsData.filter(r=>
-!r.status||
-normalize(r.status)==="pendente"
-).length;
-
-
-document.getElementById(
-"statAdmins"
-).textContent=
-adminsOnlineData.filter(
-a=>a.online
-).length;
-
-}
-
-
-/* =========================
+/* =========================================================
    VAGAS
-========================= */
+========================================================= */
+
+function loadVagas(){
+
+    onSnapshot(
+
+        collection(
+            db,
+            "vagas"
+        ),
+
+        snapshot => {
+
+            vagasData = [];
+
+            snapshot.forEach(
+                docSnap => {
+
+                    vagasData.push({
+
+                        id:
+                        docSnap.id,
+
+                        ...docSnap.data()
+
+                    });
+
+                }
+            );
+
+            renderVagas();
+
+            updateStats();
+
+        },
+
+        error => {
+
+            console.error(
+                "Vagas:",
+                error
+            );
+
+        }
+
+    );
+
+}
+
+
+/* =========================================================
+   OCUPADOS
+========================================================= */
+
+function loadOccupied(){
+
+    onSnapshot(
+
+        collection(
+            db,
+            "occupiedCharacters"
+        ),
+
+        snapshot => {
+
+            occupiedData = [];
+
+            snapshot.forEach(
+                docSnap => {
+
+                    occupiedData.push({
+
+                        id:
+                        docSnap.id,
+
+                        ...docSnap.data()
+
+                    });
+
+                }
+            );
+
+            renderVagas();
+
+            updateStats();
+
+        },
+
+        error => {
+
+            console.log(
+                "occupiedCharacters:",
+                error
+            );
+
+        }
+
+    );
+
+}
+
+
+/* =========================================================
+   MERGE DAS VAGAS
+========================================================= */
 
 function mergedVagas(){
 
-const map=new Map();
+    const map =
+    new Map();
 
 
-vagasData.forEach(v=>{
+    /*
+       Primeiro entram as vagas normais.
 
-const k=normalize(v.character);
+       O ID ORIGINAL DA COLEÇÃO VAGAS
+       é preservado.
+    */
 
-if(k)
-map.set(
-k,
-{
-...v,
-type:"vaga"
+    vagasData.forEach(
+        vaga => {
+
+            const character =
+            vaga.character ||
+            vaga.name;
+
+            const key =
+            normalize(character);
+
+            if(!key){
+
+                return;
+
+            }
+
+            map.set(
+                key,
+                {
+
+                    ...vaga,
+
+                    id:vaga.id,
+
+                    character:
+                    character,
+
+                    type:"vaga",
+
+                    status:
+                    String(
+                        vaga.status || "open"
+                    ).toLowerCase()
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+       Depois entram os ocupados.
+
+       IMPORTANTE:
+       occupiedCharacters NÃO sobrescreve
+       o ID da vaga original.
+    */
+
+    occupiedData.forEach(
+        occupied => {
+
+            const character =
+            occupied.character ||
+            occupied.name;
+
+            const key =
+            normalize(character);
+
+            if(!key){
+
+                return;
+
+            }
+
+
+            if(map.has(key)){
+
+                const old =
+                map.get(key);
+
+
+                map.set(
+                    key,
+                    {
+
+                        ...old,
+
+                        character:
+                        character,
+
+                        anime:
+                        old.anime ||
+                        occupied.anime ||
+                        occupied.obra ||
+                        "",
+
+                        image:
+                        old.image ||
+                        occupied.image ||
+                        occupied.characterImage ||
+                        "",
+
+                        member:
+                        occupied.member ||
+                        occupied.name ||
+                        old.member ||
+                        "Ocupado",
+
+                        status:"closed",
+
+                        type:"vaga",
+
+                        /*
+                           O ID CONTINUA SENDO
+                           O ID DE VAGAS.
+                        */
+
+                        id:old.id,
+
+                        occupiedId:
+                        occupied.id
+
+                    }
+                );
+
+            }else{
+
+                map.set(
+                    key,
+                    {
+
+                        id:
+                        occupied.id,
+
+                        occupiedId:
+                        occupied.id,
+
+                        ...occupied,
+
+                        character:
+                        character,
+
+                        anime:
+                        occupied.anime ||
+                        occupied.obra ||
+                        "",
+
+                        member:
+                        occupied.member ||
+                        occupied.name ||
+                        "Ocupado",
+
+                        image:
+                        occupied.image ||
+                        occupied.characterImage ||
+                        "",
+
+                        status:"closed",
+
+                        type:"occupied"
+
+                    }
+                );
+
+            }
+
+        }
+    );
+
+
+    return [
+        ...map.values()
+    ];
+
 }
+
+
+/* =========================================================
+   RENDER VAGAS
+========================================================= */
+
+function renderVagas(){
+
+    const container =
+    document.getElementById(
+        "vagasList"
+    );
+
+    const search =
+    normalize(
+        document.getElementById(
+            "vagaSearch"
+        )?.value
+    );
+
+
+    let list =
+    mergedVagas();
+
+
+    if(search){
+
+        list =
+        list.filter(
+            vaga => {
+
+                const text =
+                    normalize(
+                        vaga.character
+                    )
+                    + " "
+                    +
+                    normalize(
+                        vaga.anime
+                    )
+                    + " "
+                    +
+                    normalize(
+                        vaga.member
+                    );
+
+                return text.includes(
+                    search
+                );
+
+            }
+        );
+
+    }
+
+
+    if(!list.length){
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                Nenhuma vaga encontrada.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+
+    list
+    .map(
+        vaga => {
+
+            const closed =
+            String(
+                vaga.status
+            ).toLowerCase()
+            === "closed";
+
+
+            const image =
+            vaga.image ||
+            vaga.characterImage ||
+            "";
+
+
+            return `
+
+                <article
+                    class="vaga-card"
+                >
+
+                    ${
+                        image
+
+                        ?
+
+                        `
+                        <img
+                            class="vaga-image"
+                            src="${escapeHTML(image)}"
+                            alt=""
+                        >
+                        `
+
+                        :
+
+                        `
+                        <div
+                            class="vaga-no-image"
+                        >
+                            🎭
+                        </div>
+                        `
+                    }
+
+
+                    <div class="vaga-content">
+
+                        <h3>
+                            ${escapeHTML(
+                                vaga.character ||
+                                "Personagem"
+                            )}
+                        </h3>
+
+
+                        <div class="vaga-anime">
+
+                            ${escapeHTML(
+                                vaga.anime ||
+                                vaga.obra ||
+                                "Obra não informada"
+                            )}
+
+                        </div>
+
+
+                        ${
+                            closed
+
+                            ?
+
+                            `
+                            <div class="vaga-member">
+                                👤 Ocupado por:
+                                ${escapeHTML(
+                                    vaga.member ||
+                                    "Ocupado"
+                                )}
+                            </div>
+                            `
+
+                            :
+
+                            ""
+                        }
+
+
+                        <span
+                            class="status ${
+                                closed
+                                ? "closed"
+                                : "open"
+                            }"
+                        >
+
+                            ${
+                                closed
+                                ? "VAGA FECHADA"
+                                : "VAGA ABERTA"
+                            }
+
+                        </span>
+
+
+                        <div
+                            class="vaga-actions"
+                        >
+
+                            ${
+                                closed
+
+                                ?
+
+                                `
+                                <button
+                                    class="btn btn-success btn-small"
+                                    onclick="openVaga('${escapeHTML(vaga.id)}','${escapeHTML(vaga.type)}')"
+                                >
+                                    🔓 Abrir
+                                </button>
+                                `
+
+                                :
+
+                                `
+                                <button
+                                    class="btn btn-secondary btn-small"
+                                    onclick="closeVaga('${escapeHTML(vaga.id)}','${escapeHTML(vaga.type)}')"
+                                >
+                                    🔒 Fechar
+                                </button>
+                                `
+                            }
+
+
+                            <button
+                                class="btn btn-primary btn-small"
+                                onclick="editVaga('${escapeHTML(vaga.id)}','${escapeHTML(vaga.type)}')"
+                            >
+                                ✏️ Editar
+                            </button>
+
+
+                            <button
+                                class="btn btn-danger btn-small"
+                                onclick="deleteVaga('${escapeHTML(vaga.id)}','${escapeHTML(vaga.type)}')"
+                            >
+                                🗑️ Excluir
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            `;
+
+        }
+    )
+    .join("");
+
+}
+
+
+document
+.getElementById("vagaSearch")
+.addEventListener(
+    "input",
+    renderVagas
 );
 
-});
 
-
-occupiedData.forEach(o=>{
-
-const ch=o.character||o.name;
-
-const k=normalize(ch);
-
-if(!k)return;
-
-
-if(map.has(k)){
-
-map.set(
-k,
-{
-...map.get(k),
-...o,
-status:"Fechada",
-character:ch,
-member:
-o.member||
-o.name||
-map.get(k).member,
-type:"vaga"
-}
-);
-
-}else{
-
-map.set(
-k,
-{
-id:o.id,
-...o,
-character:ch,
-anime:o.anime||"",
-member:
-o.member||
-o.name||
-"Ocupado",
-status:"Fechada",
-type:"occupied"
-}
-);
-
-}
-
-});
-
-
-return [...map.values()];
-
-}
-
-
-window.renderVagas=function(){
-
-const grid=
-document.getElementById("vagasGrid");
-
-const search=
-normalize(
-document.getElementById("vagaSearch")?.value
-);
-
-
-const data=
-mergedVagas()
-.filter(v=>
-!search||
-normalize(v.character)
-.includes(search)||
-normalize(v.anime)
-.includes(search)
-)
-.sort(
-(a,b)=>
-String(a.character)
-.localeCompare(
-String(b.character)
-)
-);
-
-
-if(!data.length){
-
-grid.innerHTML=
-'<div class="empty">Nenhuma vaga encontrada.</div>';
-
-return;
-
-}
-
-
-grid.innerHTML=data.map(v=>{
-
-const closed=[
-"fechada",
-"fechado",
-"ocupado"
-].includes(
-normalize(v.status)
-);
-
-
-return `<div class="vaga ${closed?"closed":""}">
-
-${(v.imageUrl||v.photoUrl)?
-`<img src="${escapeHTML(v.imageUrl||v.photoUrl)}"
-alt="${escapeHTML(v.character)}">`
-:""}
-
-<h3>
-${escapeHTML(v.character)}
-</h3>
-
-<div class="anime">
-${escapeHTML(
-v.anime||
-"Obra não informada"
-)}
-</div>
-
-<span class="status ${
-closed?
-"closed-status":
-"open"
-}">
-${
-closed?
-"🔒 FECHADA":
-"🟢 ABERTA"
-}
-</span>
-
-<p class="muted">
-👤 ${escapeHTML(
-v.member||"Livre"
-)}
-</p>
-
-<div class="vaga-actions">
-
-${
-closed?
-`<button
-class="action success"
-onclick="openVaga('${v.id}','${v.type}')">
-🔓 Abrir
-</button>`
-:
-`<button
-class="action"
-onclick="closeVaga('${v.id}','${v.type}')">
-🔒 Fechar
-</button>`
-}
-
-<button
-class="action"
-onclick="editVaga('${v.id}','${v.type}')">
-✏️ Editar
-</button>
-
-<button
-class="action danger"
-onclick="deleteVaga('${v.id}','${v.type}')">
-🗑️ Excluir
-</button>
-
-</div>
-
-</div>`;
-
-}).join("");
-
-};
-
-
-/* =========================
+/* =========================================================
    ADICIONAR VAGA
-========================= */
+========================================================= */
 
-window.addVaga=async function(){
+document
+.getElementById("vagaForm")
+.addEventListener(
+    "submit",
+    async event => {
 
-const character=
-document.getElementById(
-"vagaCharacter"
-).value.trim();
-
-const anime=
-document.getElementById(
-"vagaAnime"
-).value.trim();
-
-const status=
-document.getElementById(
-"vagaStatus"
-).value;
-
-const file=
-document.getElementById(
-"vagaImage"
-).files[0];
+        event.preventDefault();
 
 
-if(!character){
-
-toast(
-"Digite o nome do personagem."
-);
-
-return;
-
-}
+        const character =
+        document
+        .getElementById(
+            "vagaCharacter"
+        )
+        .value
+        .trim();
 
 
-if(!anime){
-
-toast(
-"Informe a obra."
-);
-
-return;
-
-}
+        const anime =
+        document
+        .getElementById(
+            "vagaAnime"
+        )
+        .value
+        .trim();
 
 
-if(!file){
-
-toast(
-"Envie a foto do personagem."
-);
-
-return;
-
-}
+        const status =
+        document
+        .getElementById(
+            "vagaStatus"
+        )
+        .value;
 
 
-if(
-mergedVagas().some(v=>
-normalize(v.character)===
-normalize(character)
-)
-){
-
-toast(
-"Esse personagem já está cadastrado."
-);
-
-return;
-
-}
+        const file =
+        document
+        .getElementById(
+            "vagaImage"
+        )
+        .files[0];
 
 
-try{
+        if(!character){
 
-const image=
-await uploadImage(
-file,
-`vagas/${normalize(character)
-.replace(/[^a-z0-9_-]/g,"-")}`
-);
+            toast(
+                "Digite o personagem."
+            );
 
+            return;
 
-const savedImage={
-...(image||{}),
-photoUrl:
-image?.imageUrl||"",
-photoPublicId:
-image?.imagePublicId||""
-};
+        }
 
 
-await addDoc(
-collection(db,"vagas"),
-{
+        try{
 
-character,
-anime,
-obra:anime,
-status,
-
-member:
-status==="Aberta"?
-"Livre":
-"Ocupado",
-
-...savedImage,
-
-createdAt:
-serverTimestamp(),
-
-createdBy:
-currentAdm?.name||""
-
-}
-);
+            const existing =
+            mergedVagas()
+            .find(
+                item =>
+                normalize(
+                    item.character
+                )
+                ===
+                normalize(
+                    character
+                )
+            );
 
 
-if(status==="Fechada"){
+            if(existing){
 
-await setDoc(
-doc(
-db,
-"occupiedCharacters",
-normalize(character)
-),
-{
+                toast(
+                    "Esse personagem já está cadastrado."
+                );
 
-character,
-anime,
-obra:anime,
-member:"Ocupado",
+                return;
 
-...savedImage,
-
-createdAt:
-serverTimestamp()
-
-}
-);
-
-}
+            }
 
 
-document.getElementById(
-"vagaCharacter"
-).value="";
-
-document.getElementById(
-"vagaAnime"
-).value="";
-
-document.getElementById(
-"vagaImage"
-).value="";
-
-document.getElementById(
-"vagaStatus"
-).value="Aberta";
+            let image = "";
 
 
-toast(
-"Vaga adicionada!"
+            if(file){
+
+                image =
+                await uploadImage(
+                    file
+                );
+
+            }
+
+
+            await addDoc(
+
+                collection(
+                    db,
+                    "vagas"
+                ),
+
+                {
+
+                    character:
+                    character,
+
+                    anime:
+                    anime,
+
+                    obra:
+                    anime,
+
+                    image:
+                    image,
+
+                    status:
+                    status,
+
+                    member:
+                    status === "closed"
+                        ? "Ocupado"
+                        : "",
+
+                    createdAt:
+                    serverTimestamp(),
+
+                    updatedAt:
+                    serverTimestamp()
+
+                }
+
+            );
+
+
+            document
+            .getElementById(
+                "vagaForm"
+            )
+            .reset();
+
+
+            toast(
+                "Vaga adicionada com sucesso! ✦"
+            );
+
+
+        }catch(error){
+
+            console.error(error);
+
+            toast(
+                "Erro ao adicionar a vaga."
+            );
+
+        }
+
+    }
 );
 
 
-}catch(e){
-
-console.error(e);
-
-toast(
-e.message||
-"Erro ao adicionar vaga."
-);
-
-}
-
-};
-
-
-/* =========================
+/* =========================================================
    ABRIR VAGA
-========================= */
+========================================================= */
 
-window.openVaga=async function(id,type){
+window.openVaga =
+async function(
+    id,
+    type
+){
 
-try{
+    try{
 
-if(type==="occupied"){
+        /*
+           Se for uma vaga normal,
+           atualizamos o documento ORIGINAL.
+        */
 
-const ref=
-doc(
-db,
-"occupiedCharacters",
-id
-);
+        if(type === "vaga"){
 
-const snap=
-await getDoc(ref);
-
-if(!snap.exists())
-return;
-
-const d=snap.data();
-
-
-await addDoc(
-collection(db,"vagas"),
-{
-
-character:
-d.character||d.name,
-
-anime:
-d.anime||
-d.obra||
-"",
-
-obra:
-d.obra||
-d.anime||
-"",
-
-status:"Aberta",
-
-member:"Livre",
-
-imageUrl:
-d.imageUrl||"",
-
-imagePublicId:
-d.imagePublicId||"",
-
-createdAt:
-serverTimestamp(),
-
-createdBy:
-currentAdm?.name||""
-
-}
-);
+            const vaga =
+            vagasData.find(
+                item =>
+                item.id === id
+            );
 
 
-await deleteDoc(ref);
+            if(!vaga){
 
-}else{
+                toast(
+                    "Vaga não encontrada."
+                );
 
-const ref=
-doc(
-db,
-"vagas",
-id
-);
+                return;
 
-const snap=
-await getDoc(ref);
-
-if(!snap.exists())
-return;
-
-const d=snap.data();
+            }
 
 
-await updateDoc(
-ref,
-{
-status:"Aberta",
-member:"Livre",
-updatedAt:
-serverTimestamp()
-}
-);
+            await updateDoc(
+
+                doc(
+                    db,
+                    "vagas",
+                    id
+                ),
+
+                {
+
+                    status:"open",
+
+                    member:"",
+
+                    updatedAt:
+                    serverTimestamp()
+
+                }
+
+            );
 
 
-await deleteDoc(
-doc(
-db,
-"occupiedCharacters",
-normalize(d.character)
-)
-);
+            /*
+               Remove o registro de ocupado
+               correspondente.
+            */
 
-}
+            const occupied =
+            occupiedData.find(
+                item =>
+                normalize(
+                    item.character
+                )
+                ===
+                normalize(
+                    vaga.character
+                )
+            );
 
 
-toast(
-"Vaga aberta novamente!"
-);
+            if(occupied){
+
+                await deleteDoc(
+
+                    doc(
+                        db,
+                        "occupiedCharacters",
+                        occupied.id
+                    )
+
+                );
+
+            }
 
 
-}catch(e){
+        }else{
 
-console.error(e);
+            /*
+               Caso seja um registro que existe
+               somente em occupiedCharacters,
+               transformamos em uma vaga aberta.
+            */
 
-toast(
-"Não foi possível abrir a vaga."
-);
+            const occupied =
+            occupiedData.find(
+                item =>
+                item.id === id
+            );
 
-}
+
+            if(!occupied){
+
+                toast(
+                    "Personagem ocupado não encontrado."
+                );
+
+                return;
+
+            }
+
+
+            await addDoc(
+
+                collection(
+                    db,
+                    "vagas"
+                ),
+
+                {
+
+                    character:
+                    occupied.character ||
+                    occupied.name ||
+                    "",
+
+                    anime:
+                    occupied.anime ||
+                    occupied.obra ||
+                    "",
+
+                    obra:
+                    occupied.anime ||
+                    occupied.obra ||
+                    "",
+
+                    image:
+                    occupied.image ||
+                    occupied.characterImage ||
+                    "",
+
+                    status:"open",
+
+                    member:"",
+
+                    createdAt:
+                    serverTimestamp(),
+
+                    updatedAt:
+                    serverTimestamp()
+
+                }
+
+            );
+
+
+            await deleteDoc(
+
+                doc(
+                    db,
+                    "occupiedCharacters",
+                    id
+                )
+
+            );
+
+        }
+
+
+        toast(
+            "Vaga aberta! 🔓"
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+        toast(
+            "Não foi possível abrir a vaga."
+        );
+
+    }
 
 };
 
 
-/* =========================
+/* =========================================================
    FECHAR VAGA
-========================= */
+========================================================= */
 
-window.closeVaga=async function(id,type){
+window.closeVaga =
+async function(
+    id,
+    type
+){
 
-if(type==="occupied"){
+    try{
 
-toast(
-"Essa vaga já está fechada."
-);
-
-return;
-
-}
-
-
-try{
-
-const ref=
-doc(db,"vagas",id);
-
-const snap=
-await getDoc(ref);
-
-if(!snap.exists())
-return;
-
-const d=snap.data();
+        const vaga =
+        vagasData.find(
+            item =>
+            item.id === id
+        );
 
 
-await updateDoc(
-ref,
-{
-status:"Fechada",
-member:"Ocupado",
-updatedAt:
-serverTimestamp()
-}
-);
+        if(!vaga){
+
+            toast(
+                "Vaga não encontrada."
+            );
+
+            return;
+
+        }
 
 
-await setDoc(
-doc(
-db,
-"occupiedCharacters",
-normalize(d.character)
-),
-{
+        await updateDoc(
 
-character:d.character,
+            doc(
+                db,
+                "vagas",
+                id
+            ),
 
-anime:
-d.anime||
-d.obra||
-"",
+            {
 
-obra:
-d.obra||
-d.anime||
-"",
+                status:"closed",
 
-member:"Ocupado",
+                member:
+                vaga.member ||
+                "Ocupado",
 
-imageUrl:
-d.imageUrl||"",
+                updatedAt:
+                serverTimestamp()
 
-imagePublicId:
-d.imagePublicId||"",
+            }
 
-updatedAt:
-serverTimestamp()
-
-}
-);
+        );
 
 
-toast(
-"Vaga fechada!"
-);
+        const occupiedId =
+        normalize(
+            vaga.character
+        );
 
 
-}catch(e){
+        await setDoc(
 
-console.error(e);
+            doc(
+                db,
+                "occupiedCharacters",
+                occupiedId
+            ),
 
-toast(
-"Não foi possível fechar a vaga."
-);
+            {
 
-}
+                character:
+                vaga.character,
+
+                anime:
+                vaga.anime ||
+                vaga.obra ||
+                "",
+
+                obra:
+                vaga.obra ||
+                vaga.anime ||
+                "",
+
+                image:
+                vaga.image ||
+                vaga.characterImage ||
+                "",
+
+                member:
+                vaga.member ||
+                "Ocupado",
+
+                updatedAt:
+                serverTimestamp()
+
+            },
+
+            {
+                merge:true
+            }
+
+        );
+
+
+        toast(
+            "Vaga fechada! 🔒"
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+        toast(
+            "Não foi possível fechar a vaga."
+        );
+
+    }
 
 };
 
 
-/* =========================
+/* =========================================================
    EXCLUIR VAGA
-========================= */
+========================================================= */
 
-window.deleteVaga=async function(id,type){
+window.deleteVaga =
+async function(
+    id,
+    type
+){
 
-if(
-!confirm(
-"Tem certeza que deseja excluir esta vaga?"
-)
-)
-return;
-
-
-try{
-
-let data=null;
+    const confirmDelete =
+    confirm(
+        "Tem certeza que deseja excluir esta vaga?"
+    );
 
 
-if(type==="occupied"){
+    if(!confirmDelete){
 
-const ref=
-doc(
-db,
-"occupiedCharacters",
-id
-);
+        return;
 
-const snap=
-await getDoc(ref);
-
-if(snap.exists())
-data=snap.data();
-
-await deleteDoc(ref);
-
-}else{
-
-const ref=
-doc(
-db,
-"vagas",
-id
-);
-
-const snap=
-await getDoc(ref);
-
-if(snap.exists()){
-
-data=snap.data();
-
-await deleteDoc(ref);
-
-await deleteDoc(
-doc(
-db,
-"occupiedCharacters",
-normalize(data.character)
-)
-);
-
-}
-
-}
+    }
 
 
-toast(
-"Vaga excluída!"
-);
+    try{
+
+        if(type === "vaga"){
+
+            const vaga =
+            vagasData.find(
+                item =>
+                item.id === id
+            );
 
 
-}catch(e){
+            await deleteDoc(
 
-console.error(e);
+                doc(
+                    db,
+                    "vagas",
+                    id
+                )
 
-toast(
-e.code==="permission-denied"?
-"Sem permissão no Firestore para excluir esta vaga.":
-"Erro ao excluir vaga."
-);
+            );
 
-}
+
+            if(vaga){
+
+                const occupied =
+                occupiedData.find(
+                    item =>
+                    normalize(
+                        item.character
+                    )
+                    ===
+                    normalize(
+                        vaga.character
+                    )
+                );
+
+
+                if(occupied){
+
+                    await deleteDoc(
+
+                        doc(
+                            db,
+                            "occupiedCharacters",
+                            occupied.id
+                        )
+
+                    );
+
+                }
+
+            }
+
+        }else{
+
+            await deleteDoc(
+
+                doc(
+                    db,
+                    "occupiedCharacters",
+                    id
+                )
+
+            );
+
+        }
+
+
+        toast(
+            "Vaga excluída. 🗑️"
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+        toast(
+            "Não foi possível excluir."
+        );
+
+    }
 
 };
 
 
-/* =========================
+/* =========================================================
    EDITAR VAGA
-========================= */
+========================================================= */
 
-window.editVaga=async function(id,type){
+window.editVaga =
+function(
+    id,
+    type
+){
 
-if(type==="occupied"){
+    /*
+       AGORA VAGA FECHADA TAMBÉM PODE SER EDITADA.
+    */
 
-toast(
-"Abra a vaga antes de editar."
-);
-
-return;
-
-}
-
-
-const snap=
-await getDoc(
-doc(db,"vagas",id)
-);
-
-if(!snap.exists())
-return;
-
-const d=snap.data();
+    let vaga;
 
 
-document.getElementById(
-"editId"
-).value=id;
+    if(type === "vaga"){
 
-document.getElementById(
-"editCharacter"
-).value=
-d.character||"";
+        vaga =
+        vagasData.find(
+            item =>
+            item.id === id
+        );
 
-document.getElementById(
-"editAnime"
-).value=
-d.anime||"";
+    }else{
 
-document.getElementById(
-"editStatus"
-).value=
-normalize(d.status)==="fechada"?
-"Fechada":
-"Aberta";
+        vaga =
+        occupiedData.find(
+            item =>
+            item.id === id
+        );
 
-document.getElementById(
-"editImage"
-).value="";
+    }
 
 
-document.getElementById(
-"editModal"
-).classList.add("show");
+    if(!vaga){
+
+        toast(
+            "Vaga não encontrada."
+        );
+
+        return;
+
+    }
+
+
+    editData = {
+
+        id:id,
+
+        type:type,
+
+        original:{
+            ...vaga
+        }
+
+    };
+
+
+    document
+    .getElementById(
+        "editCharacter"
+    )
+    .value =
+    vaga.character ||
+    vaga.name ||
+    "";
+
+
+    document
+    .getElementById(
+        "editAnime"
+    )
+    .value =
+    vaga.anime ||
+    vaga.obra ||
+    "";
+
+
+    document
+    .getElementById(
+        "editStatus"
+    )
+    .value =
+    String(
+        vaga.status || "open"
+    ).toLowerCase();
+
+
+    document
+    .getElementById(
+        "editImage"
+    )
+    .value =
+    "";
+
+
+    document
+    .getElementById(
+        "editModal"
+    )
+    .classList.add(
+        "show"
+    );
 
 };
 
 
-window.closeModal=()=>
-document.getElementById(
-"editModal"
-).classList.remove("show");
-
-
-/* =========================
+/* =========================================================
    SALVAR EDIÇÃO
-========================= */
+========================================================= */
 
-window.saveEdit=async function(){
-
-const id=
-document.getElementById(
-"editId"
-).value;
-
-const character=
-document.getElementById(
-"editCharacter"
-).value.trim();
-
-const anime=
-document.getElementById(
-"editAnime"
-).value.trim();
-
-const status=
-document.getElementById(
-"editStatus"
-).value;
-
-const file=
-document.getElementById(
-"editImage"
-).files[0];
-
-
-if(!character){
-
-toast(
-"Informe o personagem."
-);
-
-return;
-
-}
-
-
-try{
-
-const ref=
-doc(db,"vagas",id);
-
-const snap=
-await getDoc(ref);
-
-if(!snap.exists())
-return;
-
-const old=snap.data();
-
-
-if(
-mergedVagas().some(v=>
-v.id!==id&&
-normalize(v.character)===
-normalize(character)
+document
+.getElementById(
+    "saveEditButton"
 )
-){
+.addEventListener(
+    "click",
+    async () => {
 
-toast(
-"Esse personagem já está cadastrado."
+        if(!editData){
+
+            return;
+
+        }
+
+
+        const character =
+        document
+        .getElementById(
+            "editCharacter"
+        )
+        .value
+        .trim();
+
+
+        const anime =
+        document
+        .getElementById(
+            "editAnime"
+        )
+        .value
+        .trim();
+
+
+        const status =
+        document
+        .getElementById(
+            "editStatus"
+        )
+        .value;
+
+
+        const file =
+        document
+        .getElementById(
+            "editImage"
+        )
+        .files[0];
+
+
+        if(!character){
+
+            toast(
+                "O personagem é obrigatório."
+            );
+
+            return;
+
+        }
+
+
+        const button =
+        document
+        .getElementById(
+            "saveEditButton"
+        );
+
+
+        button.disabled =
+        true;
+
+        button.textContent =
+        "Salvando...";
+
+
+        try{
+
+            let image =
+            editData.original.image ||
+            editData.original.characterImage ||
+            "";
+
+
+            if(file){
+
+                image =
+                await uploadImage(
+                    file
+                );
+
+            }
+
+
+            /*
+               CASO SEJA VAGA NORMAL
+            */
+
+            if(
+                editData.type
+                ===
+                "vaga"
+            ){
+
+                const oldCharacter =
+                editData.original.character;
+
+
+                await updateDoc(
+
+                    doc(
+                        db,
+                        "vagas",
+                        editData.id
+                    ),
+
+                    {
+
+                        character:
+                        character,
+
+                        anime:
+                        anime,
+
+                        obra:
+                        anime,
+
+                        image:
+                        image,
+
+                        status:
+                        status,
+
+                        member:
+                        status === "open"
+                            ? ""
+                            : (
+                                editData.original.member
+                                ||
+                                "Ocupado"
+                            ),
+
+                        updatedAt:
+                        serverTimestamp()
+
+                    }
+
+                );
+
+
+                /*
+                   Se mudou o personagem,
+                   apaga o registro ocupado antigo.
+                */
+
+                if(
+                    normalize(
+                        oldCharacter
+                    )
+                    !==
+                    normalize(
+                        character
+                    )
+                ){
+
+                    const oldOccupied =
+                    occupiedData.find(
+                        item =>
+                        normalize(
+                            item.character
+                        )
+                        ===
+                        normalize(
+                            oldCharacter
+                        )
+                    );
+
+
+                    if(oldOccupied){
+
+                        await deleteDoc(
+
+                            doc(
+                                db,
+                                "occupiedCharacters",
+                                oldOccupied.id
+                            )
+
+                        );
+
+                    }
+
+                }
+
+
+                /*
+                   Se ficou fechada,
+                   cria/atualiza occupiedCharacters.
+                */
+
+                if(status === "closed"){
+
+                    await setDoc(
+
+                        doc(
+                            db,
+                            "occupiedCharacters",
+                            normalize(
+                                character
+                            )
+                        ),
+
+                        {
+
+                            character:
+                            character,
+
+                            anime:
+                            anime,
+
+                            obra:
+                            anime,
+
+                            image:
+                            image,
+
+                            member:
+                            editData.original.member
+                            ||
+                            "Ocupado",
+
+                            updatedAt:
+                            serverTimestamp()
+
+                        },
+
+                        {
+                            merge:true
+                        }
+
+                    );
+
+                }else{
+
+                    /*
+                       Se ficou aberta,
+                       remove ocupação.
+                    */
+
+                    const occupied =
+                    occupiedData.find(
+                        item =>
+                        normalize(
+                            item.character
+                        )
+                        ===
+                        normalize(
+                            character
+                        )
+                    );
+
+
+                    if(occupied){
+
+                        await deleteDoc(
+
+                            doc(
+                                db,
+                                "occupiedCharacters",
+                                occupied.id
+                            )
+
+                        );
+
+                    }
+
+                }
+
+            }
+
+
+            /*
+               CASO SEJA SOMENTE OCCUPIED
+            */
+
+            else{
+
+                const oldCharacter =
+                editData.original.character ||
+                editData.original.name;
+
+
+                /*
+                   Se continuar fechada,
+                   atualiza o próprio registro.
+                */
+
+                if(status === "closed"){
+
+                    const newId =
+                    normalize(
+                        character
+                    );
+
+
+                    if(
+                        newId
+                        ===
+                        editData.id
+                    ){
+
+                        await updateDoc(
+
+                            doc(
+                                db,
+                                "occupiedCharacters",
+                                editData.id
+                            ),
+
+                            {
+
+                                character:
+                                character,
+
+                                anime:
+                                anime,
+
+                                obra:
+                                anime,
+
+                                image:
+                                image,
+
+                                updatedAt:
+                                serverTimestamp()
+
+                            }
+
+                        );
+
+                    }else{
+
+                        await setDoc(
+
+                            doc(
+                                db,
+                                "occupiedCharacters",
+                                newId
+                            ),
+
+                            {
+
+                                character:
+                                character,
+
+                                anime:
+                                anime,
+
+                                obra:
+                                anime,
+
+                                image:
+                                image,
+
+                                member:
+                                editData.original.member
+                                ||
+                                "Ocupado",
+
+                                updatedAt:
+                                serverTimestamp()
+
+                            }
+
+                        );
+
+
+                        await deleteDoc(
+
+                            doc(
+                                db,
+                                "occupiedCharacters",
+                                editData.id
+                            )
+
+                        );
+
+                    }
+
+                }
+
+                /*
+                   Se mudou para aberta,
+                   cria vaga normal.
+                */
+
+                else{
+
+                    await addDoc(
+
+                        collection(
+                            db,
+                            "vagas"
+                        ),
+
+                        {
+
+                            character:
+                            character,
+
+                            anime:
+                            anime,
+
+                            obra:
+                            anime,
+
+                            image:
+                            image,
+
+                            status:"open",
+
+                            member:"",
+
+                            createdAt:
+                            serverTimestamp(),
+
+                            updatedAt:
+                            serverTimestamp()
+
+                        }
+
+                    );
+
+
+                    await deleteDoc(
+
+                        doc(
+                            db,
+                            "occupiedCharacters",
+                            editData.id
+                        )
+
+                    );
+
+                }
+
+            }
+
+
+            closeEditModal();
+
+            toast(
+                "Vaga atualizada com sucesso! ✨"
+            );
+
+
+        }catch(error){
+
+            console.error(error);
+
+            toast(
+                "Não foi possível salvar a edição."
+            );
+
+        }finally{
+
+            button.disabled =
+            false;
+
+            button.textContent =
+            "Salvar alterações";
+
+        }
+
+    }
 );
 
-return;
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+function closeEditModal(){
+
+    document
+    .getElementById(
+        "editModal"
+    )
+    .classList.remove(
+        "show"
+    );
+
+    editData = null;
 
 }
 
 
-let image={
-
-imageUrl:
-old.imageUrl||
-old.photoUrl||
-"",
-
-imagePublicId:
-old.imagePublicId||
-old.photoPublicId||
-"",
-
-photoUrl:
-old.photoUrl||
-old.imageUrl||
-"",
-
-photoPublicId:
-old.photoPublicId||
-old.imagePublicId||
-""
-
-};
-
-
-if(file){
-
-const uploaded=
-await uploadImage(
-file,
-`vagas/${normalize(character)
-.replace(/[^a-z0-9_-]/g,"-")}`
+document
+.getElementById("closeEdit")
+.addEventListener(
+    "click",
+    closeEditModal
 );
 
 
-image={
-...uploaded,
-
-photoUrl:
-uploaded.imageUrl||"",
-
-photoPublicId:
-uploaded.imagePublicId||""
-
-};
-
-}
-
-
-await updateDoc(
-ref,
-{
-
-character,
-anime,
-obra:anime,
-status,
-
-member:
-status==="Aberta"?
-"Livre":
-old.member||"Ocupado",
-
-...image,
-
-updatedAt:
-serverTimestamp()
-
-}
+document
+.getElementById("cancelEdit")
+.addEventListener(
+    "click",
+    closeEditModal
 );
 
 
-if(
-old.character&&
-normalize(old.character)!==
-normalize(character)
-){
+document
+.getElementById("editModal")
+.addEventListener(
+    "click",
+    event => {
 
-await deleteDoc(
-doc(
-db,
-"occupiedCharacters",
-normalize(old.character)
-)
-);
+        if(
+            event.target.id
+            ===
+            "editModal"
+        ){
 
-}
+            closeEditModal();
 
+        }
 
-if(status==="Fechada"){
-
-await setDoc(
-doc(
-db,
-"occupiedCharacters",
-normalize(character)
-),
-{
-
-character,
-anime,
-obra:anime,
-
-member:
-old.member||"Ocupado",
-
-...image,
-
-updatedAt:
-serverTimestamp()
-
-}
-);
-
-}else{
-
-await deleteDoc(
-doc(
-db,
-"occupiedCharacters",
-normalize(character)
-)
-);
-
-}
-
-
-closeModal();
-
-toast(
-"Vaga atualizada!"
+    }
 );
 
 
-}catch(e){
-
-console.error(e);
-
-toast(
-e.code==="permission-denied"?
-"Sem permissão no Firestore para editar esta vaga.":
-(
-e.message||
-"Erro ao editar vaga."
-)
-);
-
-}
-
-};
-
-
-/* =========================
+/* =========================================================
    SOLICITAÇÕES
-========================= */
+========================================================= */
 
-window.renderRequests=function(){
+function loadRequests(){
 
-const c=
-document.getElementById(
-"requestsList"
-);
+    onSnapshot(
 
-const search=
-normalize(
-document.getElementById(
-"requestSearch"
-)?.value
-);
+        collection(
+            db,
+            "requests"
+        ),
 
+        snapshot => {
 
-const data=
-requestsData
-.filter(r=>
-normalize(
-r.status||
-"Pendente"
-)==="pendente"
-)
-.filter(r=>
-!search||
-normalize(r.name)
-.includes(search)||
-normalize(r.character)
-.includes(search)||
-normalize(
-r.obra||
-r.anime
-).includes(search)
-)
-.sort(
-(a,b)=>
-dateValue(b.createdAt)-
-dateValue(a.createdAt)
-);
+            requestsData = [];
+
+            snapshot.forEach(
+                docSnap => {
+
+                    requestsData.push({
+
+                        id:
+                        docSnap.id,
+
+                        ...docSnap.data()
+
+                    });
+
+                }
+            );
 
 
-if(!data.length){
+            renderRequests();
 
-c.innerHTML=
-'<div class="empty">📭 Nenhuma solicitação pendente.</div>';
+            updateStats();
 
-return;
+        },
+
+        error => {
+
+            console.error(
+                "Requests:",
+                error
+            );
+
+        }
+
+    );
 
 }
 
 
-c.innerHTML=data.map(r=>
+function renderRequests(){
 
-`<div class="request">
+    const container =
+    document.getElementById(
+        "requestsList"
+    );
 
-${r.photoUrl?
-`<img
-src="${escapeHTML(r.photoUrl)}"
-alt="Foto de ${escapeHTML(r.name||"membro")}"
-style="
-width:90px;
-height:90px;
-object-fit:cover;
-border-radius:12px;
-margin-bottom:10px
-">`
-:""}
-
-<div class="request-head">
-
-<div>
-
-<h3>
-🎭 ${escapeHTML(
-r.character||
-"Personagem"
-)}
-</h3>
-
-<div class="muted">
-👤 ${escapeHTML(
-r.name||
-"Sem nome"
-)}
-</div>
-
-</div>
-
-<span class="status open">
-${escapeHTML(
-r.requestType||
-"Pendente"
-)}
-</span>
-
-</div>
-
-<p class="muted">
-🎬 ${escapeHTML(
-r.obra||
-r.anime||
-"Obra não informada"
-)}
-</p>
-
-${r.age?
-`<p>🎂 Idade: ${escapeHTML(r.age)}</p>`
-:""}
-
-${r.message?
-`<p>💬 ${escapeHTML(r.message)}</p>`
-:""}
-
-<small class="muted">
-${formatDate(r.createdAt)}
-</small>
-
-<div class="request-actions">
-
-<button
-class="action success"
-onclick="approveRequest('${r.id}')">
-✅ Aprovar
-</button>
-
-<button
-class="action danger"
-onclick="rejectRequest('${r.id}')">
-❌ Recusar
-</button>
-
-<button
-class="action danger"
-onclick="deleteRequest('${r.id}')">
-🗑️ Excluir
-</button>
-
-</div>
-
-</div>`
-
-).join("");
-
-};
+    const search =
+    normalize(
+        document.getElementById(
+            "requestSearch"
+        )?.value
+    );
 
 
-function countName(name){
+    let list =
+    requestsData;
 
-return membersData.filter(
-m=>
-normalize(m.name)===
-normalize(name)
-).length;
+
+    if(search){
+
+        list =
+        list.filter(
+            item => {
+
+                return (
+
+                    normalize(
+                        item.name
+                    ).includes(search)
+
+                    ||
+
+                    normalize(
+                        item.character
+                    ).includes(search)
+
+                );
+
+            }
+        );
+
+    }
+
+
+    if(!list.length){
+
+        container.innerHTML = `
+
+            <div class="empty">
+                Nenhuma solicitação encontrada.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    list.sort(
+        (a,b) => {
+
+            const aTime =
+            a.createdAt?.seconds ||
+            0;
+
+            const bTime =
+            b.createdAt?.seconds ||
+            0;
+
+            return bTime - aTime;
+
+        }
+    );
+
+
+    container.innerHTML =
+
+    list
+    .map(
+        item => {
+
+            const pending =
+            String(
+                item.status || "pending"
+            ).toLowerCase()
+            === "pending";
+
+
+            return `
+
+                <article
+                    class="request-card"
+                >
+
+                    <div
+                        class="request-top"
+                    >
+
+                        <div>
+
+                            <div
+                                class="request-name"
+                            >
+                                ${escapeHTML(
+                                    item.name ||
+                                    "Sem nome"
+                                )}
+                            </div>
+
+                            <div
+                                class="request-info"
+                            >
+
+                                🎂 Idade:
+                                ${escapeHTML(
+                                    item.age ||
+                                    "—"
+                                )}
+
+                                <br>
+
+                                🎭 Personagem:
+                                ${escapeHTML(
+                                    item.character ||
+                                    "—"
+                                )}
+
+                                <br>
+
+                                📺 Obra:
+                                ${escapeHTML(
+                                    item.obra ||
+                                    "—"
+                                )}
+
+                                <br>
+
+                                📌 Status:
+                                ${escapeHTML(
+                                    item.status ||
+                                    "pending"
+                                )}
+
+                            </div>
+
+                        </div>
+
+
+                        ${
+                            item.photoURL
+
+                            ?
+
+                            `
+                            <img
+                                class="request-photo"
+                                src="${escapeHTML(item.photoURL)}"
+                                alt=""
+                            >
+                            `
+
+                            :
+
+                            ""
+                        }
+
+                    </div>
+
+
+                    ${
+                        item.message
+
+                        ?
+
+                        `
+                        <div
+                            class="request-message"
+                        >
+                            ${escapeHTML(
+                                item.message
+                            )}
+                        </div>
+                        `
+
+                        :
+
+                        ""
+                    }
+
+
+                    ${
+                        pending
+
+                        ?
+
+                        `
+                        <div
+                            class="request-actions"
+                        >
+
+                            <button
+                                class="btn btn-success btn-small"
+                                onclick="approveRequest('${escapeHTML(item.id)}')"
+                            >
+                                ✓ Aprovar
+                            </button>
+
+                            <button
+                                class="btn btn-danger btn-small"
+                                onclick="rejectRequest('${escapeHTML(item.id)}')"
+                            >
+                                ✕ Recusar
+                            </button>
+
+                        </div>
+                        `
+
+                        :
+
+                        ""
+                    }
+
+                </article>
+
+            `;
+
+        }
+    )
+    .join("");
 
 }
 
 
-function characterAlreadyTaken(character){
-
-const n=normalize(character);
-
-return occupiedData.some(
-x=>
-normalize(
-x.character||x.name
-)===n
+document
+.getElementById(
+    "requestSearch"
 )
-||
-membersData.some(
-x=>
-normalize(x.character)===n
-)
-||
-vagasData.some(
-x=>
-normalize(x.character)===n&&
-normalize(x.status)==="fechada"
+.addEventListener(
+    "input",
+    renderRequests
 );
 
-}
 
-
-/* =========================
+/* =========================================================
    APROVAR
-========================= */
+========================================================= */
 
-window.approveRequest=async function(id){
+window.approveRequest =
+async function(id){
 
-try{
+    const request =
+    requestsData.find(
+        item =>
+        item.id === id
+    );
 
-const requestRef=
-doc(db,"requests",id);
 
-const snap=
-await getDoc(requestRef);
+    if(!request){
 
+        return;
 
-if(!snap.exists()){
+    }
 
-toast(
-"Solicitação não encontrada."
-);
 
-return;
+    try{
 
-}
+        const character =
+        request.character ||
+        "Personagem";
 
 
-const r=snap.data();
+        await addDoc(
 
-const name=r.name||"";
+            collection(
+                db,
+                "members"
+            ),
 
-const character=
-r.character||
-r.personagem||
-"";
+            {
 
+                name:
+                request.name ||
+                "",
 
-if(!name||!character){
+                age:
+                request.age ||
+                "",
 
-toast(
-"Solicitação incompleta."
-);
+                character:
+                character,
 
-return;
+                obra:
+                request.obra ||
+                "",
 
-}
+                photoURL:
+                request.photoURL ||
+                "",
 
+                createdAt:
+                serverTimestamp(),
 
-if(countName(name)>=2){
+                approvedAt:
+                serverTimestamp()
 
-toast(
-"❌ Este membro já possui 2 personagens. Aprovação bloqueada."
-);
+            }
 
-return;
+        );
 
-}
 
+        await updateDoc(
 
-if(characterAlreadyTaken(character)){
+            doc(
+                db,
+                "requests",
+                id
+            ),
 
-toast(
-"🔒 Esse personagem já está ocupado/fechado. Aprovação bloqueada."
-);
+            {
 
-return;
+                status:"approved",
 
-}
+                approvedBy:
+                currentADM?.name ||
+                "ADM",
 
+                approvedAt:
+                serverTimestamp()
 
-const vaga=
-vagasData.find(
-v=>
-normalize(v.character)===
-normalize(character)
-);
+            }
 
+        );
 
-const imageUrl=
-r.photoUrl||
-vaga?.imageUrl||
-vaga?.photoUrl||
-"";
 
+        toast(
+            "Solicitação aprovada! ✓"
+        );
 
-const imagePublicId=
-r.photoPublicId||
-vaga?.imagePublicId||
-vaga?.photoPublicId||
-"";
 
+    }catch(error){
 
-await runTransaction(
-db,
-async tx=>{
+        console.error(error);
 
-const occRef=
-doc(
-db,
-"occupiedCharacters",
-normalize(character)
-);
+        toast(
+            "Erro ao aprovar solicitação."
+        );
 
-const occ=
-await tx.get(occRef);
-
-
-if(occ.exists())
-throw new Error(
-"Esse personagem já foi ocupado."
-);
-
-
-const freshMembers=
-membersData.filter(
-m=>
-normalize(m.name)===
-normalize(name)
-);
-
-
-if(freshMembers.length>=2)
-throw new Error(
-"Este membro já possui 2 personagens."
-);
-
-
-tx.set(
-occRef,
-{
-
-character,
-
-anime:
-r.anime||
-r.obra||
-"",
-
-obra:
-r.obra||
-r.anime||
-"",
-
-member:name,
-
-imageUrl,
-imagePublicId,
-
-photoUrl:imageUrl,
-photoPublicId:imagePublicId,
-
-approvedBy:
-currentAdm?.name||"",
-
-approvedAt:
-serverTimestamp()
-
-}
-);
-
-
-const memberRef=
-doc(
-collection(db,"members")
-);
-
-
-tx.set(
-memberRef,
-{
-
-name,
-age:r.age||"",
-character,
-
-anime:
-r.anime||
-r.obra||
-"",
-
-obra:
-r.obra||
-r.anime||
-"",
-
-slot:
-freshMembers.length+1,
-
-photoUrl:imageUrl,
-photoPublicId:imagePublicId,
-
-createdAt:
-serverTimestamp(),
-
-approvedBy:
-currentAdm?.name||""
-
-}
-);
-
-
-if(vaga){
-
-tx.update(
-doc(db,"vagas",vaga.id),
-{
-
-status:"Fechada",
-member:name,
-
-imageUrl,
-photoUrl:imageUrl,
-
-imagePublicId,
-photoPublicId,
-
-updatedAt:
-serverTimestamp()
-
-}
-);
-
-}
-
-
-tx.update(
-requestRef,
-{
-
-status:"Aprovada",
-
-approvedBy:
-currentAdm?.name||"",
-
-approvedAt:
-serverTimestamp()
-
-}
-);
-
-}
-);
-
-
-toast(
-"Solicitação aprovada!"
-);
-
-
-}catch(e){
-
-console.error(e);
-
-toast(
-e.message||
-"Erro ao aprovar solicitação."
-);
-
-}
+    }
 
 };
 
 
-/* =========================
-   RECUSAR / EXCLUIR
-========================= */
+/* =========================================================
+   RECUSAR
+========================================================= */
 
-window.rejectRequest=async function(id){
+window.rejectRequest =
+async function(id){
 
-try{
+    try{
 
-await updateDoc(
-doc(db,"requests",id),
-{
+        await updateDoc(
 
-status:"Recusada",
+            doc(
+                db,
+                "requests",
+                id
+            ),
 
-rejectedBy:
-currentAdm?.name||"",
+            {
 
-rejectedAt:
-serverTimestamp()
+                status:"rejected",
 
-}
-);
+                rejectedBy:
+                currentADM?.name ||
+                "ADM",
 
-toast(
-"Solicitação recusada."
-);
+                rejectedAt:
+                serverTimestamp()
 
-}catch(e){
+            }
 
-console.error(e);
-
-toast(
-"Erro ao recusar."
-);
-
-}
-
-};
+        );
 
 
-window.deleteRequest=async function(id){
-
-if(
-!confirm(
-"Excluir esta solicitação permanentemente?"
-)
-)
-return;
+        toast(
+            "Solicitação recusada."
+        );
 
 
-try{
+    }catch(error){
 
-await deleteDoc(
-doc(db,"requests",id)
-);
+        console.error(error);
 
-toast(
-"Solicitação excluída."
-);
+        toast(
+            "Erro ao recusar solicitação."
+        );
 
-}catch(e){
-
-console.error(e);
-
-toast(
-"Erro ao excluir solicitação."
-);
-
-}
+    }
 
 };
 
 
-/* =========================
+/* =========================================================
    MEMBROS
-========================= */
+========================================================= */
 
-window.renderMembers=function(){
+function loadMembers(){
 
-const grid=
-document.getElementById(
-"membersGrid"
-);
+    onSnapshot(
 
-const search=
-normalize(
-document.getElementById(
-"memberSearch"
-)?.value
-);
+        collection(
+            db,
+            "members"
+        ),
+
+        snapshot => {
+
+            membersData = [];
+
+            snapshot.forEach(
+                docSnap => {
+
+                    membersData.push({
+
+                        id:
+                        docSnap.id,
+
+                        ...docSnap.data()
+
+                    });
+
+                }
+            );
 
 
-const data=
-membersData
-.filter(m=>
-!search||
-normalize(m.name)
-.includes(search)||
-normalize(m.character)
-.includes(search)
+            renderMembers();
+
+            updateStats();
+
+        },
+
+        error => {
+
+            console.error(
+                "Members:",
+                error
+            );
+
+        }
+
+    );
+
+}
+
+
+function renderMembers(){
+
+    const container =
+    document.getElementById(
+        "membersList"
+    );
+
+    const search =
+    normalize(
+        document.getElementById(
+            "memberSearch"
+        )?.value
+    );
+
+
+    let list =
+    membersData;
+
+
+    if(search){
+
+        list =
+        list.filter(
+            member => {
+
+                const text =
+                    normalize(
+                        member.name
+                    )
+                    + " "
+                    +
+                    normalize(
+                        member.character
+                    )
+                    + " "
+                    +
+                    normalize(
+                        member.obra
+                    );
+
+                return text.includes(
+                    search
+                );
+
+            }
+        );
+
+    }
+
+
+    if(!list.length){
+
+        container.innerHTML = `
+
+            <div class="empty">
+                Nenhum membro encontrado.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+
+    list
+    .map(
+        member => `
+
+            <article
+                class="member-card"
+            >
+
+                <h3>
+                    ${escapeHTML(
+                        member.name ||
+                        "Sem nome"
+                    )}
+                </h3>
+
+                <div class="member-info">
+
+                    🎂 Idade:
+                    ${escapeHTML(
+                        member.age ||
+                        "—"
+                    )}
+
+                    <br>
+
+                    🎭 Personagem:
+                    ${escapeHTML(
+                        member.character ||
+                        "—"
+                    )}
+
+                    <br>
+
+                    📺 Obra:
+                    ${escapeHTML(
+                        member.obra ||
+                        "—"
+                    )}
+
+                </div>
+
+            </article>
+
+        `
+    )
+    .join("");
+
+}
+
+
+document
+.getElementById(
+    "memberSearch"
 )
-.sort(
-(a,b)=>
-String(a.name||"")
-.localeCompare(
-String(b.name||"")
-)
+.addEventListener(
+    "input",
+    renderMembers
 );
 
 
-if(!data.length){
-
-grid.innerHTML=
-'<div class="empty">👥 Nenhum membro encontrado.</div>';
-
-return;
-
-}
-
-
-grid.innerHTML=data.map(m=>
-
-`<div class="member">
-
-${m.photoUrl?
-`<img
-src="${escapeHTML(m.photoUrl)}"
-alt="Foto"
->`
-:""}
-
-<button
-class="member-delete"
-onclick="deleteMember('${m.id}')">
-🗑️
-</button>
-
-<h3>
-👤 ${escapeHTML(
-m.name||
-"Sem nome"
-)}
-</h3>
-
-${m.age?
-`<p>🎂 ${escapeHTML(m.age)} anos</p>`
-:""}
-
-<p>
-🎭 ${escapeHTML(
-m.character||
-"Sem personagem"
-)}
-</p>
-
-<p>
-🎬 ${escapeHTML(
-m.anime||
-"Não informado"
-)}
-</p>
-
-<small class="muted">
-Personagem ${escapeHTML(
-m.slot||"—"
-)}
-•
-${formatDate(m.createdAt)}
-</small>
-
-</div>`
-
-).join("");
-
-};
-
-
-/* =========================
-   EXCLUIR MEMBRO
-========================= */
-
-window.deleteMember=async function(id){
-
-if(
-!confirm(
-"Tem certeza que deseja excluir este personagem do membro?"
-)
-)
-return;
-
-
-try{
-
-const ref=
-doc(db,"members",id);
-
-const snap=
-await getDoc(ref);
-
-if(!snap.exists())
-return;
-
-const m=snap.data();
-
-
-await deleteDoc(ref);
-
-
-if(m.character){
-
-const occRef=
-doc(
-db,
-"occupiedCharacters",
-normalize(m.character)
-);
-
-const occ=
-await getDoc(occRef);
-
-
-if(occ.exists())
-await deleteDoc(occRef);
-
-
-const vaga=
-vagasData.find(
-v=>
-normalize(v.character)===
-normalize(m.character)
-);
-
-
-if(vaga){
-
-await updateDoc(
-doc(db,"vagas",vaga.id),
-{
-
-status:"Aberta",
-member:"Livre",
-updatedAt:
-serverTimestamp()
-
-}
-);
-
-}
-
-}
-
-
-toast(
-"Personagem removido e vaga liberada."
-);
-
-
-}catch(e){
-
-console.error(e);
-
-toast(
-"Erro ao excluir personagem."
-);
-
-}
-
-};
-
-
-/* =========================
-   PERFIL ADM
-========================= */
-
-function profileFor(name){
-
-return adminProfiles.find(
-p=>
-normalize(p.name)===
-normalize(name)
-);
-
-}
-
-
-function profileImage(name){
-
-return profileFor(name)?.photoUrl||"";
-
-}
-
-
-function renderMyProfile(){
-
-const p=
-profileFor(
-currentAdm?.name
-);
-
-const url=
-p?.photoUrl||"";
-
-
-document.getElementById(
-"myProfile"
-).innerHTML=
-
-`<div class="profile-box">
-
-${
-url?
-`<img
-src="${escapeHTML(url)}"
-alt="Foto"
->`
-:
-`<img
-src=""
-alt="Sem foto"
->`
-}
-
-<div class="profile-text">
-
-<h3>
-${escapeHTML(
-currentAdm?.name||
-"ADM"
-)}
-</h3>
-
-<div class="muted">
-${escapeHTML(
-currentAdm?.role||
-""
-)}
-</div>
-
-</div>
-
-</div>`;
-
-}
-
-
-async function saveAdminPhoto(){
-
-if(!currentAdm)
-return;
-
-
-const file=
-document.getElementById(
-"adminPhoto"
-).files[0];
-
-
-if(!file){
-
-toast(
-"Escolha uma foto."
-);
-
-return;
-
-}
-
-
-try{
-
-const ref=
-doc(
-db,
-"adminProfiles",
-normalize(currentAdm.name)
-);
-
-
-const uploaded=
-await uploadImage(
-file,
-`admins/${normalize(currentAdm.name)
-.replace(/[^a-z0-9_-]/g,"-")}`
-);
-
-
-await setDoc(
-ref,
-{
-
-name:currentAdm.name,
-role:currentAdm.role,
-
-photoUrl:
-uploaded.imageUrl,
-
-photoPublicId:
-uploaded.imagePublicId||"",
-
-updatedAt:
-serverTimestamp()
-
-},
-{
-merge:true
-}
-);
-
-
-document.getElementById(
-"adminPhoto"
-).value="";
-
-
-toast(
-"Foto de perfil salva!"
-);
-
-
-}catch(e){
-
-console.error(e);
-
-toast(
-e.message||
-"Não foi possível salvar a foto."
-);
-
-}
-
-}
-
-
-window.saveAdminPhoto=
-saveAdminPhoto;
-
-
-/* =========================
+/* =========================================================
    ADMS
-========================= */
+========================================================= */
 
 function renderAdmins(){
 
-const grid=
-document.getElementById(
-"adminsGrid"
-);
+    const container =
+    document.getElementById(
+        "adminsList"
+    );
 
 
-renderMyProfile();
+    container.innerHTML =
 
+    Object.entries(
+        ADMINS
+    )
+    .map(
+        ([name,data]) => `
 
-grid.innerHTML=
-ADMINS.map(adm=>{
+            <article
+                class="adm-card"
+            >
 
-const online=
-adminsOnlineData.some(
-a=>
-normalize(a.name)===
-normalize(adm.name)&&
-a.online===true
-);
+                <div
+                    class="adm-top"
+                >
 
+                    <div
+                        class="adm-avatar"
+                    >
+                        ${escapeHTML(
+                            name
+                            .charAt(0)
+                            .toUpperCase()
+                        )}
+                    </div>
 
-const url=
-profileImage(adm.name);
+                    <div>
 
+                        <h3>
+                            ${escapeHTML(
+                                name
+                            )}
+                        </h3>
 
-return `<div class="admin-card">
+                        <div
+                            class="adm-role"
+                        >
+                            ${escapeHTML(
+                                data.role
+                            )}
+                        </div>
 
-${
-url?
-`<img
-class="admin-photo"
-src="${escapeHTML(url)}"
-alt="${escapeHTML(adm.name)}"
->`
-:
-`<div class="admin-photo"></div>`
-}
+                    </div>
 
-<h3 style="text-align:center">
+                    <div
+                        class="online-dot"
+                        title="Equipe"
+                    ></div>
 
-${
-adm.role==="Dono"?
-"👑":
-adm.role==="Sub-dono"?
-"⭐":
-"🛡️"
-}
+                </div>
 
-${escapeHTML(adm.name)}
+            </article>
 
-</h3>
-
-<p style="text-align:center">
-
-<span class="online-dot ${
-online?"on":""
-}"></span>
-
-${online?"Online":"Offline"}
-
-</p>
-
-<small class="muted">
-${escapeHTML(adm.role)}
-</small>
-
-</div>`;
-
-}).join("");
+        `
+    )
+    .join("");
 
 }
 
 
-/* =========================
-   LOGS
-========================= */
-
-function renderLogs(){
-
-const c=
-document.getElementById(
-"accessLogs"
-);
-
-
-const data=
-[...logsData]
-.sort(
-(a,b)=>
-dateValue(b.createdAt)-
-dateValue(a.createdAt)
-)
-.slice(0,15);
-
-
-c.innerHTML=
-data.length?
-
-data.map(l=>
-
-`<div class="log">
-
-<b>
-${escapeHTML(
-l.name||
-"ADM"
-)}
-</b>
-
-—
-
-${escapeHTML(
-l.action||
-"Acesso"
-)}
-
-<br>
-
-<small>
-${formatDate(l.createdAt)}
-</small>
-
-</div>`
-
-).join("")
-
-:
-
-'<div class="empty">Nenhum registro ainda.</div>';
-
-}
-
-
-/* =========================
+/* =========================================================
    CHAT
-========================= */
+========================================================= */
 
-function renderChat(){
+function loadChat(){
 
-const c=
-document.getElementById(
-"chatMessages"
-);
-
-
-const data=
-[...chatData]
-.sort(
-(a,b)=>
-dateValue(a.createdAt)-
-dateValue(b.createdAt)
-);
+    const chat =
+    document.getElementById(
+        "chatMessages"
+    );
 
 
-c.innerHTML=
-data.length?
+    try{
 
-data.map(m=>{
+        const chatQuery =
+        query(
 
-const me=
-normalize(m.name)===
-normalize(
-currentAdm?.name
-);
+            collection(
+                db,
+                "adminChat"
+            ),
 
+            orderBy(
+                "createdAt",
+                "asc"
+            ),
 
-return `<div class="message ${me?"me":""}">
+            limit(100)
 
-<b>
-${escapeHTML(
-m.name||
-"ADM"
-)}
-</b>
-
-<div>
-${escapeHTML(
-m.text||
-""
-)}
-</div>
-
-<small>
-${formatDate(m.createdAt)}
-</small>
-
-</div>`;
-
-}).join("")
-
-:
-
-'<div class="empty">💬 Nenhuma mensagem ainda.</div>';
+        );
 
 
-c.scrollTop=
-c.scrollHeight;
+        onSnapshot(
+
+            chatQuery,
+
+            snapshot => {
+
+                if(snapshot.empty){
+
+                    chat.innerHTML = `
+
+                        <div class="empty">
+                            Nenhuma mensagem ainda.
+                        </div>
+
+                    `;
+
+                    return;
+
+                }
+
+
+                chat.innerHTML = "";
+
+
+                snapshot.forEach(
+                    docSnap => {
+
+                        const data =
+                        docSnap.data();
+
+
+                        const time =
+                        data.createdAt
+                        ?.toDate
+                        ?.
+                        ()
+                        ?.toLocaleTimeString(
+                            "pt-BR",
+                            {
+                                hour:"2-digit",
+                                minute:"2-digit"
+                            }
+                        )
+                        ||
+                        "";
+
+
+                        chat.innerHTML += `
+
+                            <div
+                                class="chat-message"
+                            >
+
+                                <strong>
+                                    ${escapeHTML(
+                                        data.name ||
+                                        "ADM"
+                                    )}
+                                </strong>
+
+                                <p>
+                                    ${escapeHTML(
+                                        data.message ||
+                                        ""
+                                    )}
+                                </p>
+
+                                <div
+                                    class="chat-time"
+                                >
+                                    ${time}
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+
+
+                chat.scrollTop =
+                chat.scrollHeight;
+
+            }
+
+        );
+
+    }catch(error){
+
+        console.error(
+            "Chat:",
+            error
+        );
+
+    }
 
 }
 
 
-window.sendMessage=async function(e){
+document
+.getElementById(
+    "chatForm"
+)
+.addEventListener(
+    "submit",
+    async event => {
 
-e.preventDefault();
+        event.preventDefault();
 
 
-const input=
-document.getElementById(
-"chatInput"
+        const input =
+        document.getElementById(
+            "chatInput"
+        );
+
+
+        const message =
+        input.value.trim();
+
+
+        if(!message){
+
+            return;
+
+        }
+
+
+        try{
+
+            await addDoc(
+
+                collection(
+                    db,
+                    "adminChat"
+                ),
+
+                {
+
+                    name:
+                    currentADM?.name ||
+                    "ADM",
+
+                    role:
+                    currentADM?.role ||
+                    "",
+
+                    message:
+                    message,
+
+                    createdAt:
+                    serverTimestamp()
+
+                }
+
+            );
+
+
+            input.value = "";
+
+
+        }catch(error){
+
+            console.error(error);
+
+            toast(
+                "Não foi possível enviar a mensagem."
+            );
+
+        }
+
+    }
 );
 
-const text=
-input.value.trim();
+
+/* =========================================================
+   LOGS
+========================================================= */
+
+function loadLogs(){
+
+    const container =
+    document.getElementById(
+        "homeLogs"
+    );
 
 
-if(!text||!currentAdm)
-return;
+    try{
+
+        const logsQuery =
+        query(
+
+            collection(
+                db,
+                "accessLogs"
+            ),
+
+            orderBy(
+                "createdAt",
+                "desc"
+            ),
+
+            limit(15)
+
+        );
 
 
-try{
+        onSnapshot(
 
-await addDoc(
-collection(db,"adminChat"),
-{
+            logsQuery,
 
-name:currentAdm.name,
+            snapshot => {
 
-role:currentAdm.role,
+                if(snapshot.empty){
 
-text,
+                    container.innerHTML = `
 
-createdAt:
-serverTimestamp()
+                        <div class="empty">
+                            Nenhuma atividade registrada.
+                        </div>
+
+                    `;
+
+                    return;
+
+                }
+
+
+                container.innerHTML = "";
+
+
+                snapshot.forEach(
+                    docSnap => {
+
+                        const data =
+                        docSnap.data();
+
+
+                        const time =
+                        data.createdAt
+                        ?.toDate
+                        ?.
+                        ()
+                        ?.toLocaleString(
+                            "pt-BR"
+                        )
+                        ||
+                        "Agora";
+
+
+                        container.innerHTML += `
+
+                            <div class="log">
+
+                                <strong>
+                                    ${escapeHTML(
+                                        data.name ||
+                                        data.admin ||
+                                        "ADM"
+                                    )}
+                                </strong>
+
+                                realizou:
+
+                                ${escapeHTML(
+                                    data.action ||
+                                    "atividade"
+                                )}
+
+                                <br>
+
+                                <span>
+                                    ${time}
+                                </span>
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+
+            }
+
+        );
+
+    }catch(error){
+
+        console.log(
+            "Logs:",
+            error
+        );
+
+    }
 
 }
-);
 
 
-input.value="";
+/* =========================================================
+   ONLINE
+========================================================= */
+
+function loadOnline(){
+
+    onSnapshot(
+
+        collection(
+            db,
+            "adminsOnline"
+        ),
+
+        snapshot => {
+
+            let total = 0;
+
+            snapshot.forEach(
+                docSnap => {
+
+                    const data =
+                    docSnap.data();
+
+                    if(data.online){
+
+                        total++;
+
+                    }
+
+                }
+            );
 
 
-}catch(e){
+            document
+            .getElementById(
+                "statOnline"
+            )
+            .textContent =
+            total;
 
-console.error(e);
+        },
 
-toast(
-"Não foi possível enviar."
-);
+        error => {
+
+            console.log(
+                "Online stats:",
+                error
+            );
+
+        }
+
+    );
 
 }
 
-};
+
+/* =========================================================
+   ESTATÍSTICAS
+========================================================= */
+
+function updateStats(){
+
+    document
+    .getElementById(
+        "statMembers"
+    )
+    .textContent =
+    membersData.length;
+
+
+    const characters =
+    mergedVagas()
+    .filter(
+        item =>
+        String(
+            item.status
+        ).toLowerCase()
+        ===
+        "closed"
+    );
+
+
+    document
+    .getElementById(
+        "statCharacters"
+    )
+    .textContent =
+    characters.length;
+
+
+    document
+    .getElementById(
+        "statRequests"
+    )
+    .textContent =
+    requestsData.filter(
+        item =>
+        String(
+            item.status ||
+            "pending"
+        ).toLowerCase()
+        ===
+        "pending"
+    ).length;
+
+}
+
+
+/* =========================================================
+   FINAL
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    async () => {
+
+        if(!currentADM){
+
+            return;
+
+        }
+
+
+        try{
+
+            await updateDoc(
+
+                doc(
+                    db,
+                    "adminsOnline",
+                    normalize(
+                        currentADM.name
+                    )
+                ),
+
+                {
+                    online:false
+                }
+
+            );
+
+        }catch(error){
+
+            console.log(error);
+
+        }
+
+    }
+);
 
 </script>
 
 </body>
- </html>
+
+  </html>
