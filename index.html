@@ -63,11 +63,6 @@ body{
     overflow-x:hidden;
 }
 
-
-/* ==============================
-   LUZ
-============================== */
-
 body::before{
     content:"";
 
@@ -105,11 +100,6 @@ body::before{
     }
 
 }
-
-
-/* ==============================
-   NÉVOA
-============================== */
 
 .fog{
     position:fixed;
@@ -174,11 +164,6 @@ body::before{
 
 }
 
-
-/* ==============================
-   DECORAÇÕES
-============================== */
-
 .decorations{
     position:fixed;
     inset:0;
@@ -188,11 +173,6 @@ body::before{
 
     overflow:hidden;
 }
-
-
-/* ==============================
-   LUA
-============================== */
 
 .moon{
     position:absolute;
@@ -249,11 +229,6 @@ body::before{
     }
 
 }
-
-
-/* ==============================
-   MORCEGOS
-============================== */
 
 .bat{
     position:absolute;
@@ -324,11 +299,6 @@ body::before{
 
 }
 
-
-/* ==============================
-   TEIAS
-============================== */
-
 .web{
     position:absolute;
 
@@ -386,11 +356,6 @@ body::before{
     transform:scale(-1);
 }
 
-
-/* ==============================
-   ARANHAS
-============================== */
-
 .spider{
     position:absolute;
 
@@ -411,8 +376,7 @@ body::before{
     width:1px;
     height:80px;
 
-    background:
-        rgba(220,210,230,.45);
+    background:rgba(220,210,230,.45);
 
     left:50%;
     bottom:100%;
@@ -450,11 +414,6 @@ body::before{
     }
 
 }
-
-
-/* ==============================
-   POÇÕES
-============================== */
 
 .potion{
     position:absolute;
@@ -551,11 +510,6 @@ body::before{
 
 }
 
-
-/* ==============================
-   VELAS
-============================== */
-
 .candle{
     position:absolute;
 
@@ -631,11 +585,6 @@ body::before{
 
 }
 
-
-/* ==============================
-   CONTEÚDO
-============================== */
-
 main,
 header,
 section,
@@ -644,17 +593,13 @@ footer{
     z-index:5;
 }
 
-
-/* ==============================
-   HEADER
-============================== */
-
 header{
     padding:24px 7%;
 
     display:flex;
     align-items:center;
     justify-content:space-between;
+    gap:20px;
 
     background:
         rgba(5,3,8,.62);
@@ -686,6 +631,7 @@ header{
 
 nav{
     display:flex;
+    align-items:center;
     gap:18px;
 }
 
@@ -707,10 +653,38 @@ nav a:hover{
         rgba(195,107,255,.7);
 }
 
+/* BOTÃO ADMINISTRAÇÃO */
 
-/* ==============================
-   HERO
-============================== */
+.admin-link{
+    padding:9px 13px;
+
+    border-radius:10px;
+
+    border:
+        1px solid
+        rgba(193,116,255,.45);
+
+    background:
+        rgba(111,43,151,.20);
+
+    color:#e1c5ff !important;
+
+    font-weight:bold;
+
+    box-shadow:
+        0 0 15px
+        rgba(147,65,210,.15);
+}
+
+.admin-link:hover{
+    background:
+        rgba(139,76,255,.28);
+
+    border-color:
+        rgba(211,155,255,.7);
+
+    transform:translateY(-2px);
+}
 
 .hero{
     min-height:650px;
@@ -856,10 +830,16 @@ h1 span{
         rgba(190,100,255,.08);
 }
 
+.btn-admin{
+    color:#ead9ff;
 
-/* ==============================
-   SHINOBU
-============================== */
+    background:
+        rgba(58,20,82,.75);
+
+    border:
+        1px solid
+        rgba(177,111,255,.35);
+}
 
 .witch-area{
     width:min(390px,42vw);
@@ -943,11 +923,6 @@ h1 span{
 
 }
 
-
-/* ==============================
-   SEÇÕES
-============================== */
-
 .section{
     padding:80px 7%;
 }
@@ -975,11 +950,6 @@ h1 span{
 
     color:#f8f1fb;
 }
-
-
-/* ==============================
-   CARDS
-============================== */
 
 .cards{
     display:grid;
@@ -1054,11 +1024,6 @@ h1 span{
 
     line-height:1.6;
 }
-
-
-/* ==============================
-   VAGAS
-============================== */
 
 .vagas-area{
     max-width:1100px;
@@ -1161,11 +1126,6 @@ h1 span{
 
     color:#d8a9ff;
 }
-
-
-/* ==============================
-   FORMULÁRIO
-============================== */
 
 .form-box{
     max-width:700px;
@@ -1278,11 +1238,6 @@ input[type="file"]{
     margin-top:18px;
 }
 
-
-/* ==============================
-   STATUS
-============================== */
-
 #status{
     margin-top:15px;
 
@@ -1323,11 +1278,6 @@ input[type="file"]{
         rgba(255,90,130,.2);
 }
 
-
-/* ==============================
-   FECHADOS
-============================== */
-
 .closed{
     opacity:.8;
 }
@@ -1338,11 +1288,6 @@ input[type="file"]{
 
     color:#e99aaa;
 }
-
-
-/* ==============================
-   FOOTER
-============================== */
 
 footer{
     padding:35px 7%;
@@ -1361,11 +1306,6 @@ footer{
         rgba(3,2,5,.6);
 }
 
-
-/* ==============================
-   RESPONSIVO
-============================== */
-
 @media(max-width:800px){
 
     header{
@@ -1373,7 +1313,19 @@ footer{
     }
 
     nav{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:flex-end;
+        gap:7px;
+    }
+
+    nav a:not(.admin-link){
         display:none;
+    }
+
+    .admin-link{
+        font-size:11px;
+        padding:8px 11px;
     }
 
     .hero{
@@ -1473,18 +1425,11 @@ footer{
 
 </head>
 
-
 <body>
-
-
-<!-- NÉVOA -->
 
 <div class="fog one"></div>
 <div class="fog two"></div>
 <div class="fog three"></div>
-
-
-<!-- DECORAÇÕES -->
 
 <div class="decorations">
 
@@ -1514,9 +1459,6 @@ footer{
 
 </div>
 
-
-<!-- HEADER -->
-
 <header>
 
     <div class="logo">
@@ -1541,15 +1483,18 @@ footer{
             Ficha
         </a>
 
+        <a
+            href="administracao.html"
+            class="admin-link"
+        >
+            ⚙ Administração
+        </a>
+
     </nav>
 
 </header>
 
-
 <main>
-
-
-<!-- HERO -->
 
 <section
     class="hero"
@@ -1563,23 +1508,18 @@ footer{
         </div>
 
         <h1>
-
             Entre na<br>
-
             <span>
                 House LTD.
             </span>
-
         </h1>
 
         <p>
-
             Escolha seu personagem,
             preencha sua ficha e faça
             parte da nossa quebrada.
             Aqui sua entrada começa
             pela recepção.
-
         </p>
 
         <div class="hero-buttons">
@@ -1598,12 +1538,16 @@ footer{
                 Ver vagas
             </a>
 
+            <a
+                href="administracao.html"
+                class="btn btn-admin"
+            >
+                ⚙ Administração
+            </a>
+
         </div>
 
     </div>
-
-
-    <!-- SHINOBU -->
 
     <div class="witch-area">
 
@@ -1619,9 +1563,6 @@ footer{
     </div>
 
 </section>
-
-
-<!-- COMO FUNCIONA -->
 
 <section
     class="section"
@@ -1640,7 +1581,6 @@ footer{
 
     </div>
 
-
     <div class="cards">
 
         <div class="card">
@@ -1657,7 +1597,6 @@ footer{
 
         </div>
 
-
         <div class="card">
 
             <h3>
@@ -1670,7 +1609,6 @@ footer{
             </p>
 
         </div>
-
 
         <div class="card">
 
@@ -1685,7 +1623,6 @@ footer{
             </p>
 
         </div>
-
 
         <div class="card">
 
@@ -1705,9 +1642,6 @@ footer{
 
 </section>
 
-
-<!-- VAGAS ABERTAS -->
-
 <section
     class="section"
     id="vagas"
@@ -1724,7 +1658,6 @@ footer{
         </h2>
 
     </div>
-
 
     <div
         class="vagas-area"
@@ -1748,9 +1681,6 @@ footer{
 
 </section>
 
-
-<!-- FICHA -->
-
 <section
     class="section"
     id="ficha"
@@ -1768,13 +1698,11 @@ footer{
 
     </div>
 
-
     <div class="form-box">
 
         <form id="requestForm">
 
             <div class="form-grid">
-
 
                 <div class="field">
 
@@ -1791,7 +1719,6 @@ footer{
                     >
 
                 </div>
-
 
                 <div class="field">
 
@@ -1811,7 +1738,6 @@ footer{
 
                 </div>
 
-
                 <div class="field">
 
                     <label for="character">
@@ -1828,7 +1754,6 @@ footer{
 
                 </div>
 
-
                 <div class="field">
 
                     <label for="obra">
@@ -1843,7 +1768,6 @@ footer{
                     >
 
                 </div>
-
 
                 <div class="field full">
 
@@ -1860,7 +1784,6 @@ footer{
 
                 </div>
 
-
                 <div class="field full">
 
                     <label for="message">
@@ -1875,9 +1798,7 @@ footer{
 
                 </div>
 
-
             </div>
-
 
             <p class="form-note">
 
@@ -1887,7 +1808,6 @@ footer{
 
             </p>
 
-
             <button
                 type="submit"
                 class="btn btn-primary submit"
@@ -1896,7 +1816,6 @@ footer{
                 Enviar ficha
             </button>
 
-
             <div id="status"></div>
 
         </form>
@@ -1904,9 +1823,6 @@ footer{
     </div>
 
 </section>
-
-
-<!-- PERSONAGENS OCUPADOS -->
 
 <section class="section">
 
@@ -1921,7 +1837,6 @@ footer{
         </h2>
 
     </div>
-
 
     <div
         class="vagas"
@@ -1940,16 +1855,13 @@ footer{
 
 </section>
 
-
 </main>
-
 
 <footer>
 
     HOUSE LTD • Recepção oficial
 
 </footer>
-
 
 <script type="module">
 
@@ -1959,14 +1871,12 @@ import {
 from
 "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
-
 import {
     getAuth,
     signInAnonymously
 }
 from
 "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-
 
 import {
     getFirestore,
@@ -1981,10 +1891,6 @@ import {
 from
 "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-
-/* ==============================
-   FIREBASE
-============================== */
 
 const firebaseConfig = {
 
@@ -2012,18 +1918,12 @@ const firebaseConfig = {
 const app =
 initializeApp(firebaseConfig);
 
-
 const auth =
 getAuth(app);
-
 
 const db =
 getFirestore(app);
 
-
-/* ==============================
-   CLOUDINARY
-============================== */
 
 const CLOUDINARY_CLOUD_NAME =
 "gsqmelxb";
@@ -2031,10 +1931,6 @@ const CLOUDINARY_CLOUD_NAME =
 const CLOUDINARY_UPLOAD_PRESET =
 "House LTD";
 
-
-/* ==============================
-   ELEMENTOS
-============================== */
 
 const form =
 document.getElementById(
@@ -2081,7 +1977,7 @@ try{
 
 
 /* ==============================
-   ESCAPAR HTML
+   UTILITÁRIOS
 ============================== */
 
 function escapeHTML(value){
@@ -2096,10 +1992,6 @@ function escapeHTML(value){
 }
 
 
-/* ==============================
-   NORMALIZAR
-============================== */
-
 function normalize(value){
 
     return String(value ?? "")
@@ -2108,10 +2000,6 @@ function normalize(value){
 
 }
 
-
-/* ==============================
-   STATUS
-============================== */
 
 function showStatus(
     message,
@@ -2139,22 +2027,18 @@ async function uploadImage(file){
 
     }
 
-
     const formData =
     new FormData();
-
 
     formData.append(
         "file",
         file
     );
 
-
     formData.append(
         "upload_preset",
         CLOUDINARY_UPLOAD_PRESET
     );
-
 
     const response =
     await fetch(
@@ -2168,7 +2052,6 @@ async function uploadImage(file){
 
     );
 
-
     if(!response.ok){
 
         throw new Error(
@@ -2177,10 +2060,8 @@ async function uploadImage(file){
 
     }
 
-
     const data =
     await response.json();
-
 
     return data.secure_url || "";
 
@@ -2198,13 +2079,11 @@ async function isCharacterOccupied(
     const normalized =
     normalize(character);
 
-
     if(!normalized){
 
         return false;
 
     }
-
 
     const occupiedSnap =
     await getDocs(
@@ -2216,7 +2095,6 @@ async function isCharacterOccupied(
 
     );
 
-
     for(
         const docSnap
         of occupiedSnap.docs
@@ -2224,7 +2102,6 @@ async function isCharacterOccupied(
 
         const data =
         docSnap.data();
-
 
         if(
             normalize(
@@ -2249,7 +2126,6 @@ async function isCharacterOccupied(
 
     );
 
-
     for(
         const docSnap
         of vagasSnap.docs
@@ -2258,10 +2134,10 @@ async function isCharacterOccupied(
         const data =
         docSnap.data();
 
-
         if(
 
-            data.status === "closed"
+            String(data.status || "")
+            .toLowerCase() === "closed"
 
             &&
 
@@ -2294,7 +2170,6 @@ async function pendingCharacter(
     const normalized =
     normalize(character);
 
-
     const snap =
     await getDocs(
 
@@ -2315,7 +2190,6 @@ async function pendingCharacter(
 
     );
 
-
     for(
         const docSnap
         of snap.docs
@@ -2323,7 +2197,6 @@ async function pendingCharacter(
 
         const data =
         docSnap.data();
-
 
         if(
             normalize(
@@ -2336,7 +2209,6 @@ async function pendingCharacter(
         }
 
     }
-
 
     return false;
 
@@ -2354,13 +2226,11 @@ async function countMemberCharacters(
     const normalized =
     normalize(name);
 
-
     if(!normalized){
 
         return 0;
 
     }
-
 
     const snap =
     await getDocs(
@@ -2372,16 +2242,13 @@ async function countMemberCharacters(
 
     );
 
-
     let total = 0;
-
 
     snap.forEach(
         docSnap => {
 
             const data =
             docSnap.data();
-
 
             if(
                 normalize(data.name)
@@ -2395,14 +2262,13 @@ async function countMemberCharacters(
         }
     );
 
-
     return total;
 
 }
 
 
 /* ==============================
-   VAGAS ABERTAS
+   RENDER VAGAS ABERTAS
 ============================== */
 
 function renderOpenVagas(
@@ -2445,7 +2311,6 @@ function renderOpenVagas(
             vaga.characterImage ||
             "";
 
-
             return `
 
                 <article class="vaga">
@@ -2467,12 +2332,10 @@ function renderOpenVagas(
                     }
 
                     <h3>
-
                         ${escapeHTML(
                             vaga.character ||
                             "Personagem"
                         )}
-
                     </h3>
 
                     ${
@@ -2509,7 +2372,7 @@ function renderOpenVagas(
 
 
 /* ==============================
-   VAGAS FECHADAS
+   RENDER FECHADAS
 ============================== */
 
 function renderClosedVagas(
@@ -2526,6 +2389,10 @@ function renderClosedVagas(
                     Nenhum personagem ocupado
                 </h3>
 
+                <p>
+                    As vagas ocupadas aparecerão aqui.
+                </p>
+
             </div>
 
         `;
@@ -2537,6 +2404,8 @@ function renderClosedVagas(
 
     closedVagas.innerHTML =
 
+    `<div class="vagas">` +
+
     list.map(
         vaga => {
 
@@ -2544,7 +2413,6 @@ function renderClosedVagas(
             vaga.image ||
             vaga.characterImage ||
             "";
-
 
             return `
 
@@ -2567,12 +2435,10 @@ function renderClosedVagas(
                     }
 
                     <h3>
-
                         ${escapeHTML(
                             vaga.character ||
                             "Personagem"
                         )}
-
                     </h3>
 
                     ${
@@ -2601,13 +2467,15 @@ function renderClosedVagas(
 
         }
 
-    ).join("");
+    ).join("") +
+
+    `</div>`;
 
 }
 
 
 /* ==============================
-   ENVIO
+   ENVIO DA FICHA
 ============================== */
 
 form.addEventListener(
@@ -2616,14 +2484,11 @@ form.addEventListener(
 
         event.preventDefault();
 
-
         submitButton.disabled =
         true;
 
-
         submitButton.textContent =
         "Enviando...";
-
 
         try{
 
@@ -2633,13 +2498,11 @@ form.addEventListener(
             .value
             .trim();
 
-
             const age =
             document
             .getElementById("age")
             .value
             .trim();
-
 
             const character =
             document
@@ -2647,20 +2510,17 @@ form.addEventListener(
             .value
             .trim();
 
-
             const obra =
             document
             .getElementById("obra")
             .value
             .trim();
 
-
             const message =
             document
             .getElementById("message")
             .value
             .trim();
-
 
             const photo =
             document
@@ -2782,7 +2642,6 @@ form.addEventListener(
 
             console.error(error);
 
-
             showStatus(
 
                 error.message ||
@@ -2792,12 +2651,10 @@ form.addEventListener(
 
             );
 
-
         }finally{
 
             submitButton.disabled =
             false;
-
 
             submitButton.textContent =
             "Enviar ficha";
@@ -2808,8 +2665,157 @@ form.addEventListener(
 );
 
 
+/* =========================================================
+   VAGAS — CORREÇÃO PRINCIPAL
+========================================================= */
+
+let vagasData = [];
+let occupiedData = [];
+
+
+function updateAllVagas(){
+
+    /*
+       Junta as duas coleções antes de renderizar.
+
+       Isso impede que occupiedCharacters
+       sobrescreva as vagas fechadas de "vagas".
+    */
+
+
+    const closedFromVagas =
+    vagasData
+        .filter(
+            item =>
+            String(
+                item.status || ""
+            ).toLowerCase() === "closed"
+        )
+        .map(
+            item => ({
+
+                ...item,
+
+                status:"closed"
+
+            })
+        );
+
+
+    const closedFromOccupied =
+    occupiedData
+        .map(
+            item => ({
+
+                ...item,
+
+                status:"closed"
+
+            })
+        );
+
+
+    /*
+       Remove personagens duplicados.
+    */
+
+    const closedMap =
+    new Map();
+
+
+    [
+        ...closedFromVagas,
+        ...closedFromOccupied
+    ]
+    .forEach(
+        item => {
+
+            const key =
+            normalize(
+                item.character
+            );
+
+            if(key){
+
+                closedMap.set(
+                    key,
+                    item
+                );
+
+            }
+
+        }
+    );
+
+
+    const closed =
+    Array.from(
+        closedMap.values()
+    );
+
+
+    /*
+       Personagens ocupados NÃO podem aparecer
+       na lista de vagas abertas.
+    */
+
+    const occupiedNames =
+    new Set(
+        closed.map(
+            item =>
+            normalize(
+                item.character
+            )
+        )
+    );
+
+
+    const open =
+    vagasData.filter(
+        item => {
+
+            const status =
+            String(
+                item.status || ""
+            ).toLowerCase();
+
+
+            const character =
+            normalize(
+                item.character
+            );
+
+
+            return (
+
+                status !== "closed"
+
+                &&
+
+                !occupiedNames.has(
+                    character
+                )
+
+            );
+
+        }
+    );
+
+
+    renderOpenVagas(
+        open
+    );
+
+
+    renderClosedVagas(
+        closed
+    );
+
+}
+
+
 /* ==============================
-   VAGAS FIREBASE
+   VAGAS
 ============================== */
 
 onSnapshot(
@@ -2821,20 +2827,16 @@ onSnapshot(
 
     snapshot => {
 
-        const all = [];
+        vagasData = [];
 
 
         snapshot.forEach(
             docSnap => {
 
-                const data =
-                docSnap.data();
-
-
-                all.push({
+                vagasData.push({
 
                     id:docSnap.id,
-                    ...data
+                    ...docSnap.data()
 
                 });
 
@@ -2842,28 +2844,7 @@ onSnapshot(
         );
 
 
-        const open =
-        all.filter(
-            item =>
-            item.status !== "closed"
-        );
-
-
-        const closed =
-        all.filter(
-            item =>
-            item.status === "closed"
-        );
-
-
-        renderOpenVagas(
-            open
-        );
-
-
-        renderClosedVagas(
-            closed
-        );
+        updateAllVagas();
 
     },
 
@@ -2909,20 +2890,16 @@ onSnapshot(
 
     snapshot => {
 
-        const occupied = [];
+        occupiedData = [];
 
 
         snapshot.forEach(
             docSnap => {
 
-                const data =
-                docSnap.data();
-
-
-                occupied.push({
+                occupiedData.push({
 
                     id:docSnap.id,
-                    ...data
+                    ...docSnap.data()
 
                 });
 
@@ -2930,25 +2907,7 @@ onSnapshot(
         );
 
 
-        if(occupied.length){
-
-            const current =
-            occupied.map(
-                item => ({
-
-                    ...item,
-
-                    status:"closed"
-
-                })
-            );
-
-
-            renderClosedVagas(
-                current
-            );
-
-        }
+        updateAllVagas();
 
     },
 
@@ -2967,4 +2926,4 @@ onSnapshot(
 
 </body>
 
-  </html>
+    </html>
