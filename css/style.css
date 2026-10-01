@@ -1,269 +1,410 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* ==============================================
+   HOUSE LTD — ESTILO GRAFFITI / STREET
+   ============================================== */
+
+/* --------------------------
+   🎨 PALETA DE CORES
+   -------------------------- */
+:root {
+  --preto: #000000;
+  --branco: #ffffff;
+  --azul-spray: #00a8ff;
+  --azul-claro: #66d0ff;
+  --vermelho: #ff2244;
+  --cinza-escuro: #111111;
+  --cinza-card: #1a1a1a;
+  --borda-cor: rgba(255, 255, 255, 0.15);
 }
 
-:root {
-    --preto: #000000;
-    --preto-muro: #0a0a0a;
-    --vermelho: #e50914;
-    --vermelho-claro: #ff2a2a;
-    --vermelho-escuro: #990000;
-    --branco: #ffffff;
+/* --------------------------
+   🔧 BASE
+   --------------------------
+*/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    background-color: var(--preto);
-    color: var(--branco);
-    background-image: 
-        url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
-    background-attachment: fixed;
-    min-height: 100vh;
-    font-family: 'Arial Black', Helvetica, sans-serif;
-    line-height: 1.6;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--preto);
+  color: var(--branco);
+  min-height: 100vh;
+  line-height: 1.6;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+  overflow-x: hidden;
 }
 
+/* --------------------------
+   💧 ANIMAÇÕES LEVES
+   -------------------------- */
+@keyframes drip {
+  0% { height: 0; opacity: 0; }
+  30% { opacity: 1; }
+  100% { height: 12px; opacity: 0.6; }
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes spray-fade {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes border-dash {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 0; }
+}
+
+/* --------------------------
+   📦 CONTAINER
+   -------------------------- */
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  animation: spray-fade 0.6s ease-out;
 }
 
+/* --------------------------
+   🧭 CABEÇALHO
+   -------------------------- */
 header {
-    border-bottom: 3px solid var(--vermelho);
-    padding: 30px 0;
-    margin-bottom: 40px;
-    position: relative;
+  position: relative;
+  padding: 50px 0 30px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--borda-cor);
+  overflow: hidden;
+}
+
+header::before,
+header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 120px;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(0, 168, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+header::before {
+  left: -40px;
 }
 
 header::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 100%;
-    height: 12px;
-    background: linear-gradient(180deg, var(--vermelho) 0%, transparent 100%);
-    filter: blur(3px);
-    opacity: 0.6;
+  right: -40px;
+  background: radial-gradient(ellipse at center, rgba(255, 34, 68, 0.06) 0%, transparent 70%);
 }
 
 header h1 {
-    font-size: 3.5em;
-    letter-spacing: 8px;
-    text-transform: uppercase;
-    text-shadow: 
-        0 0 10px var(--vermelho),
-        3px 3px 0 var(--vermelho);
-    position: relative;
+  font-size: 3.2em;
+  font-weight: 900;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-block;
 }
 
 header h1 span {
-    color: var(--vermelho-claro);
+  color: var(--azul-spray);
+  position: relative;
 }
 
+header h1 span::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--azul-spray) 0%, transparent 100%);
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+header p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9em;
+  margin-top: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* --------------------------
+   🔲 NAVEGAÇÃO — ESTILO LINHA
+   -------------------------- */
 nav {
-    margin-top: 25px;
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
 }
 
 nav a {
-    color: var(--branco);
-    text-decoration: none;
-    padding: 10px 18px;
-    margin: 0 5px;
-    border: 2px solid transparent;
-    position: relative;
-    transition: all 0.25s ease;
-    text-transform: uppercase;
-    font-size: 0.9em;
-    letter-spacing: 1px;
-    display: inline-block;
+  color: var(--branco);
+  text-decoration: none;
+  padding: 12px 22px;
+  border: 1px solid transparent;
+  position: relative;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+nav a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--azul-spray);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+nav a:hover::before {
+  opacity: 1;
+  box-shadow: 0 0 12px rgba(0, 168, 255, 0.25);
 }
 
 nav a:hover {
-    border-color: var(--vermelho);
-    box-shadow: 
-        inset 0 0 15px rgba(229, 9, 20, 0.4),
-        0 0 10px rgba(229, 9, 20, 0.3);
-    color: var(--vermelho-claro);
+  color: var(--azul-spray);
+  transform: translateY(-2px);
 }
 
+/* --------------------------
+   🃏 CARDS — ESTILO GRAFFITI
+   -------------------------- */
 .card {
-    background-color: var(--preto-muro);
-    border: 3px solid var(--vermelho);
-    border-radius: 2px;
-    padding: 25px;
-    margin-bottom: 25px;
-    position: relative;
-    transition: all 0.3s ease;
-    box-shadow: 
-        0 0 0 1px rgba(229, 9, 20, 0.2),
-        4px 4px 0 rgba(229, 9, 20, 0.25);
-}
-
-.card::before,
-.card::after {
-    content: '';
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    background: radial-gradient(circle, rgba(229, 9, 20, 0.15) 0%, transparent 70%);
-    border-radius: 50%;
-    pointer-events: none;
+  background-color: var(--cinza-card);
+  border: 1px solid var(--borda-cor);
+  border-radius: 2px;
+  padding: 28px;
+  margin-bottom: 24px;
+  position: relative;
+  transition: all 0.4s ease;
+  overflow: hidden;
 }
 
 .card::before {
-    top: -5px;
-    left: -5px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--azul-spray) 0%, var(--vermelho) 100%);
+  opacity: 0.6;
 }
 
 .card::after {
-    bottom: -5px;
-    right: -5px;
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle at top right, rgba(0, 168, 255, 0.06) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .card:hover {
-    transform: translate(-3px, -3px);
-    box-shadow: 
-        0 0 0 2px var(--vermelho),
-        8px 8px 0 rgba(229, 9, 20, 0.35),
-        inset 0 0 20px rgba(229, 9, 20, 0.05);
+  border-color: rgba(0, 168, 255, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 
+    0 8px 30px rgba(0, 0, 0, 0.6),
+    inset 0 0 40px rgba(0, 168, 255, 0.03);
 }
 
-.card h2, .card h3 {
-    color: var(--vermelho-claro);
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    margin-bottom: 15px;
-    position: relative;
-    display: inline-block;
+.card h2,
+.card h3 {
+  font-size: 1.4em;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 18px;
+  position: relative;
+  display: inline-block;
 }
 
-.card h2::after, .card h3::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg, var(--vermelho) 0%, transparent 100%);
+.card h2::after,
+.card h3::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: var(--azul-spray);
+  opacity: 0.7;
 }
 
+.card p {
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.8;
+}
+
+/* --------------------------
+   🔘 BOTÕES — ESTILO SPRAY
+   -------------------------- */
 .btn {
-    border: 3px solid var(--vermelho);
-    padding: 12px 28px;
-    border-radius: 2px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    display: inline-block;
-    background: transparent;
-    color: var(--branco);
-    position: relative;
-    overflow: hidden;
+  display: inline-block;
+  padding: 14px 32px;
+  border: none;
+  border-radius: 2px;
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background: transparent;
+  color: var(--branco);
+  border: 1px solid var(--branco);
 }
 
 .btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: var(--vermelho);
-    transition: left 0.3s ease;
-    z-index: -1;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 168, 255, 0.15), transparent);
+  transition: left 0.5s ease;
 }
 
 .btn:hover::before {
-    left: 0;
+  left: 100%;
 }
 
 .btn:hover {
-    color: var(--branco);
-    box-shadow: 
-        0 0 15px rgba(229, 9, 20, 0.5),
-        inset 0 0 10px rgba(255, 255, 255, 0.1);
+  border-color: var(--azul-spray);
+  color: var(--azul-spray);
+  box-shadow: 0 0 0 1px var(--azul-spray);
+  transform: translateY(-2px);
 }
 
 .btn-primary {
-    background-color: var(--vermelho);
+  background: linear-gradient(135deg, var(--azul-spray) 0%, #008fde 100%);
+  border-color: transparent;
+  color: var(--preto);
+  font-weight: 700;
 }
 
-.btn-primary::before {
-    background: var(--vermelho-escuro);
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--azul-claro) 0%, var(--azul-spray) 100%);
+  color: var(--preto);
+  box-shadow: 0 0 20px rgba(0, 168, 255, 0.3);
 }
 
+/* --------------------------
+   📝 FORMULÁRIOS
+   -------------------------- */
 form label {
-    display: block;
-    margin: 20px 0 8px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--vermelho-claro);
+  display: block;
+  margin: 24px 0 10px;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-form input, form textarea, form select {
-    width: 100%;
-    padding: 14px;
-    background-color: rgba(10, 10, 10, 0.8);
-    border: 2px solid var(--vermelho);
-    color: var(--branco);
-    border-radius: 2px;
-    font-size: 16px;
-    transition: all 0.2s ease;
+form input,
+form textarea,
+form select {
+  width: 100%;
+  padding: 15px 18px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--branco);
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+  border-radius: 2px;
 }
 
-form input:focus, form textarea:focus, form select:focus {
-    outline: none;
-    border-color: var(--vermelho-claro);
-    box-shadow: 
-        0 0 0 2px rgba(229, 9, 20, 0.3),
-        0 0 12px rgba(229, 9, 20, 0.4);
+form input:focus,
+form textarea:focus,
+form select:focus {
+  outline: none;
+  border-color: var(--azul-spray);
+  background-color: rgba(0, 168, 255, 0.03);
+  box-shadow: inset 0 0 0 1px var(--azul-spray);
 }
 
+form button {
+  margin-top: 28px;
+  width: 100%;
+}
+
+/* --------------------------
+   🦶 RODAPÉ
+   -------------------------- */
 footer {
-    border-top: 3px solid var(--vermelho);
-    margin-top: 60px;
-    padding: 25px;
-    text-align: center;
-    color: #666;
-    position: relative;
+  text-align: center;
+  padding: 40px 20px;
+  margin-top: 80px;
+  border-top: 1px solid var(--borda-cor);
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.8em;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
 }
 
 footer::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 0;
-    width: 100%;
-    height: 10px;
-    background: linear-gradient(0deg, var(--vermelho) 0%, transparent 100%);
-    filter: blur(3px);
-    opacity: 0.4;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--azul-spray), transparent);
 }
 
+/* --------------------------
+   📱 RESPONSIVO
+   -------------------------- */
 @media (max-width: 768px) {
-    header h1 {
-        font-size: 2em;
-        letter-spacing: 4px;
-    }
-    nav a {
-        display: inline-block;
-        margin: 4px 2px;
-        padding: 8px 12px;
-        font-size: 0.8em;
-    }
-    .btn {
-        width: 100%;
-        margin: 5px 0;
-        text-align: center;
-    }
-    .container {
-        padding: 10px;
-    }
+  header h1 {
+    font-size: 1.8em;
+    letter-spacing: 3px;
+  }
+
+  nav {
+    gap: 2px;
+  }
+
+  nav a {
+    padding: 8px 12px;
+    font-size: 0.75em;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 }
