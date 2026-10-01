@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Administração • House LTD</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body data-page="admin">
+
+  <div id="adminLoading" class="loading-screen">
+
+    <div class="loading-logo">
+      LTD
+    </div>
+
+    <div class="loading-bar">
+      <span></span>
+    </div>
+
+    <p>
+      Verificando acesso...
+    </p>
+
+  </div>
+
+
+  <div class="background-effects">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+
+  <!-- LOGIN -->
+
+  <section
+    id="adminLogin"
+    class="admin-login"
+  >
+
+    <div class="admin-login-card">
+
+      <div class="logo large">
+        HOUSE <span>LTD</span>
+      </div>
+
+      <span class="small-label">
+        ÁREA ADMINISTRATIVA
+      </span>
+
+      <h1>
+        Acesso restrito
+      </h1>
+
+      <p>
+        Digite seu código administrativo.
+      </p>
+
+
+      <form id="adminLoginForm">
+
+        <div class="field">
+
+          <label>
+            Código
+          </label>
+
+          <input
+            id="adminCode"
+            type="password"
+            autocomplete="off"
+            required
+            placeholder="Digite seu código"
+          >
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="button primary full"
+        >
+          Entrar
+        </button>
+
+
+        <div
+          id="adminLoginStatus"
+          class="form-status"
+        ></div>
+
+      </form>
+
+
+      <a
+        href="index.html"
+        class="back-link"
+      >
+        ← Voltar para o site
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <!-- PAINEL -->
+
+  <section
+    id="adminPanel"
+    class="admin-panel hidden"
+  >
+
+    <header class="admin-header">
+
+      <div>
+
+        <span class="small-label">
+          HOUSE LTD
+        </span>
+
+        <h1>
+          Administração
+        </h1>
+
+        <p id="adminWelcome">
+          Bem-vindo.
+        </p>
+
+      </div>
+
+
+      <div class="admin-header-actions">
+
+        <a
+          href="index.html"
+          class="button secondary"
+        >
+          Site
+        </a>
+
+        <button
+          id="logoutButton"
+          class="button danger"
+        >
+          Sair
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- STATS -->
+
+    <div class="stats-grid">
+
+      <div class="stat-card">
+
+        <span>
+          Solicitações
+        </span>
+
+        <strong id="statRequests">
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <span>
+          Vagas abertas
+        </span>
+
+        <strong id="statOpen">
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <span>
+          Vagas fechadas
+        </span>
+
+        <strong id="statClosed">
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <span>
+          Membros
+        </span>
+
+        <strong id="statMembers">
+          0
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- SOLICITAÇÕES -->
+
+    <section class="admin-section">
+
+      <div class="admin-section-header">
+
+        <div>
+
+          <span class="small-label">
+            RECEPÇÃO
+          </span>
+
+          <h2>
+            Solicitações
+          </h2>
+
+        </div>
+
+        <button
+          id="refreshAdmin"
+          class="button secondary"
+        >
+          Atualizar
+        </button>
+
+      </div>
+
+
+      <div
+        id="requestsAdminList"
+        class="admin-list"
+      ></div>
+
+    </section>
+
+
+    <!-- VAGAS -->
+
+    <section class="admin-section">
+
+      <div class="admin-section-header">
+
+        <div>
+
+          <span class="small-label">
+            PERSONAGENS
+          </span>
+
+          <h2>
+            Gerenciar vagas
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <form
+        id="vacancyForm"
+        class="glass-form admin-form"
+      >
+
+        <input
+          id="vacancyId"
+          type="hidden"
+        >
+
+
+        <div class="form-grid">
+
+          <div class="field">
+
+            <label>
+              Personagem
+            </label>
+
+            <input
+              id="vacancyCharacter"
+              required
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Obra
+            </label>
+
+            <input
+              id="vacancyWork"
+              required
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Status
+            </label>
+
+            <select id="vacancyStatus">
+
+              <option value="aberta">
+                Aberta
+              </option>
+
+              <option value="fechada">
+                Fechada
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Foto
+            </label>
+
+            <input
+              id="vacancyPhoto"
+              type="file"
+              accept="image/*"
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="form-actions">
+
+          <button
+            type="submit"
+            class="button primary"
+          >
+            Salvar vaga
+          </button>
+
+          <button
+            type="button"
+            id="cancelVacancyEdit"
+            class="button secondary"
+          >
+            Limpar
+          </button>
+
+        </div>
+
+
+        <div
+          id="vacancyStatusMessage"
+          class="form-status"
+        ></div>
+
+      </form>
+
+
+      <div
+        id="adminVacanciesList"
+        class="admin-list"
+      ></div>
+
+    </section>
+
+
+    <!-- MEMBROS -->
+
+    <section class="admin-section">
+
+      <div class="admin-section-header">
+
+        <div>
+
+          <span class="small-label">
+            COMUNIDADE
+          </span>
+
+          <h2>
+            Membros
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="adminMembersList"
+        class="admin-list"
+      ></div>
+
+    </section>
+
+
+    <!-- ADMS -->
+
+    <section class="admin-section">
+
+      <div class="admin-section-header">
+
+        <div>
+
+          <span class="small-label">
+            EQUIPE
+          </span>
+
+          <h2>
+            ADMs
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="adminProfilesList"
+        class="admin-list"
+      ></div>
+
+    </section>
+
+
+    <!-- LOGS -->
+
+    <section class="admin-section">
+
+      <div class="admin-section-header">
+
+        <div>
+
+          <span class="small-label">
+            SISTEMA
+          </span>
+
+          <h2>
+            Logs
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="logsAdminList"
+        class="admin-list"
+      ></div>
+
+    </section>
+
+  </section>
+
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="app.js"></script>
+
+</body>
+        </html>
