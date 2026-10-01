@@ -3,32 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitações — HOUSE LTD</title>
+    <title>Solicitações — Painel ADM | HOUSE LTD</title>
     <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/firebase-config.js"></script>
 </head>
 <body>
     <div class="container">
-        <header style="text-align: center;">
-            <h1>SOLICITAÇÕES <span>PENDENTES</span></h1>
-            <nav style="margin-top: 20px;">
-                <a href="painel.html">Início</a>
-                <a href="solicitacoes.html">Solicitações</a>
-                <a href="vagas-admin.html">Vagas</a>
-                <a href="membros.html">Membros</a>
-                <a href="#" id="btn-sair" style="border-color: #e50914;">Sair</a>
+        <header>
+            <h1>SOLICITAÇÕES<span>PENDENTES</span></h1>
+            <nav>
+                <a href="painel.html">INÍCIO</a>
+                <a href="solicitacoes.html" style="color: #00a8ff; border-color: #00a8ff;">SOLICITAÇÕES</a>
+                <a href="vagas.html">VAGAS</a>
+                <a href="membros.html">MEMBROS</a>
+                <a href="#" id="btn-sair">SAIR</a>
             </nav>
         </header>
 
         <main>
-            <div id="solicitacoes-lista">
-                <div class="card" style="text-align: center; padding: 40px;">
-                    <p style="color: #888; font-size: 1.1em;">🔄 Carregando solicitações...</p>
-                    <p style="color: #666; margin-top: 10px;">Nenhuma solicitação pendente.</p>
-                </div>
+            <div id="carregando" style="text-align: center; padding: 40px; display: block;">
+                <p style="color: rgba(255,255,255,0.5);">🔄 Carregando solicitações...</p>
             </div>
+            
+            <div id="lista-solicitacoes"></div>
         </main>
     </div>
-    <script src="../js/admin-auth.js"></script>
-    <script src="../js/solicitacoes.js"></script>
+
+    <script type="module" src="../js/admin-solicitacoes.js"></script>
+    <script>
+        // Logout
+        document.getElementById('btn-sair').addEventListener('click', () => {
+            localStorage.removeItem('adminLogado');
+            localStorage.removeItem('adminNome');
+            localStorage.removeItem('adminCargo');
+            window.location.href = 'login.html';
+        });
+    </script>
 </body>
 </html>
