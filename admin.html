@@ -475,632 +475,183 @@
 
 <section id="loginView" class="login">
   <div class="login-card">
-
     <div class="logo">LTD</div>
-
     <h1>Administração LTD</h1>
-
-    <p class="muted">
-      Entre com seu código administrativo.
-    </p>
-
+    <p class="muted">Entre com seu código administrativo.</p>
     <div class="field">
       <label for="adminCode">Código</label>
-
-      <input
-        id="adminCode"
-        type="password"
-        autocomplete="off"
-        placeholder="Digite seu código"
-      >
+      <input id="adminCode" type="password" autocomplete="off" placeholder="Digite seu código">
     </div>
-
-    <button
-      id="loginBtn"
-      class="btn"
-      style="width:100%"
-    >
-      Entrar
-    </button>
-
+    <button id="loginBtn" class="btn" style="width:100%">Entrar</button>
     <div id="loginMsg" class="msg"></div>
-
   </div>
 </section>
-
 
 <section id="appView" class="app hidden">
-
   <aside>
-
     <div class="brand">
-
-      <div class="mini">
-        L
-      </div>
-
+      <div class="mini">L</div>
       <div>
         <strong>House LTD</strong>
-        <span class="muted">
-          Painel administrativo
-        </span>
+        <span class="muted">Painel administrativo</span>
       </div>
-
     </div>
-
 
     <nav class="nav">
-
-      <button
-        data-view="home"
-        class="active"
-      >
-        ⌂ Início
-      </button>
-
-      <button data-view="requests">
-        ▣ Solicitações
-      </button>
-
-      <button data-view="vacancies">
-        ◇ Vagas
-      </button>
-
-      <button data-view="members">
-        ♙ Membros
-      </button>
-
-      <button data-view="admins">
-        ✦ ADMs
-      </button>
-
-      <button data-view="chat">
-        ♡ Chat
-      </button>
-
-      <button data-view="logs">
-        ◷ Logs
-      </button>
-
+      <button data-view="home" class="active">⌂ Início</button>
+      <button data-view="requests">▣ Solicitações</button>
+      <button data-view="vacancies">◇ Vagas</button>
+      <button data-view="members">♙ Membros</button>
+      <button data-view="admins">✦ ADMs</button>
+      <button data-view="chat">♡ Chat</button>
+      <button data-view="logs">◷ Logs</button>
     </nav>
 
-
     <div class="adminbox">
-
-      <div id="meName">
-        —
-      </div>
-
-      <div id="meRole" class="muted">
-        —
-      </div>
-
-      <button
-        id="logoutBtn"
-        class="btn ghost"
-        style="width:100%;margin-top:10px"
-      >
-        Sair
-      </button>
-
+      <div id="meName">—</div>
+      <div id="meRole" class="muted">—</div>
+      <button id="logoutBtn" class="btn ghost" style="width:100%;margin-top:10px">Sair</button>
     </div>
-
   </aside>
 
-
   <main>
-
     <div class="top">
-
       <div>
-
-        <h1 id="pageTitle">
-          Início
-        </h1>
-
-        <span
-          id="pageSubtitle"
-          class="muted"
-        >
-          Visão geral da House LTD
-        </span>
-
+        <h1 id="pageTitle">Início</h1>
+        <span id="pageSubtitle" class="muted">Visão geral da House LTD</span>
       </div>
-
       <div class="top-actions">
-
-        <button
-          id="refreshBtn"
-          class="btn ghost"
-        >
-          Atualizar
-        </button>
-
+        <button id="refreshBtn" class="btn ghost">Atualizar</button>
       </div>
-
     </div>
 
-
-    <!-- INÍCIO -->
-
-    <section
-      id="view-home"
-      class="view active"
-    >
-
+    <section id="view-home" class="view active">
       <div class="stats">
-
-        <div class="stat">
-          <small>
-            Solicitações pendentes
-          </small>
-
-          <b id="statRequests">
-            0
-          </b>
-        </div>
-
-
-        <div class="stat">
-          <small>
-            Vagas abertas
-          </small>
-
-          <b id="statOpen">
-            0
-          </b>
-        </div>
-
-
-        <div class="stat">
-          <small>
-            Vagas fechadas
-          </small>
-
-          <b id="statClosed">
-            0
-          </b>
-        </div>
-
-
-        <div class="stat">
-          <small>
-            Membros
-          </small>
-
-          <b id="statMembers">
-            0
-          </b>
-        </div>
-
+        <div class="stat"><small>Solicitações pendentes</small><b id="statRequests">0</b></div>
+        <div class="stat"><small>Vagas abertas</small><b id="statOpen">0</b></div>
+        <div class="stat"><small>Vagas fechadas</small><b id="statClosed">0</b></div>
+        <div class="stat"><small>Membros</small><b id="statMembers">0</b></div>
       </div>
-
-
       <div class="panel">
-
         <div class="panel-head">
-
-          <div>
-            <h2>
-              Resumo
-            </h2>
-
-            <span class="muted">
-              Dados carregados do Firebase
-            </span>
-          </div>
-
+          <div><h2>Resumo</h2><span class="muted">Dados carregados do Firebase</span></div>
         </div>
-
-        <div
-          id="homeSummary"
-          class="grid"
-        ></div>
-
+        <div id="homeSummary" class="grid"></div>
       </div>
-
     </section>
 
-
-    <!-- SOLICITAÇÕES -->
-
-    <section
-      id="view-requests"
-      class="view"
-    >
-
+    <section id="view-requests" class="view">
       <div class="panel">
-
         <div class="panel-head">
-
-          <div>
-
-            <h2>
-              Solicitações
-            </h2>
-
-            <span class="muted">
-              Aceite ou recuse fichas pendentes.
-            </span>
-
-          </div>
-
-          <button
-            class="btn ghost"
-            data-refresh-section="requests"
-          >
-            Atualizar
-          </button>
-
+          <div><h2>Solicitações</h2><span class="muted">Aceite ou recuse fichas pendentes.</span></div>
+          <button class="btn ghost" data-refresh-section="requests">Atualizar</button>
         </div>
-
         <div id="requestsList"></div>
-
       </div>
-
     </section>
 
-
-    <!-- VAGAS -->
-
-    <section
-      id="view-vacancies"
-      class="view"
-    >
-
+    <section id="view-vacancies" class="view">
       <div class="panel">
-
         <div class="panel-head">
-
-          <div>
-
-            <h2>
-              Vagas
-            </h2>
-
-            <span class="muted">
-              Abertas e fechadas ficam visíveis no painel.
-            </span>
-
-          </div>
-
-          <button
-            id="newVacancyBtn"
-            class="btn"
-          >
-            + Nova vaga
-          </button>
-
+          <div><h2>Vagas</h2><span class="muted">Abertas e fechadas ficam visíveis no painel.</span></div>
+          <button id="newVacancyBtn" class="btn">+ Nova vaga</button>
         </div>
-
-        <div
-          id="vacanciesList"
-          class="grid"
-        ></div>
-
+        <div id="vacanciesList" class="grid"></div>
       </div>
-
     </section>
 
-
-    <!-- MEMBROS -->
-
-    <section
-      id="view-members"
-      class="view"
-    >
-
+    <section id="view-members" class="view">
       <div class="panel">
-
         <div class="panel-head">
-
-          <div>
-
-            <h2>
-              Membros
-            </h2>
-
-            <span class="muted">
-              Membros aprovados.
-            </span>
-
-          </div>
-
+          <div><h2>Membros</h2><span class="muted">Membros aprovados.</span></div>
         </div>
-
-
         <div class="tablewrap">
-
           <table>
-
             <thead>
-
-              <tr>
-                <th>Nome</th>
-                <th>Idade</th>
-                <th>Personagem</th>
-                <th>Obra</th>
-                <th>Data</th>
-              </tr>
-
+              <tr><th>Nome</th><th>Idade</th><th>Personagem</th><th>Obra</th><th>Data</th></tr>
             </thead>
-
             <tbody id="membersList"></tbody>
-
           </table>
-
         </div>
-
       </div>
-
     </section>
 
-
-    <!-- ADMS -->
-
-    <section
-      id="view-admins"
-      class="view"
-    >
-
+    <section id="view-admins" class="view">
       <div class="panel">
-
         <div class="panel-head">
-
-          <div>
-
-            <h2>
-              Administradores
-            </h2>
-
-            <span class="muted">
-              Equipe oficial da LTD.
-            </span>
-
-          </div>
-
+          <div><h2>Administradores</h2><span class="muted">Equipe oficial da LTD.</span></div>
         </div>
-
-        <div
-          id="adminsList"
-          class="grid"
-        ></div>
-
+        <div id="adminsList" class="grid"></div>
       </div>
-
     </section>
 
-
-    <!-- CHAT -->
-
-    <section
-      id="view-chat"
-      class="view"
-    >
-
+    <section id="view-chat" class="view">
       <div class="panel">
-
         <div class="panel-head">
-
-          <div>
-
-            <h2>
-              Chat ADM
-            </h2>
-
-            <span class="muted">
-              Conversa interna.
-            </span>
-
-          </div>
-
+          <div><h2>Chat ADM</h2><span class="muted">Conversa interna.</span></div>
         </div>
-
-
-        <div
-          id="chatList"
-          style="max-height:420px;overflow:auto"
-        ></div>
-
-
-        <div
-          style="display:flex;gap:8px;margin-top:14px"
-        >
-
-          <input
-            id="chatInput"
-            placeholder="Escreva uma mensagem..."
-          >
-
-          <button
-            id="sendChatBtn"
-            class="btn"
-          >
-            Enviar
-          </button>
-
+        <div id="chatList" style="max-height:420px;overflow:auto"></div>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <input id="chatInput" placeholder="Escreva uma mensagem...">
+          <button id="sendChatBtn" class="btn">Enviar</button>
         </div>
-
       </div>
-
     </section>
 
-
-    <!-- LOGS -->
-
-    <section
-      id="view-logs"
-      class="view"
-    >
-
+    <section id="view-logs" class="view">
       <div class="panel">
-
         <div class="panel-head">
-
-          <div>
-
-            <h2>
-              Logs
-            </h2>
-
-            <span class="muted">
-              Ações registradas pelo painel.
-            </span>
-
-          </div>
-
+          <div><h2>Logs</h2><span class="muted">Ações registradas pelo painel.</span></div>
         </div>
-
-
         <div class="tablewrap">
-
           <table>
-
             <thead>
-
-              <tr>
-                <th>Data</th>
-                <th>ADM</th>
-                <th>Ação</th>
-                <th>Detalhes</th>
-              </tr>
-
+              <tr><th>Data</th><th>ADM</th><th>Ação</th><th>Detalhes</th></tr>
             </thead>
-
             <tbody id="logsList"></tbody>
-
           </table>
-
         </div>
-
       </div>
-
     </section>
-
   </main>
-
 </section>
 
-
-<!-- MODAL DE VAGA -->
-
-<div
-  id="modal"
-  class="modal"
->
-
+<div id="modal" class="modal">
   <div class="modal-card">
-
     <div class="panel-head">
-
-      <h2 id="modalTitle">
-        Nova vaga
-      </h2>
-
-      <button
-        id="closeModal"
-        class="btn ghost"
-      >
-        Fechar
-      </button>
-
+      <h2 id="modalTitle">Nova vaga</h2>
+      <button id="closeModal" class="btn ghost">Fechar</button>
     </div>
-
-
     <div class="field">
-
-      <label>
-        Personagem
-      </label>
-
-      <input
-        id="vacCharacter"
-        placeholder="Ex.: Rudo"
-      >
-
+      <label>Personagem</label>
+      <input id="vacCharacter" placeholder="Ex.: Rudo">
     </div>
-
-
     <div class="field">
-
-      <label>
-        Obra
-      </label>
-
-      <input
-        id="vacWork"
-        placeholder="Ex.: Gachiakuta"
-      >
-
+      <label>Obra</label>
+      <input id="vacWork" placeholder="Ex.: Gachiakuta">
     </div>
-
-
     <div class="field">
-
-      <label>
-        URL da imagem
-      </label>
-
-      <input
-        id="vacImage"
-        placeholder="URL Cloudinary"
-      >
-
+      <label>URL da imagem</label>
+      <input id="vacImage" placeholder="URL Cloudinary">
     </div>
-
-
     <div class="field">
-
-      <label>
-        Status
-      </label>
-
+      <label>Status</label>
       <select id="vacStatus">
-
-        <option value="aberta">
-          Aberta
-        </option>
-
-        <option value="fechada">
-          Fechada
-        </option>
-
+        <option value="aberta">Aberta</option>
+        <option value="fechada">Fechada</option>
       </select>
-
     </div>
-
-
-    <button
-      id="saveVacancyBtn"
-      class="btn"
-    >
-      Salvar vaga
-    </button>
-
-
-    <div
-      id="vacMsg"
-      class="msg"
-    ></div>
-
+    <button id="saveVacancyBtn" class="btn">Salvar vaga</button>
+    <div id="vacMsg" class="msg"></div>
   </div>
-
 </div>
 
-
-<div
-  id="toast"
-  class="toast hidden"
-></div>
-
+<div id="toast" class="toast hidden"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
 <script src="./app.js"></script>
 
 </body>
-  </html>
+</html>
