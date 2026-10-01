@@ -5,59 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitar Vaga — HOUSE LTD</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div class="container">
-        <header style="text-align: center;">
-            <h1>HOUSE <span>LTD</span></h1>
-            <p style="font-size: 1.2em; color: #999; margin-top: 10px;">SOLICITAR ENTRADA</p>
+        <header>
+            <h1>SOLICITAR<span>VAGA</span></h1>
+            <p>Preencha os dados abaixo para se tornar membro</p>
             <nav>
-                <a href="index.html">Início</a>
-                <a href="historia.html">História</a>
-                <a href="vagas-abertas.html">Abertas</a>
-                <a href="vagas-fechadas.html">Fechadas</a>
-                <a href="solicitar-vaga.html">Solicitar</a>
-                <a href="troca-personagem.html">Troca</a>
-                <a href="admin/login.html" style="border-color: #e50914;">Admin</a>
+                <a href="index.html">INÍCIO</a>
+                <a href="vagas-abertas.html">VAGAS ABERTAS</a>
+                <a href="vagas-fechadas.html">VAGAS FECHADAS</a>
+                <a href="troca-personagem.html">TROCA</a>
             </nav>
         </header>
 
         <main>
             <div class="card">
-                <h2>PREENCHA SUA FICHA</h2>
-                <p style="color: #999; margin-bottom: 20px;">Preencha todos os campos abaixo para solicitar sua vaga</p>
-                
                 <form id="ficha-form">
                     <label for="nome">NOME / APELIDO</label>
-                    <input type="text" id="nome" placeholder="Como você quer ser chamado" required>
+                    <input type="text" id="nome" placeholder="Como gostaria de ser chamado...">
 
-                    <label for="idade">IDADE</label>
-                    <input type="number" id="idade" placeholder="Sua idade" required>
+                    <label for="idade">IDADE *</label>
+                    <input type="number" id="idade" required placeholder="Sua idade...">
 
-                    <label for="telefone">ÚLTIMOS 4 DÍGITOS DO TELEFONE</label>
-                    <input type="text" id="telefone" maxlength="4" placeholder="Ex: 1234" required>
+                    <label for="telefone">ÚLTIMOS 4 DÍGITOS DO TELEFONE *</label>
+                    <input type="text" id="telefone" required maxlength="4" placeholder="____">
 
-                    <label for="personagem">PERSONAGEM</label>
-                    <input type="text" id="personagem" placeholder="Nome do personagem" required>
+                    <label for="personagem">PERSONAGEM *</label>
+                    <input type="text" id="personagem" required placeholder="Nome do personagem...">
 
-                    <label for="obra">OBRA / FANDOM</label>
-                    <input type="text" id="obra" placeholder="Anime, jogo, série, filme..." required>
+                    <label for="obra">OBRA / FANDOM *</label>
+                    <input type="text" id="obra" required placeholder="Nome da obra...">
 
-                    <label for="foto">LINK DA FOTO DO PERSONAGEM</label>
-                    <input type="url" id="foto" placeholder="Cole o link da imagem aqui" required>
+                    <label for="foto">FOTO DO PERSONAGEM *</label>
+                    <input type="file" id="foto" accept="image/*" required>
 
                     <label for="mensagem">INFORMAÇÕES ADICIONAIS (OPCIONAL)</label>
                     <textarea id="mensagem" rows="4" placeholder="Algo que queira nos dizer..."></textarea>
 
-                    <button type="submit" class="btn btn-primary" style="margin-top: 20px; width: 100%;">ENVIAR SOLICITAÇÃO</button>
+                    <button type="submit" class="btn btn-primary">ENVIAR SOLICITAÇÃO</button>
                 </form>
             </div>
         </main>
 
         <footer>
-            <p>© 2025 HOUSE LTD — HOUSE ALL/GERAL | TODOS OS DIREITOS RESERVADOS</p>
+            <p>© 2026 HOUSE LTD — Todos os direitos reservados</p>
         </footer>
     </div>
-    <script src="js/solicitacoes.js"></script>
+
+    <script type="module" src="js/solicitacoes.js"></script>
 </body>
 </html>
