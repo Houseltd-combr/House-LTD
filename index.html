@@ -1,1272 +1,520 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>HOUSE LTD</title>
+  <title>House LTD</title>
 
-    <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body data-page="public">
 
-<!-- =========================
-     LOADING
-========================= -->
-
-<div id="loadingScreen" class="loading-screen">
+  <div id="loadingScreen" class="loading-screen">
     <div class="loading-logo">LTD</div>
     <div class="loading-bar">
-        <span></span>
+      <span></span>
     </div>
-    <p>Entrando na HOUSE LTD...</p>
-</div>
+    <p>Carregando House LTD...</p>
+  </div>
 
+  <div class="background-effects">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
 
-<!-- =========================
-     NAVEGAÇÃO
-========================= -->
+  <header class="navbar">
 
-<header class="topbar">
-
-    <div class="brand">
-        <span>HOUSE</span> LTD
+    <div class="logo">
+      HOUSE <span>LTD</span>
     </div>
 
-    <nav id="publicNav">
-
-        <button data-page="home">Início</button>
-
-        <button data-page="vagas">Vagas</button>
-
-        <button data-page="solicitar">Solicitar</button>
-
-        <button data-page="trocar">Trocar</button>
-
-        <button data-page="membros">Membros</button>
-
-        <button data-page="historia">História</button>
-
+    <nav>
+      <a href="#inicio">Início</a>
+      <a href="#vagas">Vagas</a>
+      <a href="#solicitar">Solicitar</a>
+      <a href="#trocar">Trocar</a>
+      <a href="#membros">Membros</a>
+      <a href="#historia">História</a>
     </nav>
 
-    <button
-        id="adminOpenButton"
-        class="admin-top-button"
-    >
-        ADMIN
-    </button>
+    <a href="admin.html" class="admin-button">
+      Administração
+    </a>
 
-</header>
+  </header>
 
 
-<!-- =========================
-     CONTEÚDO PÚBLICO
-========================= -->
+  <main>
 
-<main id="publicArea">
+    <!-- HERO -->
 
+    <section id="inicio" class="hero section">
 
-<!-- =========================
-     HOME
-========================= -->
+      <div class="hero-content">
 
-<section
-    id="page-home"
-    class="page active"
->
+        <span class="small-label">HOUSE ALL • LTD</span>
 
-    <div class="hero">
-
-        <div class="hero-text">
-
-            <span class="eyebrow">
-                BEM-VINDO À
-            </span>
-
-            <h1>
-                HOUSE
-                <strong>LTD</strong>
-            </h1>
-
-            <p>
-                Um espaço para personagens, histórias,
-                amizades e experiências dentro da nossa
-                comunidade.
-            </p>
-
-            <div class="hero-buttons">
-
-                <button
-                    class="main-button"
-                    data-page="vagas"
-                >
-                    VER VAGAS
-                </button>
-
-                <button
-                    class="outline-button"
-                    data-page="solicitar"
-                >
-                    SOLICITAR PERSONAGEM
-                </button>
-
-            </div>
-
-        </div>
-
-        <div class="hero-art">
-
-            <div class="orbit orbit-one"></div>
-
-            <div class="orbit orbit-two"></div>
-
-            <div class="hero-ltd">
-                LTD
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="home-section">
-
-        <div class="section-heading">
-
-            <span>EXPLORE</span>
-
-            <h2>
-                HOUSE LTD
-            </h2>
-
-        </div>
-
-
-        <div class="feature-grid">
-
-            <button
-                class="feature-card"
-                data-page="vagas"
-            >
-                <small>01</small>
-
-                <h3>
-                    Vagas
-                </h3>
-
-                <p>
-                    Confira os personagens disponíveis
-                    e ocupados.
-                </p>
-            </button>
-
-
-            <button
-                class="feature-card"
-                data-page="solicitar"
-            >
-                <small>02</small>
-
-                <h3>
-                    Solicitar
-                </h3>
-
-                <p>
-                    Escolha seu personagem e envie
-                    sua ficha.
-                </p>
-            </button>
-
-
-            <button
-                class="feature-card"
-                data-page="trocar"
-            >
-                <small>03</small>
-
-                <h3>
-                    Trocar
-                </h3>
-
-                <p>
-                    Troque seu personagem por outro
-                    disponível.
-                </p>
-            </button>
-
-
-            <button
-                class="feature-card"
-                data-page="membros"
-            >
-                <small>04</small>
-
-                <h3>
-                    Membros
-                </h3>
-
-                <p>
-                    Encontre os membros da House LTD.
-                </p>
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     VAGAS
-========================= -->
-
-<section
-    id="page-vagas"
-    class="page"
->
-
-    <div class="page-heading">
-
-        <span>HOUSE LTD</span>
-
-        <h2>
-            Vagas
-        </h2>
+        <h1>
+          Bem-vindo à
+          <span>House LTD</span>
+        </h1>
 
         <p>
-            Confira os personagens disponíveis
-            e os personagens atualmente ocupados.
+          Uma comunidade para personagens, interação,
+          eventos, RPG e novas experiências.
         </p>
 
-    </div>
+        <div class="hero-buttons">
 
+          <a href="#vagas" class="button primary">
+            Ver vagas
+          </a>
 
-    <div class="vacancy-area">
-
-        <div class="vacancy-title">
-            <span>DISPONÍVEIS</span>
-            <h3>Vagas abertas</h3>
-        </div>
-
-        <div
-            id="openVacancies"
-            class="vacancy-grid"
-        >
-
-            <div class="empty-card">
-                Carregando vagas...
-            </div>
+          <a href="#solicitar" class="button secondary">
+            Fazer ficha
+          </a>
 
         </div>
 
-    </div>
+      </div>
 
-
-    <div class="vacancy-area">
-
-        <div class="vacancy-title closed">
-
-            <span>OCUPADOS</span>
-
-            <h3>
-                Vagas fechadas
-            </h3>
-
+      <div class="hero-decoration">
+        <div class="hero-circle">
+          LTD
         </div>
+      </div>
 
-        <div
-            id="closedVacancies"
-            class="vacancy-grid"
-        >
-
-            <div class="empty-card">
-                Carregando...
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
+    </section>
 
 
-<!-- =========================
-     SOLICITAR
-========================= -->
+    <!-- VAGAS -->
 
-<section
-    id="page-solicitar"
-    class="page"
->
+    <section id="vagas" class="section">
 
-    <div class="page-heading">
+      <div class="section-title">
 
-        <span>SUA FICHA</span>
+        <span>PERSONAGENS</span>
 
-        <h2>
-            Solicitar personagem
-        </h2>
+        <h2>Vagas disponíveis</h2>
 
         <p>
-            Preencha os dados abaixo para
-            enviar sua solicitação.
+          Escolha um personagem disponível para fazer sua ficha.
         </p>
 
-    </div>
+      </div>
 
 
-    <form
-        id="requestForm"
-        class="form-box"
-    >
+      <div class="vacancy-title">
+        <h3>Vagas abertas</h3>
+      </div>
+
+      <div id="openVacancies" class="cards-grid">
+        <div class="empty-card">
+          Carregando vagas...
+        </div>
+      </div>
+
+
+      <div class="vacancy-title closed-title">
+        <h3>Vagas fechadas</h3>
+      </div>
+
+      <div id="closedVacancies" class="cards-grid">
+        <div class="empty-card">
+          Carregando vagas...
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- SOLICITAR -->
+
+    <section id="solicitar" class="section">
+
+      <div class="section-title">
+
+        <span>RECEPÇÃO</span>
+
+        <h2>Solicitar personagem</h2>
+
+        <p>
+          Preencha sua ficha para entrar na House LTD.
+        </p>
+
+      </div>
+
+
+      <form id="requestForm" class="glass-form">
 
         <div class="form-grid">
 
-            <div class="input-group">
+          <div class="field">
 
-                <label>
-                    Nome / apelido
-                </label>
-
-                <input
-                    id="requestName"
-                    type="text"
-                    maxlength="50"
-                    placeholder="Seu nome ou apelido"
-                    required
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>
-                    Últimos 4 dígitos do telefone
-                </label>
-
-                <input
-                    id="requestPhone"
-                    type="text"
-                    inputmode="numeric"
-                    maxlength="4"
-                    pattern="[0-9]{4}"
-                    placeholder="0000"
-                    required
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>
-                    Personagem
-                </label>
-
-                <input
-                    id="requestCharacter"
-                    type="text"
-                    placeholder="Nome do personagem"
-                    required
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>
-                    Obra / fandom
-                </label>
-
-                <input
-                    id="requestWork"
-                    type="text"
-                    placeholder="Anime, jogo, série..."
-                    required
-                >
-
-            </div>
-
-        </div>
-
-
-        <div class="input-group">
-
-            <label>
-                Foto do personagem
-            </label>
+            <label>Nome / Apelido</label>
 
             <input
-                id="requestPhoto"
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                required
+              id="requestName"
+              type="text"
+              placeholder="Opcional"
             >
 
-            <img
-                id="requestPreview"
-                class="image-preview"
-                alt="Prévia"
+          </div>
+
+
+          <div class="field">
+
+            <label>Idade *</label>
+
+            <input
+              id="requestAge"
+              type="number"
+              min="1"
+              max="100"
+              required
+              placeholder="Sua idade"
             >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Últimos 4 dígitos do telefone *</label>
+
+            <input
+              id="requestPhone"
+              type="text"
+              maxlength="4"
+              inputmode="numeric"
+              pattern="[0-9]{4}"
+              required
+              placeholder="0000"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Personagem *</label>
+
+            <input
+              id="requestCharacter"
+              type="text"
+              required
+              placeholder="Nome do personagem"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Obra *</label>
+
+            <input
+              id="requestWork"
+              type="text"
+              required
+              placeholder="Anime, jogo, série..."
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Foto do personagem *</label>
+
+            <input
+              id="requestPhoto"
+              type="file"
+              accept="image/*"
+              required
+            >
+
+          </div>
 
         </div>
 
 
-        <div class="input-group">
+        <div class="photo-preview-box">
 
-            <label>
-                Mensagem
-            </label>
+          <img
+            id="requestPhotoPreview"
+            alt="Prévia"
+          >
 
-            <textarea
-                id="requestMessage"
-                maxlength="500"
-                placeholder="Alguma observação? (opcional)"
-            ></textarea>
+          <span id="requestPhotoPlaceholder">
+            Prévia da imagem
+          </span>
 
         </div>
 
 
-        <div
-            id="requestStatus"
-            class="form-status"
-        ></div>
+        <div class="field">
+
+          <label>Mensagem</label>
+
+          <textarea
+            id="requestMessage"
+            rows="4"
+            placeholder="Alguma observação? Opcional."
+          ></textarea>
+
+        </div>
 
 
         <button
-            type="submit"
-            id="requestSubmit"
-            class="main-button full"
+          type="submit"
+          class="button primary full"
         >
-            ENVIAR SOLICITAÇÃO
+          Enviar ficha
         </button>
 
-    </form>
 
-</section>
+        <div id="requestStatus" class="form-status"></div>
+
+      </form>
+
+    </section>
 
 
-<!-- =========================
-     TROCAR
-========================= -->
+    <!-- TROCA -->
 
-<section
-    id="page-trocar"
-    class="page"
->
+    <section id="trocar" class="section">
 
-    <div class="page-heading">
+      <div class="section-title">
 
-        <span>ALTERAÇÃO</span>
+        <span>TROCA</span>
 
-        <h2>
-            Trocar personagem
-        </h2>
+        <h2>Trocar personagem</h2>
 
         <p>
-            Solicite a troca do personagem
-            que você possui atualmente.
+          Solicite a troca do seu personagem atual por outro disponível.
         </p>
 
-    </div>
+      </div>
 
 
-    <form
-        id="exchangeForm"
-        class="form-box"
-    >
+      <form id="exchangeForm" class="glass-form">
 
         <div class="form-grid">
 
-            <div class="input-group">
+          <div class="field">
 
-                <label>
-                    Seu nome / apelido
-                </label>
-
-                <input
-                    id="exchangeName"
-                    required
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>
-                    Últimos 4 dígitos
-                </label>
-
-                <input
-                    id="exchangePhone"
-                    maxlength="4"
-                    inputmode="numeric"
-                    pattern="[0-9]{4}"
-                    required
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>
-                    Personagem atual
-                </label>
-
-                <input
-                    id="oldCharacter"
-                    required
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>
-                    Obra atual
-                </label>
-
-                <input
-                    id="oldWork"
-                    required
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>
-                    Novo personagem
-                </label>
-
-                <input
-                    id="newCharacter"
-                    required
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>
-                    Nova obra
-                </label>
-
-                <input
-                    id="newWork"
-                    required
-                >
-
-            </div>
-
-        </div>
-
-
-        <div class="input-group">
-
-            <label>
-                Foto do novo personagem
-            </label>
+            <label>Últimos 4 dígitos do telefone *</label>
 
             <input
-                id="exchangePhoto"
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                required
+              id="exchangePhone"
+              type="text"
+              maxlength="4"
+              inputmode="numeric"
+              pattern="[0-9]{4}"
+              required
             >
 
-            <img
-                id="exchangePreview"
-                class="image-preview"
-                alt="Prévia"
+          </div>
+
+
+          <div class="field">
+
+            <label>Personagem atual *</label>
+
+            <input
+              id="exchangeOldCharacter"
+              type="text"
+              required
             >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Obra atual *</label>
+
+            <input
+              id="exchangeOldWork"
+              type="text"
+              required
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Novo personagem *</label>
+
+            <input
+              id="exchangeNewCharacter"
+              type="text"
+              required
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Nova obra *</label>
+
+            <input
+              id="exchangeNewWork"
+              type="text"
+              required
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Nova foto *</label>
+
+            <input
+              id="exchangePhoto"
+              type="file"
+              accept="image/*"
+              required
+            >
+
+          </div>
 
         </div>
 
 
-        <div
-            id="exchangeStatus"
-            class="form-status"
-        ></div>
+        <div class="photo-preview-box">
+
+          <img
+            id="exchangePhotoPreview"
+            alt="Prévia"
+          >
+
+          <span id="exchangePhotoPlaceholder">
+            Prévia da imagem
+          </span>
+
+        </div>
 
 
         <button
-            class="main-button full"
-            type="submit"
+          type="submit"
+          class="button primary full"
         >
-            ENVIAR TROCA
+          Solicitar troca
         </button>
 
-    </form>
 
-</section>
+        <div id="exchangeStatus" class="form-status"></div>
+
+      </form>
+
+    </section>
 
 
-<!-- =========================
-     MEMBROS
-========================= -->
+    <!-- MEMBROS -->
 
-<section
-    id="page-membros"
-    class="page"
->
+    <section id="membros" class="section">
 
-    <div class="page-heading">
+      <div class="section-title">
 
         <span>HOUSE LTD</span>
 
-        <h2>
-            Membros
-        </h2>
+        <h2>Buscar membro</h2>
 
         <p>
-            Pesquise pelos membros da comunidade.
+          Encontre membros aprovados da comunidade.
         </p>
 
-    </div>
+      </div>
 
 
-    <div class="search-box">
+      <div class="search-box">
 
         <input
-            id="memberSearch"
-            placeholder="Pesquisar membro ou personagem..."
+          id="memberSearch"
+          type="search"
+          placeholder="Nome, personagem ou obra..."
         >
 
-    </div>
+      </div>
 
 
-    <div
-        id="membersGrid"
-        class="member-grid"
-    >
+      <div id="membersList" class="cards-grid">
 
         <div class="empty-card">
-            Carregando membros...
+          Digite algo para pesquisar.
         </div>
 
-    </div>
+      </div>
 
-</section>
-
-
-<!-- =========================
-     HISTÓRIA
-========================= -->
-
-<section
-    id="page-historia"
-    class="page"
->
-
-    <div class="page-heading">
-
-        <span>SOBRE NÓS</span>
-
-        <h2>
-            Nossa História
-        </h2>
-
-    </div>
+    </section>
 
 
-    <div class="history-box">
+    <!-- HISTÓRIA -->
 
-        <div class="history-line"></div>
+    <section id="historia" class="section history-section">
 
-        <h3>
-            HOUSE LTD
-        </h3>
+      <div class="section-title">
+
+        <span>OUR STORY</span>
+
+        <h2>Nossa história</h2>
+
+      </div>
+
+
+      <div class="history-card">
 
         <p>
-            A House LTD nasceu como uma comunidade
-            criada para reunir pessoas com interesses
-            em personagens, RPG, criatividade,
-            amizade e interação.
+          A House LTD nasceu como uma comunidade voltada
+          para interação, criatividade, RPG, eventos e
+          convivência entre seus membros.
         </p>
 
         <p>
-            Ao longo do tempo, a LTD foi crescendo,
-            recebendo novos membros, criando eventos,
-            atividades e novos espaços para a comunidade.
+          Hoje a LTD reúne diferentes espaços e atividades,
+          buscando manter uma comunidade ativa, organizada
+          e acolhedora.
         </p>
 
-        <p>
-            Hoje, o site existe para facilitar a
-            organização das vagas, solicitações,
-            membros e administração da House.
-        </p>
+      </div>
 
+    </section>
+
+  </main>
+
+
+  <footer>
+
+    <div class="logo">
+      HOUSE <span>LTD</span>
     </div>
 
-</section>
+    <p>
+      House LTD • House All
+    </p>
 
-</main>
+  </footer>
 
 
-<!-- =========================
-     LOGIN ADMIN
-========================= -->
+  <!-- FIREBASE -->
 
-<div
-    id="adminLogin"
-    class="modal"
->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-    <div class="modal-box">
-
-        <button
-            class="modal-close"
-            id="closeLogin"
-        >
-            ×
-        </button>
-
-        <span class="modal-label">
-            ÁREA RESTRITA
-        </span>
-
-        <h2>
-            Administração
-        </h2>
-
-        <p>
-            Digite seu código de acesso.
-        </p>
-
-        <input
-            id="adminCode"
-            type="password"
-            placeholder="Código de acesso"
-            autocomplete="off"
-        >
-
-        <div
-            id="loginStatus"
-            class="form-status"
-        ></div>
-
-        <button
-            id="loginButton"
-            class="main-button full"
-        >
-            ENTRAR
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- =========================
-     PAINEL ADMIN
-========================= -->
-
-<section
-    id="adminPanel"
-    class="admin-panel"
->
-
-    <div class="admin-sidebar">
-
-        <div class="admin-brand">
-            <span>HOUSE</span> LTD
-        </div>
-
-        <div class="admin-user">
-
-            <div
-                id="adminAvatar"
-                class="admin-avatar"
-            >
-                A
-            </div>
-
-            <div>
-
-                <strong id="adminName">
-                    Administrador
-                </strong>
-
-                <small id="adminRole">
-                    ADM
-                </small>
-
-            </div>
-
-        </div>
-
-
-        <button
-            class="admin-nav active"
-            data-admin-page="dashboard"
-        >
-            ◈ Dashboard
-        </button>
-
-        <button
-            class="admin-nav"
-            data-admin-page="requests"
-        >
-            ◇ Solicitações
-        </button>
-
-        <button
-            class="admin-nav"
-            data-admin-page="vacancies"
-        >
-            ◇ Vagas
-        </button>
-
-        <button
-            class="admin-nav"
-            data-admin-page="members"
-        >
-            ◇ Membros
-        </button>
-
-        <button
-            class="admin-nav"
-            data-admin-page="admins"
-        >
-            ◇ ADMs
-        </button>
-
-        <button
-            class="admin-nav"
-            data-admin-page="chat"
-        >
-            ◇ Chat ADM
-        </button>
-
-
-        <button
-            id="logoutButton"
-            class="logout-button"
-        >
-            Sair
-        </button>
-
-    </div>
-
-
-    <div class="admin-content">
-
-
-        <!-- DASHBOARD -->
-
-        <div
-            id="admin-dashboard"
-            class="admin-page active"
-        >
-
-            <div class="admin-heading">
-
-                <div>
-                    <span>PAINEL</span>
-
-                    <h2>
-                        Dashboard
-                    </h2>
-                </div>
-
-            </div>
-
-
-            <div class="stats-grid">
-
-                <div class="stat-card">
-
-                    <small>
-                        SOLICITAÇÕES
-                    </small>
-
-                    <strong id="statRequests">
-                        0
-                    </strong>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <small>
-                        VAGAS ABERTAS
-                    </small>
-
-                    <strong id="statOpen">
-                        0
-                    </strong>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <small>
-                        VAGAS FECHADAS
-                    </small>
-
-                    <strong id="statClosed">
-                        0
-                    </strong>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <small>
-                        MEMBROS
-                    </small>
-
-                    <strong id="statMembers">
-                        0
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <div class="dashboard-box">
-
-                <span>STATUS</span>
-
-                <h3>
-                    Sistema conectado
-                </h3>
-
-                <p id="connectionStatus">
-                    Verificando conexão...
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <!-- SOLICITAÇÕES -->
-
-        <div
-            id="admin-requests"
-            class="admin-page"
-        >
-
-            <div class="admin-heading">
-
-                <div>
-                    <span>GERENCIAMENTO</span>
-
-                    <h2>
-                        Solicitações
-                    </h2>
-                </div>
-
-            </div>
-
-
-            <div
-                id="adminRequestsList"
-                class="admin-list"
-            >
-                Carregando...
-            </div>
-
-        </div>
-
-
-        <!-- VAGAS -->
-
-        <div
-            id="admin-vacancies"
-            class="admin-page"
-        >
-
-            <div class="admin-heading">
-
-                <div>
-                    <span>GERENCIAMENTO</span>
-
-                    <h2>
-                        Vagas
-                    </h2>
-                </div>
-
-                <button
-                    id="addVacancyButton"
-                    class="main-button"
-                >
-                    + NOVA VAGA
-                </button>
-
-            </div>
-
-
-            <div
-                id="adminVacanciesList"
-                class="admin-list"
-            >
-                Carregando...
-            </div>
-
-        </div>
-
-
-        <!-- MEMBROS -->
-
-        <div
-            id="admin-members"
-            class="admin-page"
-        >
-
-            <div class="admin-heading">
-
-                <div>
-                    <span>COMUNIDADE</span>
-
-                    <h2>
-                        Membros
-                    </h2>
-                </div>
-
-            </div>
-
-
-            <div
-                id="adminMembersList"
-                class="admin-list"
-            >
-                Carregando...
-            </div>
-
-        </div>
-
-
-        <!-- ADMS -->
-
-        <div
-            id="admin-admins"
-            class="admin-page"
-        >
-
-            <div class="admin-heading">
-
-                <div>
-                    <span>EQUIPE</span>
-
-                    <h2>
-                        Administradores
-                    </h2>
-                </div>
-
-            </div>
-
-
-            <div
-                id="adminsList"
-                class="admin-list"
-            ></div>
-
-        </div>
-
-
-        <!-- CHAT -->
-
-        <div
-            id="admin-chat"
-            class="admin-page"
-        >
-
-            <div class="admin-heading">
-
-                <div>
-                    <span>STAFF</span>
-
-                    <h2>
-                        Chat ADM
-                    </h2>
-                </div>
-
-            </div>
-
-
-            <div class="chat-container">
-
-                <div
-                    id="chatMessages"
-                    class="chat-messages"
-                ></div>
-
-
-                <form
-                    id="chatForm"
-                    class="chat-form"
-                >
-
-                    <input
-                        id="chatInput"
-                        placeholder="Escreva uma mensagem..."
-                        maxlength="500"
-                    >
-
-                    <button>
-                        ENVIAR
-                    </button>
-
-                </form>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     MODAL DE VAGA
-========================= -->
-
-<div
-    id="vacancyModal"
-    class="modal"
->
-
-    <div class="modal-box large">
-
-        <button
-            id="closeVacancyModal"
-            class="modal-close"
-        >
-            ×
-        </button>
-
-        <span class="modal-label">
-            GERENCIAR
-        </span>
-
-        <h2>
-            Vaga
-        </h2>
-
-
-        <form id="vacancyForm">
-
-            <input
-                id="vacancyId"
-                type="hidden"
-            >
-
-
-            <div class="input-group">
-
-                <label>
-                    Personagem
-                </label>
-
-                <input
-                    id="vacancyCharacter"
-                    required
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>
-                    Obra
-                </label>
-
-                <input
-                    id="vacancyWork"
-                    required
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>
-                    Foto
-                </label>
-
-                <input
-                    id="vacancyPhoto"
-                    type="file"
-                    accept="image/*"
-                >
-
-                <img
-                    id="vacancyPreview"
-                    class="image-preview"
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>
-                    Status
-                </label>
-
-                <select id="vacancyStatus">
-
-                    <option value="aberta">
-                        Aberta
-                    </option>
-
-                    <option value="fechada">
-                        Fechada
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div
-                id="vacancyStatusMessage"
-                class="form-status"
-            ></div>
-
-
-            <button
-                class="main-button full"
-                type="submit"
-            >
-                SALVAR VAGA
-            </button>
-
-        </form>
-
-    </div>
-
-</div>
-
-
-<!-- FIREBASE -->
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-<script src="js/firebase.js"></script>
-
-<script src="js/script.js"></script>
+  <script src="app.js"></script>
 
 </body>
-                </html>
+    </html>
