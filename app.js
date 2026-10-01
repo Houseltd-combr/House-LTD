@@ -1,6 +1,12 @@
 /* =========================================================
    HOUSE LTD
    APP.JS — ADMINISTRAÇÃO
+   VERSÃO CORRIGIDA
+   ========================================================= */
+
+
+/* =========================================================
+   FIREBASE CONFIG
    ========================================================= */
 
 const firebaseConfig = {
@@ -108,13 +114,54 @@ const ADMIN_ACCOUNTS = {
    FIREBASE
    ========================================================= */
 
-firebase.initializeApp(firebaseConfig);
+let db = null;
+let auth = null;
+let firebaseReady = false;
+let firebaseError = null;
 
-const db =
-  firebase.firestore();
+try {
 
-const auth =
-  firebase.auth();
+  if (
+    typeof firebase === "undefined"
+  ) {
+
+    throw new Error(
+      "Firebase não foi carregado pelo navegador."
+    );
+
+  }
+
+
+  if (
+    !firebase.apps ||
+    !firebase.apps.length
+  ) {
+
+    firebase.initializeApp(
+      firebaseConfig
+    );
+
+  }
+
+
+  db =
+    firebase.firestore();
+
+  auth =
+    firebase.auth();
+
+  firebaseReady = true;
+
+} catch (error) {
+
+  firebaseError = error;
+
+  console.error(
+    "Erro ao inicializar Firebase:",
+    error
+  );
+
+}
 
 
 /* =========================================================
@@ -126,6 +173,8 @@ const state = {
   admin: null,
 
   editVacancyId: null,
+
+  editVacancyCollection: null,
 
   requests: [],
 
@@ -146,20 +195,38 @@ const state = {
    HELPERS
    ========================================================= */
 
-const $ = id =>
-  document.getElementById(id);
+function $(id) {
+
+  return document.getElementById(id);
+
+}
 
 
 function esc(value) {
 
-  return String(value ?? "")
-    .replace(/[&<>"']/g, char => ({
+  return String(
+    value ?? ""
+  ).replace(
+    /[&<>"']/g,
+    char => ({
       "&": "&amp;",
       "<": "&lt;",
       ">": "&gt;",
       '"': "&quot;",
       "'": "&#039;"
-    }[char]));
+    }[char])
+  );
+
+}
+
+
+function normalizeCode(value) {
+
+  return String(
+    value || ""
+  )
+    .trim()
+    .toUpperCase();
 
 }
 
@@ -169,7 +236,17 @@ function toast(message) {
   const element =
     $("toast");
 
-  if (!element) return;
+  if (!element) {
+
+    console.log(
+      "[LTD]",
+      message
+    );
+
+    return;
+
+  }
+
 
   element.textContent =
     message;
@@ -178,18 +255,23 @@ function toast(message) {
     "hidden"
   );
 
+
   clearTimeout(
-    window.__toastTimer
+    window.__ltdToastTimer
   );
 
-  window.__toastTimer =
-    setTimeout(() => {
 
-      element.classList.add(
-        "hidden"
-      );
+  window.__ltdToastTimer =
+    setTimeout(
+      () => {
 
-    }, 3000);
+        element.classList.add(
+          "hidden"
+        );
+
+      },
+      3500
+    );
 
 }
 
@@ -202,10 +284,18 @@ function setLoginMessage(
   const element =
     $("loginMsg");
 
-  if (!element) return;
+  if (!element) {
+
+    alert(message);
+
+    return;
+
+  }
+
 
   element.textContent =
     message;
+
 
   element.style.color =
     success
@@ -215,13 +305,26 @@ function setLoginMessage(
 }
 
 
-function normalizeCode(
-  value
+function setVacancyMessage(
+  message,
+  success = false
 ) {
 
-  return String(value || "")
-    .trim()
-    .toUpperCase();
+  const element =
+    $("vacMsg");
+
+  if (!element)
+    return;
+
+
+  element.textContent =
+    message;
+
+
+  element.style.color =
+    success
+      ? "#67e6a7"
+      : "#ff9aac";
 
 }
 
@@ -234,13 +337,26 @@ function getStoredAdmin() {
 
   try {
 
-    return JSON.parse(
+    const raw =
       sessionStorage.getItem(
         "houseLTDAdmin"
-      ) || "null"
+      );
+
+
+    if (!raw)
+      return null;
+
+
+    return JSON.parse(
+      raw
     );
 
-  } catch {
+  } catch (error) {
+
+    console.warn(
+      "Sessão inválida:",
+      error
+    );
 
     return null;
 
@@ -276,19 +392,17 @@ function clearStoredAdmin() {
 
 async function login() {
 
-  const code =
-    normalizeCode(
-      $("adminCode")?.value
-    );
+  const input =
+    $("adminCode");
 
-  const admin =
-    ADMIN_ACCOUNTS[code];
+  const button =
+    $("loginBtn");
 
 
-  if (!admin) {
+  if (!input) {
 
-    setLoginMessage(
-      "Código inválido."
+    console.error(
+      "Campo #adminCode não encontrado."
     );
 
     return;
@@ -296,9 +410,83 @@ async function login() {
   }
 
 
+  const code =
+    normalizeCode(
+      input.value
+    );
+
+
+  /* -------------------------
+     CAMPO VAZIO
+     ------------------------- */
+
+  if (!code) {
+
+    setLoginMessage(
+      "Digite seu código de acesso."
+    );
+
+    input.focus();
+
+    return;
+
+  }
+
+
+  /* -------------------------
+     CÓDIGO INVÁLIDO
+     ------------------------- */
+
+  const account =
+    ADMIN_ACCOUNTS[code];
+
+
+  if (!account) {
+
+    setLoginMessage(
+      "Código de acesso inválido."
+    );
+
+    input.focus();
+
+    input.select();
+
+    return;
+
+  }
+
+
+  /* -------------------------
+     MOSTRA CARREGAMENTO
+     ------------------------- */
+
+  if (button) {
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "Entrando...";
+
+  }
+
+
+  setLoginMessage(
+    "Código correto. Entrando...",
+    true
+  );
+
+
+  /* -------------------------
+     CRIA SESSÃO LOCAL
+     ------------------------- */
+
   state.admin = {
-    ...admin,
+
+    ...account,
+
     code
+
   };
 
 
@@ -308,46 +496,144 @@ async function login() {
 
 
   /*
-    Tenta criar uma sessão Firebase anônima.
-    O login por código é feito pelo painel.
-  */
+   * IMPORTANTE:
+   * O painel NÃO fica esperando o Firebase
+   * para abrir.
+   */
 
-  try {
+  showApp();
 
-    if (!auth.currentUser) {
 
-      await auth.signInAnonymously();
+  /*
+   * Firebase é tratado em segundo plano.
+   * Se Anonymous Auth estiver ativado,
+   * ele cria a sessão.
+   */
+
+  if (
+    firebaseReady &&
+    auth
+  ) {
+
+    try {
+
+      if (
+        !auth.currentUser
+      ) {
+
+        await auth.signInAnonymously();
+
+      }
+
+    } catch (error) {
+
+      console.warn(
+        "Autenticação anônima:",
+        error
+      );
+
+      /*
+       * Não expulsa o ADM.
+       * O código já foi validado.
+       */
+
+      toast(
+        "Painel aberto. Firebase Auth precisa ser ativado para acessar os dados."
+      );
 
     }
 
+  }
+
+
+  if (button) {
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "Entrar";
+
+  }
+
+
+  /*
+   * Carrega os dados depois de entrar.
+   */
+
+  try {
+
+    await refreshAll();
+
   } catch (error) {
 
-    console.warn(
-      "Firebase Auth:",
+    console.error(
+      "Erro ao carregar painel:",
       error
+    );
+
+    toast(
+      "Painel aberto, mas houve um erro ao carregar os dados."
     );
 
   }
 
 
-  showApp();
+  /*
+   * Log não pode impedir o login.
+   */
 
+  try {
 
-  await ensureAdminProfile();
+    await logAction(
+      "login",
+      "Entrada no painel"
+    );
 
-  await logAction(
-    "login",
-    "Entrada no painel"
-  );
+  } catch (error) {
 
-  await refreshAll();
+    console.warn(
+      "Não foi possível registrar o login:",
+      error
+    );
+
+  }
 
 }
 
 
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
 function logout() {
 
   clearStoredAdmin();
+
+  state.admin =
+    null;
+
+
+  try {
+
+    if (
+      auth &&
+      auth.currentUser
+    ) {
+
+      auth.signOut()
+        .catch(
+          error =>
+            console.warn(
+              "Logout Firebase:",
+              error
+            )
+        );
+
+    }
+
+  } catch {}
+
 
   location.reload();
 
@@ -360,129 +646,50 @@ function logout() {
 
 function showApp() {
 
-  $("loginView")
-    ?.classList
-    .add("hidden");
+  const loginView =
+    $("loginView");
 
-  $("appView")
-    ?.classList
-    .remove("hidden");
+  const appView =
+    $("appView");
 
 
-  $("meName").textContent =
-    state.admin?.name ||
-    "ADM";
+  if (loginView) {
 
-
-  $("meRole").textContent =
-    state.admin?.role ||
-    "";
-
-}
-
-
-/* =========================================================
-   PERFIL ADM
-   ========================================================= */
-
-async function ensureAdminProfile() {
-
-  if (!state.admin)
-    return;
-
-
-  try {
-
-    const query =
-      await db
-        .collection("adminProfiles")
-        .where(
-          "name",
-          "==",
-          state.admin.name
-        )
-        .limit(1)
-        .get();
-
-
-    if (query.empty) {
-
-      await db
-        .collection("adminProfiles")
-        .add({
-
-          name:
-            state.admin.name,
-
-          role:
-            state.admin.role,
-
-          status:
-            true,
-
-          createdAt:
-            firebase.firestore
-              .FieldValue
-              .serverTimestamp()
-
-        });
-
-    }
-
-  } catch (error) {
-
-    console.warn(
-      "adminProfiles:",
-      error
+    loginView.classList.add(
+      "hidden"
     );
 
   }
 
-}
 
+  if (appView) {
 
-/* =========================================================
-   LOGS
-   ========================================================= */
-
-async function logAction(
-  action,
-  details
-) {
-
-  try {
-
-    await db
-      .collection("accessLogs")
-      .add({
-
-        admin:
-          state.admin?.name ||
-          "Desconhecido",
-
-        role:
-          state.admin?.role ||
-          "",
-
-        action,
-
-        details,
-
-        createdAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
-
-      });
-
-  } catch (error) {
-
-    console.warn(
-      "log:",
-      error
+    appView.classList.remove(
+      "hidden"
     );
 
   }
+
+
+  if ($("meName")) {
+
+    $("meName").textContent =
+      state.admin?.name ||
+      "ADM";
+
+  }
+
+
+  if ($("meRole")) {
+
+    $("meRole").textContent =
+      state.admin?.role ||
+      "";
+
+  }
+
+
+  showView("home");
 
 }
 
@@ -496,7 +703,8 @@ function dateValue(data) {
   const raw =
     data?.createdAt ||
     data?.date ||
-    data?.updatedAt;
+    data?.updatedAt ||
+    data?.approvedAt;
 
 
   if (!raw)
@@ -513,15 +721,26 @@ function dateValue(data) {
   }
 
 
+  if (
+    raw instanceof Date
+  ) {
+
+    return raw.getTime();
+
+  }
+
+
   const date =
     new Date(raw);
 
 
-  return Number.isNaN(
-    date.getTime()
-  )
+  const value =
+    date.getTime();
+
+
+  return Number.isNaN(value)
     ? 0
-    : date.getTime();
+    : value;
 
 }
 
@@ -558,7 +777,9 @@ function statusIsOpen(
       vacancy?.status ||
       vacancy?.estado ||
       ""
-    ).toLowerCase();
+    )
+      .trim()
+      .toLowerCase();
 
 
   return (
@@ -584,7 +805,9 @@ function statusIsPending(
     String(
       request?.status ||
       ""
-    ).toLowerCase();
+    )
+      .trim()
+      .toLowerCase();
 
 
   return (
@@ -601,6 +824,27 @@ function statusIsPending(
 
 
 /* =========================================================
+   FIRESTORE DISPONÍVEL?
+   ========================================================= */
+
+function firestoreAvailable() {
+
+  if (!firebaseReady || !db) {
+
+    toast(
+      "Firebase não está disponível."
+    );
+
+    return false;
+
+  }
+
+  return true;
+
+}
+
+
+/* =========================================================
    LER COLEÇÃO
    ========================================================= */
 
@@ -608,6 +852,10 @@ async function getCollectionSafe(
   collectionName,
   orderField = null
 ) {
+
+  if (!db)
+    return [];
+
 
   try {
 
@@ -619,11 +867,15 @@ async function getCollectionSafe(
 
     if (orderField) {
 
-      reference =
-        reference.orderBy(
-          orderField,
-          "desc"
-        );
+      try {
+
+        reference =
+          reference.orderBy(
+            orderField,
+            "desc"
+          );
+
+      } catch {}
 
     }
 
@@ -640,6 +892,9 @@ async function getCollectionSafe(
 
         ref:
           document.ref,
+
+        collection:
+          collectionName,
 
         ...document.data()
 
@@ -674,11 +929,6 @@ async function loadRequests() {
     );
 
 
-  /*
-    Compatibilidade com
-    instalações antigas.
-  */
-
   if (!rows.length) {
 
     rows =
@@ -710,6 +960,11 @@ async function loadVacancies() {
       "createdAt"
     );
 
+
+  /*
+   * Se vagas estiver vazia,
+   * tenta a coleção antiga.
+   */
 
   if (!rows.length) {
 
@@ -757,17 +1012,31 @@ async function loadAdmins() {
 
 
   const byName =
-    new Map(
-      rows.map(
-        item => [
-          String(
-            item.name || ""
-          ).toLowerCase(),
+    new Map();
 
+
+  rows.forEach(
+    item => {
+
+      const name =
+        String(
+          item.name || ""
+        )
+          .trim()
+          .toLowerCase();
+
+
+      if (name) {
+
+        byName.set(
+          name,
           item
-        ]
-      )
-    );
+        );
+
+      }
+
+    }
+  );
 
 
   state.admins =
@@ -778,7 +1047,8 @@ async function loadAdmins() {
 
         const saved =
           byName.get(
-            base.name.toLowerCase()
+            base.name
+              .toLowerCase()
           ) || {};
 
 
@@ -834,7 +1104,16 @@ async function loadLogs() {
 
 async function refreshAll() {
 
-  await Promise.all([
+  if (!firebaseReady) {
+
+    renderAll();
+
+    return;
+
+  }
+
+
+  await Promise.allSettled([
 
     loadRequests(),
 
@@ -857,12 +1136,14 @@ async function refreshAll() {
 
 
 /* =========================================================
-   RENDER
+   RENDER GERAL
    ========================================================= */
 
 function renderAll() {
 
   renderStats();
+
+  renderHome();
 
   renderRequests();
 
@@ -875,8 +1156,6 @@ function renderAll() {
   renderChat();
 
   renderLogs();
-
-  renderHome();
 
 }
 
@@ -891,32 +1170,52 @@ function renderStats() {
     state.vacancies
       .filter(
         statusIsOpen
-      ).length;
+      )
+      .length;
 
 
   const closed =
-    state.vacancies.length -
-    open;
+    Math.max(
+      0,
+      state.vacancies.length -
+      open
+    );
 
 
-  $("statRequests")
-    .textContent =
-    state.requests.length;
+  if ($("statRequests")) {
+
+    $("statRequests")
+      .textContent =
+      state.requests.length;
+
+  }
 
 
-  $("statOpen")
-    .textContent =
-    open;
+  if ($("statOpen")) {
+
+    $("statOpen")
+      .textContent =
+      open;
+
+  }
 
 
-  $("statClosed")
-    .textContent =
-    closed;
+  if ($("statClosed")) {
+
+    $("statClosed")
+      .textContent =
+      closed;
+
+  }
 
 
-  $("statMembers")
-    .textContent =
-    state.members.length;
+  if ($("statMembers")) {
+
+    $("statMembers")
+      .textContent =
+      state.members.length;
+
+  }
 
 }
 
@@ -997,7 +1296,7 @@ function renderHome() {
 
 
 /* =========================================================
-   SOLICITAÇÕES — VISUAL
+   SOLICITAÇÕES
    ========================================================= */
 
 function renderRequests() {
@@ -1013,9 +1312,11 @@ function renderRequests() {
   if (!state.requests.length) {
 
     element.innerHTML = `
+
       <div class="empty">
         Nenhuma solicitação pendente.
       </div>
+
     `;
 
     return;
@@ -1025,7 +1326,8 @@ function renderRequests() {
 
   element.innerHTML =
     state.requests
-      .map(request => `
+      .map(
+        request => `
 
         <div
           class="card"
@@ -1037,34 +1339,28 @@ function renderRequests() {
             <div>
 
               <h3>
-                ${
-                  esc(
-                    request.name ||
-                    request.nickname ||
-                    "Sem nome"
-                  )
-                }
+                ${esc(
+                  request.name ||
+                  request.nickname ||
+                  "Sem nome"
+                )}
               </h3>
 
               <span class="muted">
 
-                ${
-                  esc(
-                    request.character ||
-                    request.personagem ||
-                    "—"
-                  )
-                }
+                ${esc(
+                  request.character ||
+                  request.personagem ||
+                  "—"
+                )}
 
                 •
 
-                ${
-                  esc(
-                    request.work ||
-                    request.obra ||
-                    "—"
-                  )
-                }
+                ${esc(
+                  request.work ||
+                  request.obra ||
+                  "—"
+                )}
 
               </span>
 
@@ -1073,7 +1369,6 @@ function renderRequests() {
 
             ${
               request.photo
-
                 ? `
 
                   <img
@@ -1083,7 +1378,6 @@ function renderRequests() {
                   >
 
                 `
-
                 : ""
             }
 
@@ -1093,25 +1387,21 @@ function renderRequests() {
           <p class="muted">
 
             Idade:
-            ${
-              esc(
-                request.age ||
-                request.idade ||
-                "—"
-              )
-            }
+            ${esc(
+              request.age ||
+              request.idade ||
+              "—"
+            )}
 
             •
 
             Últimos 4 dígitos:
-            ${
-              esc(
-                request.phoneLast4 ||
-                request.last4 ||
-                request.ultimos4 ||
-                "—"
-              )
-            }
+            ${esc(
+              request.phoneLast4 ||
+              request.last4 ||
+              request.ultimos4 ||
+              "—"
+            )}
 
           </p>
 
@@ -1145,14 +1435,15 @@ function renderRequests() {
 
         </div>
 
-      `)
+      `
+      )
       .join("");
 
 }
 
 
 /* =========================================================
-   VAGAS — VISUAL
+   VAGAS
    ========================================================= */
 
 function renderVacancies() {
@@ -1168,9 +1459,11 @@ function renderVacancies() {
   if (!state.vacancies.length) {
 
     element.innerHTML = `
+
       <div class="empty">
         Nenhuma vaga cadastrada.
       </div>
+
     `;
 
     return;
@@ -1180,124 +1473,113 @@ function renderVacancies() {
 
   element.innerHTML =
     state.vacancies
-      .map(vacancy => {
+      .map(
+        vacancy => {
 
-        const open =
-          statusIsOpen(
-            vacancy
-          );
-
-
-        /*
-          IMPORTANTE:
-          personagem e obra são
-          campos separados.
-        */
-
-        const character =
-          vacancy.character ||
-          vacancy.personagem ||
-          vacancy.name ||
-          "Sem personagem";
+          const open =
+            statusIsOpen(
+              vacancy
+            );
 
 
-        const work =
-          vacancy.work ||
-          vacancy.obra ||
-          "Sem obra";
+          const character =
+            vacancy.character ||
+            vacancy.personagem ||
+            vacancy.name ||
+            "Sem personagem";
 
 
-        return `
-
-          <div class="card">
-
-            ${
-              vacancy.image ||
-              vacancy.photo
-
-                ? `
-
-                  <img
-                    class="cover"
-                    src="${
-                      esc(
-                        vacancy.image ||
-                        vacancy.photo
-                      )
-                    }"
-                    alt=""
-                  >
-
-                `
-
-                : ""
-            }
+          const work =
+            vacancy.work ||
+            vacancy.obra ||
+            "Sem obra";
 
 
-            <div class="row">
-
-              <h3>
-                ${esc(character)}
-              </h3>
-
-              <span class="pill">
-
-                ${
-                  open
-                    ? "Aberta"
-                    : "Fechada"
-                }
-
-              </span>
-
-            </div>
+          const image =
+            vacancy.image ||
+            vacancy.photo ||
+            vacancy.characterPhoto ||
+            "";
 
 
-            <div class="muted">
+          return `
 
-              ${esc(work)}
+            <div class="card">
 
-            </div>
+              ${
+                image
+                  ? `
 
+                    <img
+                      class="cover"
+                      src="${esc(image)}"
+                      alt=""
+                    >
 
-            <div class="actions">
-
-              <button
-                class="btn ghost"
-                data-edit-vac="${esc(vacancy.id)}"
-              >
-                Editar
-              </button>
-
-
-              <button
-                class="btn ghost"
-                data-toggle-vac="${esc(vacancy.id)}"
-              >
-
-                ${
-                  open
-                    ? "Fechar"
-                    : "Abrir"
-                }
-
-              </button>
+                  `
+                  : ""
+              }
 
 
-              <button
-                class="btn danger"
-                data-delete-vac="${esc(vacancy.id)}"
-              >
-                Excluir
-              </button>
+              <div class="row">
+
+                <h3>
+                  ${esc(character)}
+                </h3>
+
+                <span class="pill">
+                  ${
+                    open
+                      ? "Aberta"
+                      : "Fechada"
+                  }
+                </span>
+
+              </div>
+
+
+              <div class="muted">
+                ${esc(work)}
+              </div>
+
+
+              <div class="actions">
+
+                <button
+                  class="btn ghost"
+                  data-edit-vac="${esc(vacancy.id)}"
+                >
+                  Editar
+                </button>
+
+
+                <button
+                  class="btn ghost"
+                  data-toggle-vac="${esc(vacancy.id)}"
+                >
+                  ${
+                    open
+                      ? "Fechar"
+                      : "Abrir"
+                  }
+                </button>
+
+
+                <button
+                  class="btn danger"
+                  data-delete-vac="${esc(vacancy.id)}"
+                >
+                  Excluir
+                </button>
+
+              </div>
 
             </div>
 
-          </div>
+          `;
 
-        `;
-
-      })
+        }
+      )
       .join("");
 
 }
@@ -1320,14 +1602,18 @@ function renderMembers() {
   if (!state.members.length) {
 
     element.innerHTML = `
+
       <tr>
+
         <td
           colspan="5"
           class="empty"
         >
           Nenhum membro aprovado.
         </td>
+
       </tr>
+
     `;
 
     return;
@@ -1337,53 +1623,42 @@ function renderMembers() {
 
   element.innerHTML =
     state.members
-      .map(member => `
+      .map(
+        member => `
 
         <tr>
 
           <td>
-            ${
-              esc(
-                member.name ||
-                member.nickname ||
-                "—"
-              )
-            }
+            ${esc(
+              member.name ||
+              member.nickname ||
+              "—"
+            )}
           </td>
-
 
           <td>
-            ${
-              esc(
-                member.age ||
-                member.idade ||
-                "—"
-              )
-            }
+            ${esc(
+              member.age ||
+              member.idade ||
+              "—"
+            )}
           </td>
-
 
           <td>
-            ${
-              esc(
-                member.character ||
-                member.personagem ||
-                "—"
-              )
-            }
+            ${esc(
+              member.character ||
+              member.personagem ||
+              "—"
+            )}
           </td>
-
 
           <td>
-            ${
-              esc(
-                member.work ||
-                member.obra ||
-                "—"
-              )
-            }
+            ${esc(
+              member.work ||
+              member.obra ||
+              "—"
+            )}
           </td>
-
 
           <td>
             ${formatDate(member)}
@@ -1391,14 +1666,15 @@ function renderMembers() {
 
         </tr>
 
-      `)
+      `
+      )
       .join("");
 
 }
 
 
 /* =========================================================
-   ADMS
+   ADMINS
    ========================================================= */
 
 function renderAdmins() {
@@ -1413,13 +1689,13 @@ function renderAdmins() {
 
   element.innerHTML =
     state.admins
-      .map(admin => `
+      .map(
+        admin => `
 
         <div class="card">
 
           ${
             admin.cover
-
               ? `
 
                 <img
@@ -1429,7 +1705,6 @@ function renderAdmins() {
                 >
 
               `
-
               : ""
           }
 
@@ -1438,7 +1713,6 @@ function renderAdmins() {
 
             ${
               admin.photo
-
                 ? `
 
                   <img
@@ -1448,7 +1722,6 @@ function renderAdmins() {
                   >
 
                 `
-
                 : `
 
                   <div class="avatar"></div>
@@ -1491,7 +1764,8 @@ function renderAdmins() {
 
         </div>
 
-      `)
+      `
+      )
       .join("");
 
 }
@@ -1514,9 +1788,11 @@ function renderChat() {
   if (!state.chat.length) {
 
     element.innerHTML = `
+
       <div class="empty">
         Nenhuma mensagem ainda.
       </div>
+
     `;
 
     return;
@@ -1526,7 +1802,8 @@ function renderChat() {
 
   element.innerHTML =
     state.chat
-      .map(message => `
+      .map(
+        message => `
 
         <div
           class="card"
@@ -1536,15 +1813,12 @@ function renderChat() {
           <div class="row">
 
             <strong>
-              ${
-                esc(
-                  message.adminName ||
-                  message.admin ||
-                  "ADM"
-                )
-              }
+              ${esc(
+                message.adminName ||
+                message.admin ||
+                "ADM"
+              )}
             </strong>
-
 
             <span class="muted">
               ${formatDate(message)}
@@ -1555,18 +1829,17 @@ function renderChat() {
 
           <div style="margin-top:7px">
 
-            ${
-              esc(
-                message.message ||
-                ""
-              )
-            }
+            ${esc(
+              message.message ||
+              ""
+            )}
 
           </div>
 
         </div>
 
-      `)
+      `
+      )
       .join("");
 
 
@@ -1593,14 +1866,18 @@ function renderLogs() {
   if (!state.logs.length) {
 
     element.innerHTML = `
+
       <tr>
+
         <td
           colspan="4"
           class="empty"
         >
           Nenhum log.
         </td>
+
       </tr>
+
     `;
 
     return;
@@ -1610,8 +1887,9 @@ function renderLogs() {
 
   element.innerHTML =
     state.logs
-      .slice(0,100)
-      .map(log => `
+      .slice(0, 100)
+      .map(
+        log => `
 
         <tr>
 
@@ -1620,20 +1898,30 @@ function renderLogs() {
           </td>
 
           <td>
-            ${esc(log.admin || "—")}
+            ${esc(
+              log.admin ||
+              "—"
+            )}
           </td>
 
           <td>
-            ${esc(log.action || "—")}
+            ${esc(
+              log.action ||
+              "—"
+            )}
           </td>
 
           <td>
-            ${esc(log.details || "—")}
+            ${esc(
+              log.details ||
+              "—"
+            )}
           </td>
 
         </tr>
 
-      `)
+      `
+      )
       .join("");
 
 }
@@ -1643,43 +1931,60 @@ function renderLogs() {
    NAVEGAÇÃO
    ========================================================= */
 
-function showView(
-  name
-) {
+function showView(name) {
 
   document
     .querySelectorAll(".view")
-    .forEach(view => {
+    .forEach(
+      view => {
 
-      view.classList.remove(
-        "active"
-      );
+        view.classList.remove(
+          "active"
+        );
 
-    });
+      }
+    );
 
 
   document
     .querySelectorAll(".nav button")
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      button.classList.remove(
-        "active"
-      );
+        button.classList.remove(
+          "active"
+        );
 
-    });
-
-
-  $("view-" + name)
-    ?.classList
-    .add("active");
+      }
+    );
 
 
-  document
-    .querySelector(
+  const view =
+    $("view-" + name);
+
+
+  if (view) {
+
+    view.classList.add(
+      "active"
+    );
+
+  }
+
+
+  const navButton =
+    document.querySelector(
       `.nav button[data-view="${name}"]`
-    )
-    ?.classList
-    .add("active");
+    );
+
+
+  if (navButton) {
+
+    navButton.classList.add(
+      "active"
+    );
+
+  }
 
 
   const titles = {
@@ -1727,12 +2032,36 @@ function showView(
     titles.home;
 
 
-  $("pageTitle").textContent =
-    title[0];
+  if ($("pageTitle")) {
+
+    $("pageTitle").textContent =
+      title[0];
+
+  }
 
 
-  $("pageSubtitle").textContent =
-    title[1];
+  if ($("pageSubtitle")) {
+
+    $("pageSubtitle").textContent =
+      title[1];
+
+  }
+
+}
+
+
+/* =========================================================
+   LOCALIZAR VAGA
+   ========================================================= */
+
+function findVacancy(
+  id
+) {
+
+  return state.vacancies.find(
+    item =>
+      item.id === id
+  ) || null;
 
 }
 
@@ -1752,8 +2081,15 @@ async function approveRequest(
     );
 
 
-  if (!request)
+  if (!request) {
+
+    toast(
+      "Solicitação não encontrada."
+    );
+
     return;
+
+  }
 
 
   const character =
@@ -1769,7 +2105,7 @@ async function approveRequest(
   if (!character || !work) {
 
     toast(
-      "A solicitação não possui personagem/obra."
+      "A solicitação não possui personagem ou obra."
     );
 
     return;
@@ -1777,49 +2113,64 @@ async function approveRequest(
   }
 
 
-  /*
-    Procura a vaga aberta
-    pelo personagem E pela obra.
-  */
-
   const vacancy =
     state.vacancies.find(
-      item =>
+      item => {
 
-        String(
-          item.character ||
-          item.personagem ||
-          item.name ||
-          ""
-        ).toLowerCase()
-        ===
-        String(
-          character
-        ).toLowerCase()
+        const itemCharacter =
+          String(
+            item.character ||
+            item.personagem ||
+            item.name ||
+            ""
+          )
+            .trim()
+            .toLowerCase();
 
-        &&
 
-        String(
-          item.work ||
-          item.obra ||
-          ""
-        ).toLowerCase()
-        ===
-        String(
-          work
-        ).toLowerCase()
+        const itemWork =
+          String(
+            item.work ||
+            item.obra ||
+            ""
+          )
+            .trim()
+            .toLowerCase();
 
-        &&
 
-        statusIsOpen(item)
+        return (
+
+          itemCharacter ===
+          String(character)
+            .trim()
+            .toLowerCase()
+
+          &&
+
+          itemWork ===
+          String(work)
+            .trim()
+            .toLowerCase()
+
+          &&
+
+          statusIsOpen(item)
+
+        );
+
+      }
     );
 
 
   try {
 
-    /* =========================
-       CRIA MEMBRO
-       ========================= */
+    if (!firestoreAvailable())
+      return;
+
+
+    /*
+     * CRIA MEMBRO
+     */
 
     await db
       .collection("members")
@@ -1835,6 +2186,12 @@ async function approveRequest(
           request.idade ||
           "",
 
+        phoneLast4:
+          request.phoneLast4 ||
+          request.last4 ||
+          request.ultimos4 ||
+          "",
+
         character,
 
         work,
@@ -1844,7 +2201,8 @@ async function approveRequest(
           "",
 
         approvedBy:
-          state.admin.name,
+          state.admin?.name ||
+          "",
 
         approvedAt:
           firebase.firestore
@@ -1859,9 +2217,9 @@ async function approveRequest(
       });
 
 
-    /* =========================
-       FECHA VAGA
-       ========================= */
+    /*
+     * FECHA A VAGA ENCONTRADA
+     */
 
     if (vacancy?.ref) {
 
@@ -1870,26 +2228,32 @@ async function approveRequest(
         status:
           "fechada",
 
-        updatedAt:
+        occupiedBy:
+          request.name ||
+          request.nickname ||
+          "",
+
+        occupiedAt:
           firebase.firestore
             .FieldValue
             .serverTimestamp(),
 
-        occupiedBy:
-          request.name ||
-          request.nickname ||
-          ""
+        updatedAt:
+          firebase.firestore
+            .FieldValue
+            .serverTimestamp()
 
       });
 
     }
 
 
-    /* =========================
-       ATUALIZA SOLICITAÇÃO
-       ========================= */
+    /*
+     * ATUALIZA SOLICITAÇÃO
+     */
 
     const collection =
+      request.collection ||
       await findRequestCollection(
         id
       );
@@ -1906,7 +2270,8 @@ async function approveRequest(
             "aprovado",
 
           approvedBy:
-            state.admin.name,
+            state.admin?.name ||
+            "",
 
           approvedAt:
             firebase.firestore
@@ -1931,13 +2296,16 @@ async function approveRequest(
 
     await refreshAll();
 
-
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Erro ao aprovar:",
+      error
+    );
+
 
     toast(
-      "Não foi possível aprovar. Verifique as regras do Firestore."
+      "Não foi possível aprovar a solicitação."
     );
 
   }
@@ -1946,7 +2314,7 @@ async function approveRequest(
 
 
 /* =========================================================
-   RECUSAR
+   RECUSAR SOLICITAÇÃO
    ========================================================= */
 
 async function rejectRequest(
@@ -1955,14 +2323,33 @@ async function rejectRequest(
 
   try {
 
+    if (!firestoreAvailable())
+      return;
+
+
+    const request =
+      state.requests.find(
+        item =>
+          item.id === id
+      );
+
+
     const collection =
+      request?.collection ||
       await findRequestCollection(
         id
       );
 
 
-    if (!collection)
+    if (!collection) {
+
+      toast(
+        "Solicitação não encontrada."
+      );
+
       return;
+
+    }
 
 
     await db
@@ -1974,7 +2361,8 @@ async function rejectRequest(
           "recusado",
 
         rejectedBy:
-          state.admin.name,
+          state.admin?.name ||
+          "",
 
         rejectedAt:
           firebase.firestore
@@ -1997,13 +2385,16 @@ async function rejectRequest(
 
     await refreshAll();
 
-
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Erro ao recusar:",
+      error
+    );
+
 
     toast(
-      "Não foi possível recusar."
+      "Não foi possível recusar a solicitação."
     );
 
   }
@@ -2018,6 +2409,10 @@ async function rejectRequest(
 async function findRequestCollection(
   id
 ) {
+
+  if (!db)
+    return null;
+
 
   try {
 
@@ -2072,64 +2467,93 @@ function openVacancyModal(
 
   const vacancy =
     id
-      ? state.vacancies.find(
-          item =>
-            item.id === id
-        )
+      ? findVacancy(id)
       : null;
 
 
-  $("modalTitle")
-    .textContent =
-    vacancy
-      ? "Editar vaga"
-      : "Nova vaga";
+  state.editVacancyCollection =
+    vacancy?.collection ||
+    "vagas";
 
 
-  $("vacCharacter").value =
-    vacancy?.character ||
-    vacancy?.personagem ||
-    vacancy?.name ||
-    "";
+  if ($("modalTitle")) {
+
+    $("modalTitle")
+      .textContent =
+      vacancy
+        ? "Editar vaga"
+        : "Nova vaga";
+
+  }
 
 
-  $("vacWork").value =
-    vacancy?.work ||
-    vacancy?.obra ||
-    "";
+  if ($("vacCharacter")) {
+
+    $("vacCharacter").value =
+      vacancy?.character ||
+      vacancy?.personagem ||
+      vacancy?.name ||
+      "";
+
+  }
 
 
-  $("vacImage").value =
-    vacancy?.image ||
-    vacancy?.photo ||
-    "";
+  if ($("vacWork")) {
+
+    $("vacWork").value =
+      vacancy?.work ||
+      vacancy?.obra ||
+      "";
+
+  }
 
 
-  $("vacStatus").value =
-    statusIsOpen(vacancy)
-      ? "aberta"
-      : "fechada";
+  if ($("vacImage")) {
+
+    $("vacImage").value =
+      vacancy?.image ||
+      vacancy?.photo ||
+      "";
+
+  }
 
 
-  $("vacMsg").textContent =
-    "";
+  if ($("vacStatus")) {
+
+    $("vacStatus").value =
+      statusIsOpen(vacancy)
+        ? "aberta"
+        : "fechada";
+
+  }
+
+
+  setVacancyMessage("");
 
 
   $("modal")
-    .classList
+    ?.classList
     .add("open");
 
 }
 
 
+/* =========================================================
+   FECHAR MODAL
+   ========================================================= */
+
 function closeVacancyModal() {
 
   $("modal")
-    .classList
+    ?.classList
     .remove("open");
 
 
   state.editVacancyId =
+    null;
+
+
+  state.editVacancyCollection =
     null;
 
 }
@@ -2143,36 +2567,41 @@ async function saveVacancy() {
 
   const character =
     $("vacCharacter")
-      .value
-      .trim();
+      ?.value
+      .trim() || "";
 
 
   const work =
     $("vacWork")
-      .value
-      .trim();
+      ?.value
+      .trim() || "";
 
 
   const image =
     $("vacImage")
-      .value
-      .trim();
+      ?.value
+      .trim() || "";
 
 
   const status =
     $("vacStatus")
-      .value;
+      ?.value ||
+      "aberta";
 
 
   if (!character || !work) {
 
-    $("vacMsg")
-      .textContent =
-      "Personagem e obra são obrigatórios.";
+    setVacancyMessage(
+      "Personagem e obra são obrigatórios."
+    );
 
     return;
 
   }
+
+
+  if (!firestoreAvailable())
+    return;
 
 
   try {
@@ -2195,10 +2624,19 @@ async function saveVacancy() {
     };
 
 
+    /*
+     * EDITAR
+     */
+
     if (state.editVacancyId) {
 
+      const collection =
+        state.editVacancyCollection ||
+        "vagas";
+
+
       await db
-        .collection("vagas")
+        .collection(collection)
         .doc(
           state.editVacancyId
         )
@@ -2215,7 +2653,14 @@ async function saveVacancy() {
         "Vaga atualizada."
       );
 
-    } else {
+    }
+
+
+    /*
+     * CRIAR
+     */
+
+    else {
 
       await db
         .collection("vagas")
@@ -2248,14 +2693,17 @@ async function saveVacancy() {
 
     await refreshAll();
 
-
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Erro ao salvar vaga:",
+      error
+    );
 
-    $("vacMsg")
-      .textContent =
-      "Erro ao salvar. Verifique as regras do Firestore.";
+
+    setVacancyMessage(
+      "Não foi possível salvar a vaga."
+    );
 
   }
 
@@ -2271,13 +2719,21 @@ async function toggleVacancy(
 ) {
 
   const vacancy =
-    state.vacancies.find(
-      item =>
-        item.id === id
+    findVacancy(id);
+
+
+  if (!vacancy) {
+
+    toast(
+      "Vaga não encontrada."
     );
 
+    return;
 
-  if (!vacancy)
+  }
+
+
+  if (!firestoreAvailable())
     return;
 
 
@@ -2289,8 +2745,13 @@ async function toggleVacancy(
 
   try {
 
+    const collection =
+      vacancy.collection ||
+      "vagas";
+
+
     await db
-      .collection("vagas")
+      .collection(collection)
       .doc(id)
       .update({
 
@@ -2312,19 +2773,14 @@ async function toggleVacancy(
         : "fechar_vaga",
 
       `${
-
         vacancy.character ||
         vacancy.personagem ||
-
+        vacancy.name ||
         "Sem personagem"
-
       } • ${
-
         vacancy.work ||
         vacancy.obra ||
-
         "Sem obra"
-
       }`
 
     );
@@ -2341,10 +2797,13 @@ async function toggleVacancy(
 
     await refreshAll();
 
-
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Erro ao alterar vaga:",
+      error
+    );
+
 
     toast(
       "Não foi possível alterar a vaga."
@@ -2364,14 +2823,18 @@ async function deleteVacancy(
 ) {
 
   const vacancy =
-    state.vacancies.find(
-      item =>
-        item.id === id
+    findVacancy(id);
+
+
+  if (!vacancy) {
+
+    toast(
+      "Vaga não encontrada."
     );
 
-
-  if (!vacancy)
     return;
+
+  }
 
 
   const name =
@@ -2392,10 +2855,19 @@ async function deleteVacancy(
   }
 
 
+  if (!firestoreAvailable())
+    return;
+
+
   try {
 
+    const collection =
+      vacancy.collection ||
+      "vagas";
+
+
     await db
-      .collection("vagas")
+      .collection(collection)
       .doc(id)
       .delete();
 
@@ -2413,13 +2885,16 @@ async function deleteVacancy(
 
     await refreshAll();
 
-
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Erro ao excluir vaga:",
+      error
+    );
+
 
     toast(
-      "Não foi possível excluir."
+      "Não foi possível excluir a vaga."
     );
 
   }
@@ -2437,11 +2912,19 @@ async function sendChat() {
     $("chatInput");
 
 
+  if (!input)
+    return;
+
+
   const message =
     input.value.trim();
 
 
   if (!message)
+    return;
+
+
+  if (!firestoreAvailable())
     return;
 
 
@@ -2452,10 +2935,12 @@ async function sendChat() {
       .add({
 
         adminName:
-          state.admin.name,
+          state.admin?.name ||
+          "ADM",
 
         adminRole:
-          state.admin.role,
+          state.admin?.role ||
+          "",
 
         message,
 
@@ -2475,13 +2960,66 @@ async function sendChat() {
 
     renderChat();
 
-
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Erro no chat:",
+      error
+    );
+
 
     toast(
       "Não foi possível enviar a mensagem."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   LOG ACTION
+   ========================================================= */
+
+async function logAction(
+  action,
+  details
+) {
+
+  if (!db)
+    return;
+
+
+  try {
+
+    await db
+      .collection("accessLogs")
+      .add({
+
+        admin:
+          state.admin?.name ||
+          "Desconhecido",
+
+        role:
+          state.admin?.role ||
+          "",
+
+        action,
+
+        details,
+
+        createdAt:
+          firebase.firestore
+            .FieldValue
+            .serverTimestamp()
+
+      });
+
+  } catch (error) {
+
+    console.warn(
+      "Não foi possível registrar log:",
+      error
     );
 
   }
@@ -2530,7 +3068,7 @@ async function uploadToCloudinary(
   if (!response.ok) {
 
     throw new Error(
-      "Falha no Cloudinary"
+      "Falha no upload para o Cloudinary."
     );
 
   }
@@ -2550,7 +3088,7 @@ async function uploadToCloudinary(
 
 
 /* =========================================================
-   EVENTOS
+   EVENTOS DE NAVEGAÇÃO E CARDS
    ========================================================= */
 
 document.addEventListener(
@@ -2569,6 +3107,8 @@ document.addEventListener(
         navigation.dataset.view
       );
 
+      return;
+
     }
 
 
@@ -2583,6 +3123,8 @@ document.addEventListener(
       await approveRequest(
         approve.dataset.approve
       );
+
+      return;
 
     }
 
@@ -2599,6 +3141,8 @@ document.addEventListener(
         reject.dataset.reject
       );
 
+      return;
+
     }
 
 
@@ -2613,6 +3157,8 @@ document.addEventListener(
       openVacancyModal(
         edit.dataset.editVac
       );
+
+      return;
 
     }
 
@@ -2629,6 +3175,8 @@ document.addEventListener(
         toggle.dataset.toggleVac
       );
 
+      return;
+
     }
 
 
@@ -2643,6 +3191,8 @@ document.addEventListener(
       await deleteVacancy(
         deleteButton.dataset.deleteVac
       );
+
+      return;
 
     }
 
@@ -2667,162 +3217,325 @@ document.addEventListener(
    BOTÕES
    ========================================================= */
 
-$("loginBtn")
-  ?.addEventListener(
-    "click",
-    login
-  );
+function bindEvents() {
+
+  const loginButton =
+    $("loginBtn");
 
 
-$("adminCode")
-  ?.addEventListener(
-    "keydown",
-    event => {
+  if (loginButton) {
 
-      if (
-        event.key === "Enter"
-      ) {
+    loginButton.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
 
         login();
 
       }
+    );
 
-    }
-  );
-
-
-$("logoutBtn")
-  ?.addEventListener(
-    "click",
-    logout
-  );
+  }
 
 
-$("refreshBtn")
-  ?.addEventListener(
-    "click",
-    async () => {
-
-      await refreshAll();
-
-      toast(
-        "Painel atualizado."
-      );
-
-    }
-  );
+  const codeInput =
+    $("adminCode");
 
 
-$("newVacancyBtn")
-  ?.addEventListener(
-    "click",
-    () =>
-      openVacancyModal()
-  );
+  if (codeInput) {
 
+    codeInput.addEventListener(
+      "keydown",
+      event => {
 
-$("closeModal")
-  ?.addEventListener(
-    "click",
-    closeVacancyModal
-  );
+        if (
+          event.key === "Enter"
+        ) {
 
+          event.preventDefault();
 
-$("saveVacancyBtn")
-  ?.addEventListener(
-    "click",
-    saveVacancy
-  );
+          login();
 
-
-$("sendChatBtn")
-  ?.addEventListener(
-    "click",
-    sendChat
-  );
-
-
-$("chatInput")
-  ?.addEventListener(
-    "keydown",
-    event => {
-
-      if (
-        event.key === "Enter"
-      ) {
-
-        sendChat();
+        }
 
       }
+    );
 
-    }
-  );
+  }
 
 
-$("modal")
-  ?.addEventListener(
-    "click",
-    event => {
+  $("logoutBtn")
+    ?.addEventListener(
+      "click",
+      event => {
 
-      if (
-        event.target ===
-        $("modal")
-      ) {
+        event.preventDefault();
+
+        logout();
+
+      }
+    );
+
+
+  $("refreshBtn")
+    ?.addEventListener(
+      "click",
+      async event => {
+
+        event.preventDefault();
+
+        await refreshAll();
+
+        toast(
+          "Painel atualizado."
+        );
+
+      }
+    );
+
+
+  $("newVacancyBtn")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+        openVacancyModal();
+
+      }
+    );
+
+
+  $("closeModal")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
 
         closeVacancyModal();
 
       }
+    );
 
-    }
-  );
+
+  $("saveVacancyBtn")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+        saveVacancy();
+
+      }
+    );
+
+
+  $("sendChatBtn")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+        sendChat();
+
+      }
+    );
+
+
+  $("chatInput")
+    ?.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Enter"
+        ) {
+
+          event.preventDefault();
+
+          sendChat();
+
+        }
+
+      }
+    );
+
+
+  $("modal")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        if (
+          event.target ===
+          $("modal")
+        ) {
+
+          closeVacancyModal();
+
+        }
+
+      }
+    );
+
+}
 
 
 /* =========================================================
    INICIALIZAÇÃO
    ========================================================= */
 
-(async function boot() {
+async function boot() {
+
+  /*
+   * Primeiro garante que os eventos existem.
+   */
+
+  bindEvents();
+
+
+  /*
+   * Verifica sessão salva.
+   */
 
   const saved =
     getStoredAdmin();
 
 
   if (
-    !saved ||
-    !ADMIN_ACCOUNTS[saved.code]
+    saved &&
+    saved.code &&
+    ADMIN_ACCOUNTS[
+      normalizeCode(saved.code)
+    ]
   ) {
+
+    const realAccount =
+      ADMIN_ACCOUNTS[
+        normalizeCode(saved.code)
+      ];
+
+
+    state.admin = {
+
+      ...realAccount,
+
+      code:
+        normalizeCode(
+          saved.code
+        )
+
+    };
+
+
+    showApp();
+
+
+    /*
+     * Firebase em segundo plano.
+     */
+
+    if (
+      firebaseReady &&
+      auth
+    ) {
+
+      try {
+
+        if (
+          !auth.currentUser
+        ) {
+
+          await auth.signInAnonymously();
+
+        }
+
+      } catch (error) {
+
+        console.warn(
+          "Firebase Auth:",
+          error
+        );
+
+      }
+
+    }
+
+
+    try {
+
+      await refreshAll();
+
+    } catch (error) {
+
+      console.error(
+        "Erro no carregamento inicial:",
+        error
+      );
+
+    }
 
     return;
 
   }
 
 
-  state.admin =
-    saved;
+  /*
+   * Sem sessão:
+   * permanece na tela de login.
+   */
 
+  if ($("loginView")) {
 
-  showApp();
-
-
-  try {
-
-    if (!auth.currentUser) {
-
-      await auth
-        .signInAnonymously();
-
-    }
-
-  } catch (error) {
-
-    console.warn(
-      "Firebase Auth:",
-      error
-    );
+    $("loginView")
+      .classList
+      .remove("hidden");
 
   }
 
 
-  await refreshAll();
+  if ($("appView")) {
 
-})();
+    $("appView")
+      .classList
+      .add("hidden");
+
+  }
+
+
+  if (firebaseError) {
+
+    console.warn(
+      "Firebase ainda não está disponível:",
+      firebaseError
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   INICIAR
+   ========================================================= */
+
+if (
+  document.readyState ===
+  "loading"
+) {
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    boot
+  );
+
+} else {
+
+  boot();
+
+     }
