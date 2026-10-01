@@ -24,7 +24,6 @@ window.buscarMembro = async function() {
     mensagemDiv.innerHTML = '<p>🔄 Buscando membro...</p>';
 
     try {
-        // Buscar TODOS os personagens desse telefone
         const q = query(
             collection(db, "occupiedCharacters"),
             where("telefone", "==", telefoneBusca)
@@ -40,7 +39,6 @@ window.buscarMembro = async function() {
             return;
         }
 
-        // Organizar os dados
         const personagens = [];
         let nomeMembro = '';
 
@@ -55,7 +53,6 @@ window.buscarMembro = async function() {
             if (!nomeMembro && dados.membro) nomeMembro = dados.membro;
         });
 
-        // Mostrar o perfil
         mensagemDiv.style.display = 'none';
         resultadoDiv.style.display = 'block';
         mostrarPerfil(nomeMembro, telefoneBusca, personagens);
@@ -67,13 +64,11 @@ window.buscarMembro = async function() {
 };
 
 function mostrarPerfil(nome, telefone, personagens) {
-    // Preencher até 2 personagens (caso tenha só 1, o segundo fica vazio)
     const p1 = personagens[0] || null;
     const p2 = personagens[1] || null;
 
     resultadoDiv.innerHTML = `
         <div class="card" style="border: 2px solid #00a8ff; background: linear-gradient(135deg, rgba(0,168,255,0.08), rgba(0,0,0,0.8));">
-            <!-- CABEÇALHO DO PERFIL -->
             <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
                 <h2 style="color: #00a8ff; font-size: 1.8em; margin-bottom: 5px;">${nome || 'Membro'}</h2>
                 <p style="color: rgba(255,255,255,0.5); font-size: 0.9em;">****${telefone}</p>
@@ -82,11 +77,9 @@ function mostrarPerfil(nome, telefone, personagens) {
                 </span>
             </div>
 
-            <!-- PERSONAGENS -->
             <h3 style="color: #fff; margin-bottom: 20px; text-align: center;">🎭 PERSONAGENS (${personagens.length}/2)</h3>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                <!-- PERSONAGEM 1 -->
                 <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(0,168,255,0.3); border-radius: 8px; padding: 20px; text-align: center;">
                     <h4 style="color: #00a8ff; margin-bottom: 15px;">PERSONAGEM 1</h4>
                     ${p1 && p1.foto 
@@ -97,7 +90,6 @@ function mostrarPerfil(nome, telefone, personagens) {
                     <p style="color: rgba(255,255,255,0.5); font-size: 0.9em;">${p1 ? p1.obra : '—'}</p>
                 </div>
 
-                <!-- PERSONAGEM 2 -->
                 <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; text-align: center;">
                     <h4 style="color: rgba(255,255,255,0.5); margin-bottom: 15px;">PERSONAGEM 2</h4>
                     ${p2 && p2.foto 
