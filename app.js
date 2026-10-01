@@ -1,5 +1,5 @@
 /* =========================================================
-   HOUSE LTD — APP.JS COMPLETO
+   HOUSE LTD — APP.JS
    PUBLIC INDEX + ADMIN PANEL
    Firebase + Cloudinary
    ========================================================= */
@@ -20,6 +20,7 @@ const firebaseConfig = {
 
 const CLOUDINARY_CLOUD_NAME = "gsqmelxb";
 const CLOUDINARY_UPLOAD_PRESET = "House LTD";
+
 const CLOUDINARY_UPLOAD_URL =
   `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
@@ -134,9 +135,15 @@ try {
   auth = firebase.auth();
 
   firebaseReady = true;
+
 } catch (error) {
+
   firebaseError = error;
-  console.error("Erro ao iniciar Firebase:", error);
+
+  console.error(
+    "Erro ao iniciar Firebase:",
+    error
+  );
 }
 
 
@@ -169,11 +176,13 @@ function $(id) {
   return document.getElementById(id);
 }
 
+
 function normalizeCode(code) {
   return String(code || "")
     .trim()
     .toUpperCase();
 }
+
 
 function escapeHTML(value) {
   return String(value ?? "")
@@ -184,6 +193,7 @@ function escapeHTML(value) {
     .replace(/'/g, "&#039;");
 }
 
+
 function normalizeText(value) {
   return String(value || "")
     .trim()
@@ -192,11 +202,6 @@ function normalizeText(value) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function generateId(prefix = "id") {
-  return `${prefix}_${Date.now()}_${Math.random()
-    .toString(36)
-    .slice(2, 9)}`;
-}
 
 function getTimestamp() {
   if (
@@ -210,34 +215,15 @@ function getTimestamp() {
   return new Date();
 }
 
-function formatDate(value) {
-  if (!value) return "—";
-
-  try {
-    if (value.toDate) {
-      value = value.toDate();
-    }
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-      return "—";
-    }
-
-    return date.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric"
-    });
-  } catch {
-    return "—";
-  }
-}
 
 function formatDateTime(value) {
-  if (!value) return "—";
+
+  if (!value) {
+    return "—";
+  }
 
   try {
+
     if (value.toDate) {
       value = value.toDate();
     }
@@ -249,13 +235,19 @@ function formatDateTime(value) {
     }
 
     return date.toLocaleString("pt-BR");
+
   } catch {
+
     return "—";
   }
 }
 
+
 function isOpenVacancy(vacancy) {
-  if (!vacancy) return false;
+
+  if (!vacancy) {
+    return false;
+  }
 
   if (typeof vacancy.open === "boolean") {
     return vacancy.open;
@@ -266,7 +258,9 @@ function isOpenVacancy(vacancy) {
   }
 
   if (typeof vacancy.status === "string") {
-    const status = normalizeText(vacancy.status);
+
+    const status =
+      normalizeText(vacancy.status);
 
     return (
       status === "aberta" ||
@@ -278,7 +272,9 @@ function isOpenVacancy(vacancy) {
   return true;
 }
 
+
 function vacancyCharacter(vacancy) {
+
   return (
     vacancy.character ||
     vacancy.personagem ||
@@ -288,7 +284,9 @@ function vacancyCharacter(vacancy) {
   );
 }
 
+
 function vacancyWork(vacancy) {
+
   return (
     vacancy.work ||
     vacancy.obra ||
@@ -297,7 +295,9 @@ function vacancyWork(vacancy) {
   );
 }
 
+
 function vacancyPhoto(vacancy) {
+
   return (
     vacancy.photo ||
     vacancy.image ||
@@ -308,84 +308,246 @@ function vacancyPhoto(vacancy) {
 }
 
 
+function memberName(member) {
+
+  return (
+    member.name ||
+    member.nome ||
+    member.nickname ||
+    member.apelido ||
+    "Membro"
+  );
+}
+
+
+function memberCharacter(member) {
+
+  return (
+    member.character ||
+    member.personagem ||
+    ""
+  );
+}
+
+
+function memberWork(member) {
+
+  return (
+    member.work ||
+    member.obra ||
+    ""
+  );
+}
+
+
+function memberPhoto(member) {
+
+  return (
+    member.photo ||
+    member.image ||
+    member.imageUrl ||
+    ""
+  );
+}
+
+
 /* =========================================================
-   6. SESSION
+   6. LOADING — CORREÇÃO PRINCIPAL
+   ========================================================= */
+
+function finishPublicLoading() {
+
+  const loading =
+    $("loadingScreen");
+
+  if (!loading) {
+    return;
+  }
+
+  loading.classList.add("hide");
+  loading.classList.add("hidden");
+
+  loading.style.opacity = "0";
+  loading.style.visibility = "hidden";
+  loading.style.pointerEvents = "none";
+
+  setTimeout(() => {
+
+    if (loading) {
+      loading.style.display = "none";
+    }
+
+  }, 600);
+}
+
+
+/*
+  IMPORTANTE:
+
+  O loading da página pública NÃO pode depender de:
+  - Firebase
+  - Auth
+  - Firestore
+  - Cloudinary
+  - carregamento das vagas
+
+  A página precisa abrir mesmo que algum desses serviços falhe.
+*/
+
+function publicLoadingFailsafe() {
+
+  finishPublicLoading();
+
+  setTimeout(
+    finishPublicLoading,
+    500
+  );
+
+  setTimeout(
+    finishPublicLoading,
+    1500
+  );
+
+  setTimeout(
+    finishPublicLoading,
+    3000
+  );
+}
+
+
+/* =========================================================
+   7. SESSION ADM
    ========================================================= */
 
 function getStoredAdmin() {
-  try {
-    const raw = sessionStorage.getItem("house_ltd_admin");
 
-    if (!raw) return null;
+  try {
+
+    const raw =
+      sessionStorage.getItem(
+        "house_ltd_admin"
+      );
+
+    if (!raw) {
+      return null;
+    }
 
     return JSON.parse(raw);
+
   } catch {
+
     return null;
   }
 }
 
+
 function storeAdmin(admin) {
+
   try {
+
     sessionStorage.setItem(
       "house_ltd_admin",
       JSON.stringify(admin)
     );
+
   } catch {}
 }
 
+
 function clearStoredAdmin() {
+
   try {
-    sessionStorage.removeItem("house_ltd_admin");
+
+    sessionStorage.removeItem(
+      "house_ltd_admin"
+    );
+
   } catch {}
 }
 
 
 /* =========================================================
-   7. LOGIN / LOGOUT
+   8. LOGIN
    ========================================================= */
 
 function showLogin() {
-  const loginView = $("loginView");
-  const appView = $("appView");
+
+  const loginView =
+    $("loginView");
+
+  const appView =
+    $("appView");
 
   if (loginView) {
-    loginView.classList.remove("hidden");
+    loginView.classList.remove(
+      "hidden"
+    );
   }
 
   if (appView) {
-    appView.classList.add("hidden");
+    appView.classList.add(
+      "hidden"
+    );
   }
 }
+
 
 function showApp() {
-  const loginView = $("loginView");
-  const appView = $("appView");
+
+  const loginView =
+    $("loginView");
+
+  const appView =
+    $("appView");
 
   if (loginView) {
-    loginView.classList.add("hidden");
+    loginView.classList.add(
+      "hidden"
+    );
   }
 
   if (appView) {
-    appView.classList.remove("hidden");
+    appView.classList.remove(
+      "hidden"
+    );
   }
 }
 
+
 function loginAdmin() {
-  const input = $("adminCode");
-  const message = $("loginMsg");
 
-  if (!input) return;
+  const input =
+    $("adminCode");
 
-  const code = normalizeCode(input.value);
-  const account = ADMIN_ACCOUNTS[code];
+  const message =
+    $("loginMsg");
+
+  if (!input) {
+    return;
+  }
+
+  const code =
+    normalizeCode(
+      input.value
+    );
+
+  const account =
+    ADMIN_ACCOUNTS[code];
 
   if (!account) {
+
     if (message) {
-      message.textContent = "Código inválido.";
-      message.classList.add("error");
+
+      message.textContent =
+        "Código inválido.";
+
+      message.classList.add(
+        "error"
+      );
     }
 
     input.value = "";
+
     return;
   }
 
@@ -394,31 +556,41 @@ function loginAdmin() {
     code
   };
 
-  storeAdmin(state.admin);
+  storeAdmin(
+    state.admin
+  );
 
   if (message) {
-    message.textContent = "";
-    message.classList.remove("error");
+
+    message.textContent =
+      "";
+
+    message.classList.remove(
+      "error"
+    );
   }
 
   showApp();
 
   startAdminSession();
-
-  if (typeof showView === "function") {
-    showView("home");
-  }
 }
 
+
 async function logoutAdmin() {
+
   clearStoredAdmin();
 
   state.admin = null;
 
   try {
-    if (auth && auth.currentUser) {
+
+    if (
+      auth &&
+      auth.currentUser
+    ) {
       await auth.signOut();
     }
+
   } catch {}
 
   location.reload();
@@ -426,65 +598,95 @@ async function logoutAdmin() {
 
 
 /* =========================================================
-   8. FIREBASE ANÔNIMO
+   9. AUTH ANÔNIMO
    ========================================================= */
 
 async function ensureAnonymousAuth() {
-  if (!firebaseReady || !auth) {
+
+  if (
+    !firebaseReady ||
+    !auth
+  ) {
     return false;
   }
 
   try {
+
     if (!auth.currentUser) {
+
       await auth.signInAnonymously();
     }
 
     return true;
+
   } catch (error) {
-    console.warn("Firebase Auth:", error);
+
+    console.warn(
+      "Firebase Auth:",
+      error
+    );
+
     return false;
   }
 }
 
 
 /* =========================================================
-   9. CLOUDINARY
+   10. CLOUDINARY
    ========================================================= */
 
 async function uploadToCloudinary(file) {
+
   if (!file) {
-    throw new Error("Nenhuma imagem selecionada.");
+    throw new Error(
+      "Nenhuma imagem selecionada."
+    );
   }
 
-  if (!file.type.startsWith("image/")) {
-    throw new Error("O arquivo precisa ser uma imagem.");
+  if (
+    !file.type.startsWith(
+      "image/"
+    )
+  ) {
+    throw new Error(
+      "O arquivo precisa ser uma imagem."
+    );
   }
 
-  const formData = new FormData();
+  const formData =
+    new FormData();
 
-  formData.append("file", file);
+  formData.append(
+    "file",
+    file
+  );
+
   formData.append(
     "upload_preset",
     CLOUDINARY_UPLOAD_PRESET
   );
 
-  const response = await fetch(
-    CLOUDINARY_UPLOAD_URL,
-    {
-      method: "POST",
-      body: formData
-    }
-  );
+  const response =
+    await fetch(
+      CLOUDINARY_UPLOAD_URL,
+      {
+        method: "POST",
+        body: formData
+      }
+    );
 
   if (!response.ok) {
+
     throw new Error(
       `Erro no Cloudinary: ${response.status}`
     );
   }
 
-  const data = await response.json();
+  const data =
+    await response.json();
 
   if (!data.secure_url) {
+
     throw new Error(
       "O Cloudinary não retornou a imagem."
     );
@@ -495,32 +697,151 @@ async function uploadToCloudinary(file) {
 
 
 /* =========================================================
-   10. LOADING DO INDEX
+   11. PREVIEW DE IMAGEM
    ========================================================= */
 
-function finishPublicLoading() {
-  const loading = $("loadingScreen");
+function setupImagePreview(
+  inputId,
+  previewId,
+  placeholderId
+) {
 
-  if (!loading) return;
+  const input =
+    $(inputId);
 
-  loading.classList.add("hidden");
+  const preview =
+    $(previewId);
 
-  loading.style.opacity = "0";
-  loading.style.pointerEvents = "none";
+  const placeholder =
+    $(placeholderId);
 
-  setTimeout(() => {
-    if (loading) {
-      loading.style.display = "none";
+  if (!input) {
+    return;
+  }
+
+  input.addEventListener(
+    "change",
+    () => {
+
+      const file =
+        input.files?.[0];
+
+      if (!file) {
+
+        if (preview) {
+
+          preview.style.display =
+            "none";
+
+          preview.removeAttribute(
+            "src"
+          );
+        }
+
+        if (placeholder) {
+
+          placeholder.style.display =
+            "";
+        }
+
+        return;
+      }
+
+      if (
+        !file.type.startsWith(
+          "image/"
+        )
+      ) {
+
+        input.value = "";
+
+        if (preview) {
+          preview.style.display =
+            "none";
+        }
+
+        if (placeholder) {
+          placeholder.style.display =
+            "";
+        }
+
+        alert(
+          "Selecione uma imagem válida."
+        );
+
+        return;
+      }
+
+      const url =
+        URL.createObjectURL(
+          file
+        );
+
+      if (preview) {
+
+        preview.src =
+          url;
+
+        preview.style.display =
+          "block";
+      }
+
+      if (placeholder) {
+
+        placeholder.style.display =
+          "none";
+      }
     }
-  }, 500);
+  );
 }
 
 
 /* =========================================================
-   11. PUBLIC — VAGAS
+   12. COLEÇÃO FIREBASE
+   ========================================================= */
+
+async function getCollection(
+  collectionName
+) {
+
+  if (!db) {
+    return [];
+  }
+
+  try {
+
+    const snapshot =
+      await db
+        .collection(
+          collectionName
+        )
+        .get();
+
+    return snapshot.docs.map(
+      doc => ({
+        id: doc.id,
+        ...doc.data()
+      })
+    );
+
+  } catch (error) {
+
+    console.warn(
+      `Erro ao carregar ${collectionName}:`,
+      error
+    );
+
+    return [];
+  }
+}
+
+
+/* =========================================================
+   13. VAGAS PÚBLICAS
    ========================================================= */
 
 async function getPublicVacancies() {
+
   if (!db) {
     return [];
   }
@@ -532,38 +853,81 @@ async function getPublicVacancies() {
     "occupiedCharacters"
   ];
 
-  for (const collectionName of collections) {
+  for (
+    const collectionName
+    of collections
+  ) {
+
     try {
+
       const snapshot =
-        await db.collection(collectionName).get();
+        await db
+          .collection(
+            collectionName
+          )
+          .get();
 
-      snapshot.forEach(doc => {
-        const data = {
-          id: doc.id,
-          ...doc.data()
-        };
+      snapshot.forEach(
+        doc => {
 
-        const alreadyExists = result.some(item => {
-          const a = normalizeText(vacancyCharacter(item));
-          const b = normalizeText(vacancyCharacter(data));
+          const data = {
+            id: doc.id,
+            ...doc.data()
+          };
 
-          const aw = normalizeText(vacancyWork(item));
-          const bw = normalizeText(vacancyWork(data));
+          const alreadyExists =
+            result.some(item => {
 
-          return a === b && aw === bw;
-        });
+              const characterA =
+                normalizeText(
+                  vacancyCharacter(
+                    item
+                  )
+                );
 
-        if (!alreadyExists) {
-          result.push(data);
+              const characterB =
+                normalizeText(
+                  vacancyCharacter(
+                    data
+                  )
+                );
+
+              const workA =
+                normalizeText(
+                  vacancyWork(
+                    item
+                  )
+                );
+
+              const workB =
+                normalizeText(
+                  vacancyWork(
+                    data
+                  )
+                );
+
+              return (
+                characterA ===
+                  characterB &&
+                workA ===
+                  workB
+              );
+            });
+
+          if (!alreadyExists) {
+            result.push(data);
+          }
         }
-      });
+      );
 
       if (result.length) {
         break;
       }
+
     } catch (error) {
+
       console.warn(
-        `Erro ao carregar ${collectionName}:`,
+        `Erro em ${collectionName}:`,
         error
       );
     }
@@ -572,156 +936,203 @@ async function getPublicVacancies() {
   return result;
 }
 
-function createVacancyCard(vacancy, closed = false) {
-  const character = vacancyCharacter(vacancy);
-  const work = vacancyWork(vacancy);
-  const photo = vacancyPhoto(vacancy);
 
-  const imageHTML = photo
-    ? `
-      <img
-        src="${escapeHTML(photo)}"
-        alt="${escapeHTML(character)}"
-        loading="lazy"
-      >
-    `
-    : `
-      <div class="vacancy-placeholder">
-        LTD
-      </div>
-    `;
+function createVacancyCard(
+  vacancy,
+  closed
+) {
+
+  const character =
+    vacancyCharacter(
+      vacancy
+    );
+
+  const work =
+    vacancyWork(
+      vacancy
+    );
+
+  const photo =
+    vacancyPhoto(
+      vacancy
+    );
+
+  const image =
+    photo
+      ? `
+        <img
+          src="${escapeHTML(photo)}"
+          alt="${escapeHTML(character)}"
+          loading="lazy"
+        >
+      `
+      : `
+        <div class="vacancy-placeholder">
+          LTD
+        </div>
+      `;
 
   return `
     <article
-      class="vacancy-card ${closed ? "closed" : "open"}"
-      data-character="${escapeHTML(character)}"
+      class="vacancy-card ${
+        closed
+          ? "closed"
+          : "open"
+      }"
     >
+
       <div class="vacancy-image">
-        ${imageHTML}
+        ${image}
       </div>
 
       <div class="vacancy-info">
-        <h3>${escapeHTML(character || "Personagem")}</h3>
+
+        <h3>
+          ${escapeHTML(
+            character ||
+            "Personagem"
+          )}
+        </h3>
 
         ${
           work
-            ? `<p>${escapeHTML(work)}</p>`
+            ? `
+              <p>
+                ${escapeHTML(work)}
+              </p>
+            `
             : ""
         }
 
         <span class="vacancy-status">
-          ${closed ? "Vaga fechada" : "Vaga aberta"}
+          ${
+            closed
+              ? "Vaga fechada"
+              : "Vaga aberta"
+          }
         </span>
+
       </div>
+
     </article>
   `;
 }
 
-function renderPublicVacancies(vacancies) {
-  state.publicVacancies = vacancies || [];
 
-  const openContainer = $("openVacancies");
-  const closedContainer = $("closedVacancies");
+function renderPublicVacancies(
+  vacancies
+) {
 
-  const open = state.publicVacancies.filter(
-    vacancy => isOpenVacancy(vacancy)
-  );
+  state.publicVacancies =
+    vacancies || [];
 
-  const closed = state.publicVacancies.filter(
-    vacancy => !isOpenVacancy(vacancy)
-  );
+  const openContainer =
+    $("openVacancies");
+
+  const closedContainer =
+    $("closedVacancies");
+
+  const open =
+    state.publicVacancies.filter(
+      vacancy =>
+        isOpenVacancy(
+          vacancy
+        )
+    );
+
+  const closed =
+    state.publicVacancies.filter(
+      vacancy =>
+        !isOpenVacancy(
+          vacancy
+        )
+    );
 
   if (openContainer) {
-    openContainer.innerHTML = open.length
-      ? open
-          .map(v => createVacancyCard(v, false))
-          .join("")
-      : `
-        <div class="empty-state">
-          Nenhuma vaga aberta no momento.
-        </div>
-      `;
+
+    openContainer.innerHTML =
+      open.length
+
+        ? open
+            .map(
+              vacancy =>
+                createVacancyCard(
+                  vacancy,
+                  false
+                )
+            )
+            .join("")
+
+        : `
+          <div class="empty-card">
+            Nenhuma vaga aberta no momento.
+          </div>
+        `;
   }
 
   if (closedContainer) {
-    closedContainer.innerHTML = closed.length
-      ? closed
-          .map(v => createVacancyCard(v, true))
-          .join("")
-      : `
-        <div class="empty-state">
-          Nenhuma vaga fechada no momento.
-        </div>
-      `;
+
+    closedContainer.innerHTML =
+      closed.length
+
+        ? closed
+            .map(
+              vacancy =>
+                createVacancyCard(
+                  vacancy,
+                  true
+                )
+            )
+            .join("")
+
+        : `
+          <div class="empty-card">
+            Nenhuma vaga fechada no momento.
+          </div>
+        `;
   }
 }
 
 
 /* =========================================================
-   12. PUBLIC — MEMBROS
+   14. MEMBROS PÚBLICOS
    ========================================================= */
 
 async function getPublicMembers() {
-  if (!db) return [];
 
-  try {
-    const snapshot =
-      await db.collection("members").get();
-
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-  } catch (error) {
-    console.warn(
-      "Erro ao carregar membros:",
-      error
-    );
-
+  if (!db) {
     return [];
   }
-}
 
-function memberCharacter(member) {
-  return (
-    member.character ||
-    member.personagem ||
-    ""
+  return getCollection(
+    "members"
   );
 }
 
-function memberWork(member) {
-  return (
-    member.work ||
-    member.obra ||
-    ""
-  );
-}
 
-function memberName(member) {
-  return (
-    member.name ||
-    member.nome ||
-    member.nickname ||
-    member.apelido ||
-    "Membro"
-  );
-}
+function createPublicMemberCard(
+  member
+) {
 
-function memberPhoto(member) {
-  return (
-    member.photo ||
-    member.image ||
-    member.imageUrl ||
-    ""
-  );
-}
+  const name =
+    memberName(
+      member
+    );
 
-function createPublicMemberCard(member) {
-  const name = memberName(member);
-  const character = memberCharacter(member);
-  const work = memberWork(member);
-  const photo = memberPhoto(member);
+  const character =
+    memberCharacter(
+      member
+    );
+
+  const work =
+    memberWork(
+      member
+    );
+
+  const photo =
+    memberPhoto(
+      member
+    );
 
   return `
     <article
@@ -732,8 +1143,10 @@ function createPublicMemberCard(member) {
     >
 
       <div class="member-photo">
+
         ${
           photo
+
             ? `
               <img
                 src="${escapeHTML(photo)}"
@@ -741,46 +1154,73 @@ function createPublicMemberCard(member) {
                 loading="lazy"
               >
             `
+
             : `
               <div class="member-placeholder">
                 ${escapeHTML(
-                  String(name).charAt(0).toUpperCase()
+                  name
+                    .charAt(0)
+                    .toUpperCase()
                 )}
               </div>
             `
         }
+
       </div>
 
       <div class="member-info">
-        <h3>${escapeHTML(name)}</h3>
+
+        <h3>
+          ${escapeHTML(name)}
+        </h3>
 
         ${
           character
-            ? `<p>${escapeHTML(character)}</p>`
+            ? `
+              <p>
+                ${escapeHTML(character)}
+              </p>
+            `
             : ""
         }
 
         ${
           work
-            ? `<small>${escapeHTML(work)}</small>`
+            ? `
+              <small>
+                ${escapeHTML(work)}
+              </small>
+            `
             : ""
         }
+
       </div>
 
     </article>
   `;
 }
 
-function renderPublicMembers(members) {
-  state.publicMembers = members || [];
 
-  const container = $("membersList");
+function renderPublicMembers(
+  members
+) {
 
-  if (!container) return;
+  state.publicMembers =
+    members || [];
 
-  if (!state.publicMembers.length) {
+  const container =
+    $("membersList");
+
+  if (!container) {
+    return;
+  }
+
+  if (
+    !state.publicMembers.length
+  ) {
+
     container.innerHTML = `
-      <div class="empty-state">
+      <div class="empty-card">
         Nenhum membro cadastrado ainda.
       </div>
     `;
@@ -790,142 +1230,125 @@ function renderPublicMembers(members) {
 
   container.innerHTML =
     state.publicMembers
-      .map(createPublicMemberCard)
+      .map(
+        createPublicMemberCard
+      )
       .join("");
 }
 
+
 function filterPublicMembers() {
-  const input = $("memberSearch");
-  const container = $("membersList");
 
-  if (!input || !container) return;
+  const input =
+    $("memberSearch");
 
-  const query = normalizeText(input.value);
+  const container =
+    $("membersList");
 
-  const cards =
-    container.querySelectorAll(
-      ".member-card"
+  if (
+    !input ||
+    !container
+  ) {
+    return;
+  }
+
+  const query =
+    normalizeText(
+      input.value
     );
 
-  cards.forEach(card => {
-    const text =
-      normalizeText(
-        card.dataset.memberSearch || ""
-      );
+  container
+    .querySelectorAll(
+      ".member-card"
+    )
+    .forEach(card => {
 
-    card.style.display =
-      !query || text.includes(query)
-        ? ""
-        : "none";
-  });
+      const text =
+        normalizeText(
+          card.dataset
+            .memberSearch ||
+            ""
+        );
+
+      card.style.display =
+        !query ||
+        text.includes(query)
+          ? ""
+          : "none";
+    });
 }
 
 
 /* =========================================================
-   13. PUBLIC — FOTO PREVIEW
+   15. FORMULÁRIO DE FICHA
    ========================================================= */
 
-function setupImagePreview(
-  inputId,
-  previewId,
-  placeholderId
+async function submitRequestForm(
+  event
 ) {
-  const input = $(inputId);
-  const preview = $(previewId);
-  const placeholder = $(placeholderId);
 
-  if (!input) return;
-
-  input.addEventListener("change", () => {
-    const file = input.files?.[0];
-
-    if (!file) {
-      if (preview) {
-        preview.style.display = "none";
-        preview.removeAttribute("src");
-      }
-
-      if (placeholder) {
-        placeholder.style.display = "";
-      }
-
-      return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-      input.value = "";
-
-      if (preview) {
-        preview.style.display = "none";
-      }
-
-      if (placeholder) {
-        placeholder.style.display = "";
-      }
-
-      alert("Selecione uma imagem válida.");
-
-      return;
-    }
-
-    const url = URL.createObjectURL(file);
-
-    if (preview) {
-      preview.src = url;
-      preview.style.display = "block";
-    }
-
-    if (placeholder) {
-      placeholder.style.display = "none";
-    }
-  });
-}
-
-
-/* =========================================================
-   14. PUBLIC — FICHA
-   ========================================================= */
-
-async function submitRequestForm(event) {
   event.preventDefault();
 
-  const form = event.currentTarget;
+  const form =
+    event.currentTarget;
 
-  const message = $("requestMessage");
-  const status = $("requestStatus");
-
-  const name =
-    $("requestName")?.value.trim() || "";
-
-  const age =
-    $("requestAge")?.value.trim() || "";
-
-  const phone =
-    $("requestPhone")?.value.trim() || "";
-
-  const character =
-    $("requestCharacter")?.value.trim() || "";
-
-  const work =
-    $("requestWork")?.value.trim() || "";
-
-  const photoInput =
-    $("requestPhoto");
+  const status =
+    $("requestStatus");
 
   const file =
-    photoInput?.files?.[0];
+    $("requestPhoto")
+      ?.files?.[0];
 
-  if (!age || !phone || !character || !work) {
+  const name =
+    $("requestName")
+      ?.value
+      .trim() || "";
+
+  const age =
+    $("requestAge")
+      ?.value
+      .trim() || "";
+
+  const phone =
+    $("requestPhone")
+      ?.value
+      .trim() || "";
+
+  const character =
+    $("requestCharacter")
+      ?.value
+      .trim() || "";
+
+  const work =
+    $("requestWork")
+      ?.value
+      .trim() || "";
+
+  const message =
+    $("requestMessage")
+      ?.value
+      .trim() || "";
+
+  if (
+    !age ||
+    phone.length !== 4 ||
+    !character ||
+    !work
+  ) {
+
     if (status) {
+
       status.textContent =
-        "Preencha todos os campos obrigatórios.";
+        "Preencha corretamente todos os campos obrigatórios.";
     }
 
     return;
   }
 
   if (!file) {
+
     if (status) {
+
       status.textContent =
         "Envie a foto do personagem.";
     }
@@ -934,9 +1357,11 @@ async function submitRequestForm(event) {
   }
 
   if (!db) {
+
     if (status) {
+
       status.textContent =
-        "O sistema ainda não conseguiu conectar ao banco de dados. Tente novamente.";
+        "O banco de dados não está disponível.";
     }
 
     return;
@@ -948,136 +1373,184 @@ async function submitRequestForm(event) {
     );
 
   const originalText =
-    button?.textContent || "";
+    button?.textContent ||
+    "";
 
   try {
+
     if (button) {
-      button.disabled = true;
+
+      button.disabled =
+        true;
+
       button.textContent =
         "Enviando...";
     }
 
     if (status) {
+
       status.textContent =
         "Enviando imagem...";
     }
 
     const photo =
-      await uploadToCloudinary(file);
-
-    if (status) {
-      status.textContent =
-        "Enviando ficha...";
-    }
-
-    const data = {
-      name,
-      age,
-      phone: phone.slice(-4),
-      character,
-      work,
-      photo,
-
-      status: "pending",
-      type: "request",
-
-      createdAt: getTimestamp(),
-      updatedAt: getTimestamp()
-    };
+      await uploadToCloudinary(
+        file
+      );
 
     await db
-      .collection("characterRequests")
-      .add(data);
+      .collection(
+        "characterRequests"
+      )
+      .add({
 
-    if (status) {
-      status.textContent =
-        "Ficha enviada com sucesso! Aguarde a aprovação.";
-    }
+        name,
+        age,
 
-    if (message) {
-      message.textContent =
-        "Sua ficha foi enviada para a administração.";
-    }
+        phone:
+          phone.slice(-4),
+
+        character,
+        work,
+        photo,
+        message,
+
+        type:
+          "request",
+
+        status:
+          "pending",
+
+        createdAt:
+          getTimestamp(),
+
+        updatedAt:
+          getTimestamp()
+      });
 
     form.reset();
 
-    const preview = $("requestPhotoPreview");
+    const preview =
+      $("requestPhotoPreview");
+
     const placeholder =
       $("requestPhotoPlaceholder");
 
     if (preview) {
-      preview.removeAttribute("src");
-      preview.style.display = "none";
+
+      preview.removeAttribute(
+        "src"
+      );
+
+      preview.style.display =
+        "none";
     }
 
     if (placeholder) {
-      placeholder.style.display = "";
+
+      placeholder.style.display =
+        "";
+    }
+
+    if (status) {
+
+      status.textContent =
+        "Ficha enviada com sucesso! Aguarde a aprovação.";
     }
 
   } catch (error) {
+
     console.error(
       "Erro ao enviar ficha:",
       error
     );
 
     if (status) {
+
       status.textContent =
         "Não foi possível enviar a ficha. Tente novamente.";
     }
+
   } finally {
+
     if (button) {
-      button.disabled = false;
-      button.textContent = originalText;
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        originalText;
     }
   }
 }
 
 
 /* =========================================================
-   15. PUBLIC — TROCA
+   16. TROCA
    ========================================================= */
 
-async function submitExchangeForm(event) {
+async function submitExchangeForm(
+  event
+) {
+
   event.preventDefault();
 
-  const form = event.currentTarget;
-  const status = $("exchangeStatus");
+  const form =
+    event.currentTarget;
+
+  const status =
+    $("exchangeStatus");
 
   const phone =
-    $("exchangePhone")?.value.trim() || "";
+    $("exchangePhone")
+      ?.value
+      .trim() || "";
 
   const oldCharacter =
-    $("exchangeOldCharacter")?.value.trim() || "";
+    $("exchangeOldCharacter")
+      ?.value
+      .trim() || "";
 
   const oldWork =
-    $("exchangeOldWork")?.value.trim() || "";
+    $("exchangeOldWork")
+      ?.value
+      .trim() || "";
 
   const newCharacter =
-    $("exchangeNewCharacter")?.value.trim() || "";
+    $("exchangeNewCharacter")
+      ?.value
+      .trim() || "";
 
   const newWork =
-    $("exchangeNewWork")?.value.trim() || "";
+    $("exchangeNewWork")
+      ?.value
+      .trim() || "";
 
   const file =
-    $("exchangePhoto")?.files?.[0];
+    $("exchangePhoto")
+      ?.files?.[0];
 
   if (
-    !phone ||
+    phone.length !== 4 ||
     !oldCharacter ||
     !oldWork ||
     !newCharacter ||
     !newWork
   ) {
+
     if (status) {
+
       status.textContent =
-        "Preencha todos os campos obrigatórios.";
+        "Preencha corretamente todos os campos obrigatórios.";
     }
 
     return;
   }
 
   if (!file) {
+
     if (status) {
+
       status.textContent =
         "Envie a foto do novo personagem.";
     }
@@ -1086,9 +1559,11 @@ async function submitExchangeForm(event) {
   }
 
   if (!db) {
+
     if (status) {
+
       status.textContent =
-        "O banco de dados ainda não está disponível.";
+        "O banco de dados não está disponível.";
     }
 
     return;
@@ -1100,46 +1575,63 @@ async function submitExchangeForm(event) {
     );
 
   const originalText =
-    button?.textContent || "";
+    button?.textContent ||
+    "";
 
   try {
+
     if (button) {
-      button.disabled = true;
+
+      button.disabled =
+        true;
+
       button.textContent =
         "Enviando...";
     }
 
     if (status) {
+
       status.textContent =
         "Enviando imagem...";
     }
 
     const photo =
-      await uploadToCloudinary(file);
+      await uploadToCloudinary(
+        file
+      );
 
     await db
-      .collection("characterRequests")
+      .collection(
+        "characterRequests"
+      )
       .add({
-        type: "exchange",
-        status: "pending",
 
-        phone: phone.slice(-4),
+        type:
+          "exchange",
+
+        status:
+          "pending",
+
+        phone:
+          phone.slice(-4),
 
         oldCharacter,
         oldWork,
 
-        character: newCharacter,
-        work: newWork,
+        character:
+          newCharacter,
+
+        work:
+          newWork,
+
         photo,
 
-        createdAt: getTimestamp(),
-        updatedAt: getTimestamp()
-      });
+        createdAt:
+          getTimestamp(),
 
-    if (status) {
-      status.textContent =
-        "Solicitação de troca enviada com sucesso!";
-    }
+        updatedAt:
+          getTimestamp()
+      });
 
     form.reset();
 
@@ -1150,130 +1642,98 @@ async function submitExchangeForm(event) {
       $("exchangePhotoPlaceholder");
 
     if (preview) {
-      preview.removeAttribute("src");
-      preview.style.display = "none";
+
+      preview.removeAttribute(
+        "src"
+      );
+
+      preview.style.display =
+        "none";
     }
 
     if (placeholder) {
-      placeholder.style.display = "";
+
+      placeholder.style.display =
+        "";
+    }
+
+    if (status) {
+
+      status.textContent =
+        "Solicitação de troca enviada com sucesso!";
     }
 
   } catch (error) {
+
     console.error(
       "Erro na troca:",
       error
     );
 
     if (status) {
+
       status.textContent =
         "Não foi possível enviar a troca.";
     }
+
   } finally {
+
     if (button) {
-      button.disabled = false;
-      button.textContent = originalText;
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        originalText;
     }
   }
 }
 
 
 /* =========================================================
-   16. PUBLIC — CARREGAMENTO
+   17. DADOS PÚBLICOS
    ========================================================= */
 
 async function loadPublicData() {
-  if (!db) {
-    renderPublicVacancies([]);
-    renderPublicMembers([]);
-    return;
-  }
 
   try {
-    const [vacancies, members] =
-      await Promise.all([
-        getPublicVacancies(),
-        getPublicMembers()
-      ]);
 
-    renderPublicVacancies(vacancies);
-    renderPublicMembers(members);
+    const vacancies =
+      await getPublicVacancies();
 
-  } catch (error) {
-    console.error(
-      "Erro nos dados públicos:",
-      error
+    renderPublicVacancies(
+      vacancies
     );
 
-    renderPublicVacancies([]);
-    renderPublicMembers([]);
-  }
-}
-
-
-/* =========================================================
-   17. ADMIN — CARREGAMENTO
-   ========================================================= */
-
-async function getCollection(
-  collectionName
-) {
-  if (!db) return [];
-
-  try {
-    const snapshot =
-      await db
-        .collection(collectionName)
-        .get();
-
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-
   } catch (error) {
+
     console.warn(
-      `Erro ao carregar ${collectionName}:`,
+      "Vagas públicas:",
       error
     );
 
-    return [];
+    renderPublicVacancies([]);
   }
-}
 
-async function refreshAll() {
-  if (!db) return;
 
-  const [
-    requests,
-    vacancies,
-    members,
-    admins,
-    logs,
-    chat
-  ] = await Promise.all([
-    getCollection("characterRequests"),
-    getCollection("vagas"),
-    getCollection("members"),
-    getCollection("adminProfiles"),
-    getCollection("accessLogs"),
-    getCollection("adminChat")
-  ]);
+  try {
 
-  state.requests = requests;
-  state.vacancies = vacancies;
-  state.members = members;
-  state.admins = admins;
-  state.logs = logs;
-  state.chat = chat;
+    const members =
+      await getPublicMembers();
 
-  renderStats();
-  renderHome();
-  renderRequests();
-  renderVacancies();
-  renderMembers();
-  renderAdmins();
-  renderChat();
-  renderLogs();
+    renderPublicMembers(
+      members
+    );
+
+  } catch (error) {
+
+    console.warn(
+      "Membros públicos:",
+      error
+    );
+
+    renderPublicMembers([]);
+  }
 }
 
 
@@ -1282,11 +1742,14 @@ async function refreshAll() {
    ========================================================= */
 
 function renderStats() {
+
   const pending =
     state.requests.filter(
       request =>
-        normalizeText(request.status) ===
-        "pending"
+        !request.status ||
+        normalizeText(
+          request.status
+        ) === "pending"
     ).length;
 
   const open =
@@ -1296,162 +1759,112 @@ function renderStats() {
 
   const closed =
     state.vacancies.filter(
-      vacancy => !isOpenVacancy(vacancy)
+      vacancy =>
+        !isOpenVacancy(vacancy)
     ).length;
 
   const members =
     state.members.length;
 
-  const elements = {
+  const values = {
     pending,
     open,
     closed,
     members
   };
 
-  Object.entries(elements).forEach(
+  Object.entries(
+    values
+  ).forEach(
     ([key, value]) => {
-      const el =
-        document.querySelector(
-          `[data-stat="${key}"]`
-        );
 
-      if (el) {
-        el.textContent = value;
-      }
+      document
+        .querySelectorAll(
+          `[data-stat="${key}"]`
+        )
+        .forEach(
+          element => {
+            element.textContent =
+              value;
+          }
+        );
     }
   );
 
+
   const ids = {
+
     pending: [
-      "pendingCount",
+      "statRequests",
       "statPending",
-      "homePending"
+      "pendingCount"
     ],
 
     open: [
-      "openCount",
       "statOpen",
-      "homeOpen"
+      "openCount"
     ],
 
     closed: [
-      "closedCount",
       "statClosed",
-      "homeClosed"
+      "closedCount"
     ],
 
     members: [
-      "membersCount",
       "statMembers",
-      "homeMembers"
+      "membersCount"
     ]
   };
 
-  Object.entries(ids).forEach(
-    ([key, list]) => {
-      list.forEach(id => {
-        const el = $(id);
 
-        if (el) {
-          el.textContent =
-            elements[key];
+  Object.entries(
+    ids
+  ).forEach(
+    ([key, list]) => {
+
+      list.forEach(
+        id => {
+
+          const element =
+            $(id);
+
+          if (element) {
+
+            element.textContent =
+              values[key];
+          }
         }
-      });
+      );
     }
   );
 }
 
 
 /* =========================================================
-   19. ADMIN — HOME
+   19. ADMIN — SOLICITAÇÕES
    ========================================================= */
-
-function renderHome() {
-  const container =
-    $("homeContent") ||
-    $("homeView");
-
-  if (!container) return;
-
-  const pending =
-    state.requests.filter(
-      request =>
-        normalizeText(request.status) ===
-        "pending"
-    ).length;
-
-  const open =
-    state.vacancies.filter(
-      isOpenVacancy
-    ).length;
-
-  const closed =
-    state.vacancies.filter(
-      vacancy => !isOpenVacancy(vacancy)
-    ).length;
-
-  const members =
-    state.members.length;
-
-  const existing =
-    container.querySelector(
-      "[data-ltd-home-stats]"
-    );
-
-  if (existing) {
-    existing.innerHTML = `
-      <strong>${pending}</strong>
-      <span>Solicitações pendentes</span>
-
-      <strong>${open}</strong>
-      <span>Vagas abertas</span>
-
-      <strong>${closed}</strong>
-      <span>Vagas fechadas</span>
-
-      <strong>${members}</strong>
-      <span>Membros</span>
-    `;
-  }
-}
-
-
-/* =========================================================
-   20. ADMIN — SOLICITAÇÕES
-   ========================================================= */
-
-function requestStatus(request) {
-  const status =
-    normalizeText(request.status);
-
-  if (status === "approved") {
-    return "Aprovada";
-  }
-
-  if (status === "rejected") {
-    return "Recusada";
-  }
-
-  return "Pendente";
-}
 
 function renderRequests() {
-  const container =
-    $("requestsList") ||
-    $("requestsContainer");
 
-  if (!container) return;
+  const container =
+    $("requestsList");
+
+  if (!container) {
+    return;
+  }
 
   const pending =
     state.requests.filter(
       request =>
         !request.status ||
-        normalizeText(request.status) ===
-          "pending"
+        normalizeText(
+          request.status
+        ) === "pending"
     );
 
+
   if (!pending.length) {
+
     container.innerHTML = `
       <div class="empty-state">
         Nenhuma solicitação pendente.
@@ -1461,157 +1874,188 @@ function renderRequests() {
     return;
   }
 
+
   container.innerHTML =
     pending
-      .map(request => {
-        const character =
-          request.character ||
-          request.personagem ||
-          "";
+      .map(
+        request => {
 
-        const work =
-          request.work ||
-          request.obra ||
-          "";
+          const character =
+            request.character ||
+            request.personagem ||
+            "";
 
-        const photo =
-          request.photo ||
-          request.image ||
-          "";
+          const work =
+            request.work ||
+            request.obra ||
+            "";
 
-        const isExchange =
-          request.type === "exchange";
+          const image =
+            request.photo ||
+            request.image ||
+            "";
 
-        return `
-          <article
-            class="request-card"
-            data-request-id="${escapeHTML(request.id)}"
-          >
+          return `
+            <article
+              class="request-card"
+              data-request-id="${escapeHTML(
+                request.id
+              )}"
+            >
 
-            <div class="request-photo">
-              ${
-                photo
-                  ? `
-                    <img
-                      src="${escapeHTML(photo)}"
-                      alt="${escapeHTML(character)}"
-                    >
-                  `
-                  : `
-                    <div class="member-placeholder">
-                      LTD
-                    </div>
-                  `
-              }
-            </div>
+              <div class="request-photo">
 
-            <div class="request-info">
+                ${
+                  image
 
-              <h3>
-                ${escapeHTML(
-                  character || "Sem personagem"
-                )}
-              </h3>
+                    ? `
+                      <img
+                        src="${escapeHTML(image)}"
+                        alt="${escapeHTML(character)}"
+                      >
+                    `
 
-              <p>
-                ${escapeHTML(work)}
-              </p>
+                    : `
+                      <div class="member-placeholder">
+                        LTD
+                      </div>
+                    `
+                }
 
-              ${
-                request.name
-                  ? `
-                    <p>
-                      <strong>Nome:</strong>
-                      ${escapeHTML(request.name)}
-                    </p>
-                  `
-                  : ""
-              }
+              </div>
 
-              ${
-                request.age
-                  ? `
-                    <p>
-                      <strong>Idade:</strong>
-                      ${escapeHTML(request.age)}
-                    </p>
-                  `
-                  : ""
-              }
 
-              ${
-                request.phone
-                  ? `
-                    <p>
-                      <strong>Final:</strong>
-                      ${escapeHTML(request.phone)}
-                    </p>
-                  `
-                  : ""
-              }
+              <div class="request-info">
 
-              ${
-                isExchange
-                  ? `
-                    <p>
-                      <strong>Troca:</strong>
-                      ${escapeHTML(
-                        request.oldCharacter || ""
-                      )}
-                      —
-                      ${escapeHTML(
-                        request.oldWork || ""
-                      )}
-                    </p>
-                  `
-                  : ""
-              }
+                <h3>
+                  ${escapeHTML(
+                    character ||
+                    "Sem personagem"
+                  )}
+                </h3>
 
-              <small>
-                ${formatDateTime(
-                  request.createdAt
-                )}
-              </small>
+                <p>
+                  ${escapeHTML(
+                    work
+                  )}
+                </p>
 
-            </div>
+                ${
+                  request.name
+                    ? `
+                      <p>
+                        <strong>Nome:</strong>
+                        ${escapeHTML(
+                          request.name
+                        )}
+                      </p>
+                    `
+                    : ""
+                }
 
-            <div class="request-actions">
+                ${
+                  request.age
+                    ? `
+                      <p>
+                        <strong>Idade:</strong>
+                        ${escapeHTML(
+                          request.age
+                        )}
+                      </p>
+                    `
+                    : ""
+                }
 
-              <button
-                type="button"
-                data-approve="${escapeHTML(request.id)}"
-              >
-                Aprovar
-              </button>
+                ${
+                  request.phone
+                    ? `
+                      <p>
+                        <strong>Final:</strong>
+                        ${escapeHTML(
+                          request.phone
+                        )}
+                      </p>
+                    `
+                    : ""
+                }
 
-              <button
-                type="button"
-                data-reject="${escapeHTML(request.id)}"
-              >
-                Recusar
-              </button>
+                ${
+                  request.type ===
+                  "exchange"
 
-            </div>
+                    ? `
+                      <p>
+                        <strong>Troca:</strong>
+                        ${escapeHTML(
+                          request.oldCharacter ||
+                          ""
+                        )}
+                        —
+                        ${escapeHTML(
+                          request.oldWork ||
+                          ""
+                        )}
+                      </p>
+                    `
 
-          </article>
-        `;
-      })
+                    : ""
+                }
+
+                <small>
+                  ${formatDateTime(
+                    request.createdAt
+                  )}
+                </small>
+
+              </div>
+
+
+              <div class="request-actions">
+
+                <button
+                  type="button"
+                  data-approve="${escapeHTML(
+                    request.id
+                  )}"
+                >
+                  Aprovar
+                </button>
+
+                <button
+                  type="button"
+                  data-reject="${escapeHTML(
+                    request.id
+                  )}"
+                >
+                  Recusar
+                </button>
+
+              </div>
+
+            </article>
+          `;
+        }
+      )
       .join("");
 }
 
 
 /* =========================================================
-   21. ADMIN — VAGAS
+   20. ADMIN — VAGAS
    ========================================================= */
 
 function renderVacancies() {
-  const container =
-    $("vacanciesList") ||
-    $("vacanciesContainer");
 
-  if (!container) return;
+  const container =
+    $("vacanciesList");
+
+  if (!container) {
+    return;
+  }
+
 
   if (!state.vacancies.length) {
+
     container.innerHTML = `
       <div class="empty-state">
         Nenhuma vaga cadastrada.
@@ -1621,111 +2065,158 @@ function renderVacancies() {
     return;
   }
 
+
   container.innerHTML =
     state.vacancies
-      .map(vacancy => {
-        const character =
-          vacancyCharacter(vacancy);
+      .map(
+        vacancy => {
 
-        const work =
-          vacancyWork(vacancy);
+          const character =
+            vacancyCharacter(
+              vacancy
+            );
 
-        const photo =
-          vacancyPhoto(vacancy);
+          const work =
+            vacancyWork(
+              vacancy
+            );
 
-        const open =
-          isOpenVacancy(vacancy);
+          const image =
+            vacancyPhoto(
+              vacancy
+            );
 
-        return `
-          <article
-            class="admin-vacancy-card"
-            data-vacancy-id="${escapeHTML(vacancy.id)}"
-          >
+          const open =
+            isOpenVacancy(
+              vacancy
+            );
 
-            <div class="vacancy-image">
 
-              ${
-                photo
-                  ? `
-                    <img
-                      src="${escapeHTML(photo)}"
-                      alt="${escapeHTML(character)}"
-                    >
-                  `
-                  : `
-                    <div class="vacancy-placeholder">
-                      LTD
-                    </div>
-                  `
-              }
+          return `
+            <article
+              class="admin-vacancy-card"
+              data-vacancy-id="${escapeHTML(
+                vacancy.id
+              )}"
+            >
 
-            </div>
+              <div class="vacancy-image">
 
-            <div class="vacancy-info">
+                ${
+                  image
 
-              <h3>
-                ${escapeHTML(
-                  character || "Sem nome"
-                )}
-              </h3>
+                    ? `
+                      <img
+                        src="${escapeHTML(image)}"
+                        alt="${escapeHTML(character)}"
+                      >
+                    `
 
-              <p>
-                ${escapeHTML(work)}
-              </p>
+                    : `
+                      <div class="vacancy-placeholder">
+                        LTD
+                      </div>
+                    `
+                }
 
-              <span>
-                ${open
-                  ? "Vaga aberta"
-                  : "Vaga fechada"}
-              </span>
+              </div>
 
-            </div>
 
-            <div class="vacancy-actions">
+              <div class="vacancy-info">
 
-              <button
-                type="button"
-                data-edit-vacancy="${escapeHTML(vacancy.id)}"
-              >
-                Editar
-              </button>
+                <h3>
+                  ${escapeHTML(
+                    character ||
+                    "Sem nome"
+                  )}
+                </h3>
 
-              <button
-                type="button"
-                data-toggle-vacancy="${escapeHTML(vacancy.id)}"
-              >
-                ${open ? "Fechar" : "Abrir"}
-              </button>
+                <p>
+                  ${escapeHTML(
+                    work
+                  )}
+                </p>
 
-              <button
-                type="button"
-                data-delete-vacancy="${escapeHTML(vacancy.id)}"
-              >
-                Excluir
-              </button>
+                <span>
+                  ${
+                    open
+                      ? "Vaga aberta"
+                      : "Vaga fechada"
+                  }
+                </span>
 
-            </div>
+              </div>
 
-          </article>
-        `;
-      })
+
+              <div class="vacancy-actions">
+
+                <button
+                  type="button"
+                  data-edit-vacancy="${escapeHTML(
+                    vacancy.id
+                  )}"
+                >
+                  Editar
+                </button>
+
+                <button
+                  type="button"
+                  data-toggle-vacancy="${escapeHTML(
+                    vacancy.id
+                  )}"
+                >
+                  ${
+                    open
+                      ? "Fechar"
+                      : "Abrir"
+                  }
+                </button>
+
+                <button
+                  type="button"
+                  data-delete-vacancy="${escapeHTML(
+                    vacancy.id
+                  )}"
+                >
+                  Excluir
+                </button>
+
+              </div>
+
+            </article>
+          `;
+        }
+      )
       .join("");
 }
 
 
 /* =========================================================
-   22. ADMIN — MEMBROS
+   21. ADMIN — MEMBROS
    ========================================================= */
 
 function renderMembers() {
+
+  if (
+    document.body.dataset.page !==
+    "admin"
+  ) {
+    return;
+  }
+
   const container =
     $("adminMembersList") ||
     $("membersAdminList") ||
-    $("membersListAdmin");
+    $("membersListAdmin") ||
+    $("membersList");
 
-  if (!container) return;
+  if (!container) {
+    return;
+  }
+
 
   if (!state.members.length) {
+
     container.innerHTML = `
       <div class="empty-state">
         Nenhum membro cadastrado.
@@ -1735,157 +2226,166 @@ function renderMembers() {
     return;
   }
 
+
   container.innerHTML =
     state.members
-      .map(member => {
-        const name =
-          memberName(member);
+      .map(
+        member => {
 
-        const character =
-          memberCharacter(member);
+          const name =
+            memberName(
+              member
+            );
 
-        const work =
-          memberWork(member);
+          const character =
+            memberCharacter(
+              member
+            );
 
-        const photo =
-          memberPhoto(member);
+          const work =
+            memberWork(
+              member
+            );
 
-        return `
-          <article class="member-card">
+          const image =
+            memberPhoto(
+              member
+            );
 
-            <div class="member-photo">
 
-              ${
-                photo
-                  ? `
-                    <img
-                      src="${escapeHTML(photo)}"
-                      alt="${escapeHTML(name)}"
-                    >
-                  `
-                  : `
-                    <div class="member-placeholder">
-                      ${escapeHTML(
-                        name.charAt(0).toUpperCase()
-                      )}
-                    </div>
-                  `
-              }
+          return `
+            <article class="member-card">
 
-            </div>
+              <div class="member-photo">
 
-            <div class="member-info">
+                ${
+                  image
 
-              <h3>
-                ${escapeHTML(name)}
-              </h3>
+                    ? `
+                      <img
+                        src="${escapeHTML(image)}"
+                        alt="${escapeHTML(name)}"
+                      >
+                    `
 
-              <p>
-                ${escapeHTML(character)}
-              </p>
+                    : `
+                      <div class="member-placeholder">
+                        ${escapeHTML(
+                          name
+                            .charAt(0)
+                            .toUpperCase()
+                        )}
+                      </div>
+                    `
+                }
 
-              <small>
-                ${escapeHTML(work)}
-              </small>
+              </div>
 
-            </div>
 
-          </article>
-        `;
-      })
+              <div class="member-info">
+
+                <h3>
+                  ${escapeHTML(name)}
+                </h3>
+
+                <p>
+                  ${escapeHTML(
+                    character
+                  )}
+                </p>
+
+                <small>
+                  ${escapeHTML(
+                    work
+                  )}
+                </small>
+
+              </div>
+
+            </article>
+          `;
+        }
+      )
       .join("");
 }
 
 
 /* =========================================================
-   23. ADMIN — ADMS
+   22. ADMIN — ADMS
    ========================================================= */
 
 function renderAdmins() {
+
   const container =
     $("adminsList") ||
     $("adminList");
 
-  if (!container) return;
+  if (!container) {
+    return;
+  }
 
-  const accounts =
-    Object.entries(
-      ADMIN_ACCOUNTS
-    );
 
   container.innerHTML =
-    accounts
-      .map(([code, account]) => {
-        const profile =
-          state.admins.find(
-            item =>
-              normalizeText(item.name) ===
-              normalizeText(account.name)
-          );
-
-        const photo =
-          profile?.photo ||
-          profile?.image ||
-          "";
-
-        return `
+    Object.values(
+      ADMIN_ACCOUNTS
+    )
+      .map(
+        account => `
           <article class="admin-card">
 
             <div class="admin-photo">
 
-              ${
-                photo
-                  ? `
-                    <img
-                      src="${escapeHTML(photo)}"
-                      alt="${escapeHTML(account.name)}"
-                    >
-                  `
-                  : `
-                    <div class="member-placeholder">
-                      ${escapeHTML(
-                        account.name
-                          .charAt(0)
-                          .toUpperCase()
-                      )}
-                    </div>
-                  `
-              }
+              <div class="member-placeholder">
+                ${escapeHTML(
+                  account.name
+                    .charAt(0)
+                    .toUpperCase()
+                )}
+              </div>
 
             </div>
 
             <div>
 
               <h3>
-                ${escapeHTML(account.name)}
+                ${escapeHTML(
+                  account.name
+                )}
               </h3>
 
               <p>
-                ${escapeHTML(account.role)}
+                ${escapeHTML(
+                  account.role
+                )}
               </p>
 
             </div>
 
           </article>
-        `;
-      })
+        `
+      )
       .join("");
 }
 
 
 /* =========================================================
-   24. ADMIN — CHAT
+   23. ADMIN — CHAT
    ========================================================= */
 
 function renderChat() {
-  const container =
-    $("chatMessages") ||
-    $("adminChatMessages") ||
-    $("chatList");
 
-  if (!container) return;
+  const container =
+    $("chatList") ||
+    $("chatMessages") ||
+    $("adminChatMessages");
+
+  if (!container) {
+    return;
+  }
+
 
   if (!state.chat.length) {
+
     container.innerHTML = `
       <div class="empty-state">
         Nenhuma mensagem ainda.
@@ -1895,66 +2395,80 @@ function renderChat() {
     return;
   }
 
+
   const sorted =
     [...state.chat].sort(
       (a, b) => {
+
         const ad =
           a.createdAt?.toDate?.() ||
-          new Date(a.createdAt || 0);
+          new Date(
+            a.createdAt || 0
+          );
 
         const bd =
           b.createdAt?.toDate?.() ||
-          new Date(b.createdAt || 0);
+          new Date(
+            b.createdAt || 0
+          );
 
         return ad - bd;
       }
     );
 
+
   container.innerHTML =
     sorted
-      .map(message => `
-        <div class="chat-message">
+      .map(
+        message => `
+          <div class="chat-message">
 
-          <strong>
-            ${escapeHTML(
-              message.adminName ||
-              message.name ||
-              "ADM"
-            )}
-          </strong>
+            <strong>
+              ${escapeHTML(
+                message.adminName ||
+                message.name ||
+                "ADM"
+              )}
+            </strong>
 
-          <p>
-            ${escapeHTML(
-              message.message ||
-              message.text ||
-              ""
-            )}
-          </p>
+            <p>
+              ${escapeHTML(
+                message.message ||
+                message.text ||
+                ""
+              )}
+            </p>
 
-          <small>
-            ${formatDateTime(
-              message.createdAt
-            )}
-          </small>
+            <small>
+              ${formatDateTime(
+                message.createdAt
+              )}
+            </small>
 
-        </div>
-      `)
+          </div>
+        `
+      )
       .join("");
 }
 
 
 /* =========================================================
-   25. ADMIN — LOGS
+   24. ADMIN — LOGS
    ========================================================= */
 
 function renderLogs() {
+
   const container =
     $("logsList") ||
     $("accessLogsList");
 
-  if (!container) return;
+  if (!container) {
+    return;
+  }
+
 
   if (!state.logs.length) {
+
     container.innerHTML = `
       <div class="empty-state">
         Nenhum registro.
@@ -1964,73 +2478,89 @@ function renderLogs() {
     return;
   }
 
+
   const sorted =
     [...state.logs].sort(
       (a, b) => {
+
         const ad =
-          a.createdAt?.toDate?.() ||
-          new Date(a.createdAt || 0);
+          b.createdAt?.toDate?.() ||
+          new Date(
+            b.createdAt || 0
+          );
 
         const bd =
-          b.createdAt?.toDate?.() ||
-          new Date(b.createdAt || 0);
+          a.createdAt?.toDate?.() ||
+          new Date(
+            a.createdAt || 0
+          );
 
-        return bd - ad;
+        return ad - bd;
       }
     );
 
+
   container.innerHTML =
     sorted
-      .map(log => `
-        <div class="log-item">
+      .map(
+        log => `
+          <div class="log-item">
 
-          <strong>
-            ${escapeHTML(
-              log.action ||
-              log.type ||
-              "Ação"
-            )}
-          </strong>
+            <strong>
+              ${escapeHTML(
+                log.action ||
+                log.type ||
+                "Ação"
+              )}
+            </strong>
 
-          <p>
-            ${escapeHTML(
-              log.description ||
-              log.message ||
-              ""
-            )}
-          </p>
+            <p>
+              ${escapeHTML(
+                log.description ||
+                log.message ||
+                ""
+              )}
+            </p>
 
-          <small>
-            ${escapeHTML(
-              log.adminName ||
-              "Sistema"
-            )}
-            —
-            ${formatDateTime(
-              log.createdAt
-            )}
-          </small>
+            <small>
+              ${escapeHTML(
+                log.adminName ||
+                "Sistema"
+              )}
+              —
+              ${formatDateTime(
+                log.createdAt
+              )}
+            </small>
 
-        </div>
-      `)
+          </div>
+        `
+      )
       .join("");
 }
 
 
 /* =========================================================
-   26. LOG
+   25. LOG
    ========================================================= */
 
 async function createLog(
   action,
   description
 ) {
-  if (!db) return;
+
+  if (!db) {
+    return;
+  }
 
   try {
+
     await db
-      .collection("accessLogs")
+      .collection(
+        "accessLogs"
+      )
       .add({
+
         action,
         description,
 
@@ -2047,6 +2577,7 @@ async function createLog(
       });
 
   } catch (error) {
+
     console.warn(
       "Erro ao criar log:",
       error
@@ -2056,348 +2587,157 @@ async function createLog(
 
 
 /* =========================================================
-   27. ENCONTRAR VAGA
+   26. VAGA — ENCONTRAR
    ========================================================= */
 
 function findMatchingVacancy(
   character,
   work
 ) {
-  const char =
-    normalizeText(character);
 
-  const obra =
-    normalizeText(work);
+  const c =
+    normalizeText(
+      character
+    );
+
+  const w =
+    normalizeText(
+      work
+    );
 
   return state.vacancies.find(
     vacancy =>
+
       normalizeText(
-        vacancyCharacter(vacancy)
-      ) === char &&
+        vacancyCharacter(
+          vacancy
+        )
+      ) === c &&
+
       normalizeText(
-        vacancyWork(vacancy)
-      ) === obra
+        vacancyWork(
+          vacancy
+        )
+      ) === w
   );
 }
+
 
 async function findVacancyInFirestore(
   character,
   work
 ) {
+
   const local =
     findMatchingVacancy(
       character,
       work
     );
 
-  if (local) return local;
-
-  if (!db) return null;
-
-  try {
-    const snapshot =
-      await db
-        .collection("vagas")
-        .get();
-
-    const found =
-      snapshot.docs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-        .find(vacancy =>
-          normalizeText(
-            vacancyCharacter(vacancy)
-          ) ===
-            normalizeText(character) &&
-          normalizeText(
-            vacancyWork(vacancy)
-          ) ===
-            normalizeText(work)
-        );
-
-    return found || null;
-
-  } catch (error) {
-    console.warn(
-      "Erro procurando vaga:",
-      error
-    );
-
-    return null;
-  }
-}
-
-
-/* =========================================================
-   28. CRIAR VAGA FECHADA
-   ========================================================= */
-
-async function createClosedVacancyFromRequest(
-  request
-) {
-  if (!db) return null;
-
-  const character =
-    request.character ||
-    request.personagem ||
-    "";
-
-  const work =
-    request.work ||
-    request.obra ||
-    "";
-
-  if (!character) {
-    return null;
-  }
-
-  const existing =
-    await findVacancyInFirestore(
-      character,
-      work
-    );
-
-  if (existing) {
-    try {
-      await db
-        .collection("vagas")
-        .doc(existing.id)
-        .set(
-          {
-            ...existing,
-            character,
-            work,
-
-            photo:
-              request.photo ||
-              existing.photo ||
-              "",
-
-            open: false,
-            status: "closed",
-
-            updatedAt:
-              getTimestamp()
-          },
-          { merge: true }
-        );
-
-      return existing.id;
-
-    } catch (error) {
-      console.warn(
-        "Erro fechando vaga existente:",
-        error
-      );
-
-      return existing.id;
-    }
-  }
-
-  const ref =
-    await db
-      .collection("vagas")
-      .add({
-        character,
-        work,
-
-        photo:
-          request.photo || "",
-
-        open: false,
-        status: "closed",
-
-        createdAt:
-          getTimestamp(),
-
-        updatedAt:
-          getTimestamp()
-      });
-
-  return ref.id;
-}
-
-
-/* =========================================================
-   29. FECHAR VAGA NA APROVAÇÃO
-   ========================================================= */
-
-async function closeVacancyFromApproval(
-  request
-) {
-  const character =
-    request.character ||
-    request.personagem ||
-    "";
-
-  const work =
-    request.work ||
-    request.obra ||
-    "";
-
-  const vacancy =
-    await findVacancyInFirestore(
-      character,
-      work
-    );
-
-  if (!vacancy) {
-    return createClosedVacancyFromRequest(
-      request
-    );
-  }
-
-  try {
-    await db
-      .collection("vagas")
-      .doc(vacancy.id)
-      .set(
-        {
-          open: false,
-          status: "closed",
-
-          character:
-            character ||
-            vacancyCharacter(vacancy),
-
-          work:
-            work ||
-            vacancyWork(vacancy),
-
-          photo:
-            request.photo ||
-            vacancyPhoto(vacancy) ||
-            "",
-
-          updatedAt:
-            getTimestamp()
-        },
-        { merge: true }
-      );
-
-    return vacancy.id;
-
-  } catch (error) {
-    console.error(
-      "Erro fechando vaga:",
-      error
-    );
-
-    throw error;
-  }
-}
-
-
-/* =========================================================
-   30. ENCONTRAR MEMBRO EXISTENTE
-   ========================================================= */
-
-async function findExistingMember(
-  request
-) {
-  const character =
-    normalizeText(
-      request.character ||
-      request.personagem
-    );
-
-  const phone =
-    String(
-      request.phone || ""
-    ).slice(-4);
-
-  const local =
-    state.members.find(member => {
-      const memberCharacterValue =
-        normalizeText(
-          memberCharacter(member)
-        );
-
-      const memberPhone =
-        String(
-          member.phone ||
-          member.phoneLast4 ||
-          ""
-        ).slice(-4);
-
-      return (
-        memberCharacterValue ===
-          character &&
-        phone &&
-        memberPhone === phone
-      );
-    });
-
   if (local) {
     return local;
   }
 
-  if (!db) return null;
+  if (!db) {
+    return null;
+  }
 
   try {
-    const snapshot =
-      await db
-        .collection("members")
-        .get();
+
+    const vacancies =
+      await getCollection(
+        "vagas"
+      );
 
     return (
-      snapshot.docs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-        .find(member => {
-          const mc =
-            normalizeText(
-              memberCharacter(member)
-            );
+      vacancies.find(
+        vacancy =>
 
-          const mp =
-            String(
-              member.phone ||
-              member.phoneLast4 ||
-              ""
-            ).slice(-4);
+          normalizeText(
+            vacancyCharacter(
+              vacancy
+            )
+          ) ===
+          normalizeText(
+            character
+          ) &&
 
-          return (
-            mc === character &&
-            phone &&
-            mp === phone
-          );
-        }) || null
+          normalizeText(
+            vacancyWork(
+              vacancy
+            )
+          ) ===
+          normalizeText(
+            work
+          )
+      ) || null
     );
 
   } catch {
+
     return null;
   }
 }
 
 
 /* =========================================================
-   31. CRIAR MEMBRO
+   27. APROVAÇÃO — CRIAR MEMBRO
    ========================================================= */
 
 async function createMemberFromRequest(
   request
 ) {
+
   if (!db) {
     throw new Error(
       "Firebase não disponível."
     );
   }
 
+
+  const phone =
+    String(
+      request.phone ||
+      ""
+    ).slice(-4);
+
+
   const existing =
-    await findExistingMember(
-      request
+    state.members.find(
+      member => {
+
+        const memberPhone =
+          String(
+            member.phone ||
+            member.phoneLast4 ||
+            ""
+          ).slice(-4);
+
+        return (
+          normalizeText(
+            memberCharacter(
+              member
+            )
+          ) ===
+          normalizeText(
+            request.character ||
+            request.personagem
+          ) &&
+
+          memberPhone ===
+          phone
+        );
+      }
     );
+
 
   if (existing) {
     return existing.id;
   }
 
-  const memberData = {
+
+  const data = {
+
     name:
       request.name ||
       request.nome ||
@@ -2410,11 +2750,7 @@ async function createMemberFromRequest(
       request.idade ||
       "",
 
-    phone:
-      String(
-        request.phone ||
-        ""
-      ).slice(-4),
+    phone,
 
     character:
       request.character ||
@@ -2438,72 +2774,189 @@ async function createMemberFromRequest(
       getTimestamp()
   };
 
+
   const ref =
     await db
-      .collection("members")
-      .add(memberData);
+      .collection(
+        "members"
+      )
+      .add(data);
+
 
   return ref.id;
 }
 
 
 /* =========================================================
-   32. LOCALIZAR SOLICITAÇÃO
+   28. APROVAÇÃO — FECHAR VAGA
+   ========================================================= */
+
+async function closeVacancyFromApproval(
+  request
+) {
+
+  const character =
+    request.character ||
+    request.personagem ||
+    "";
+
+  const work =
+    request.work ||
+    request.obra ||
+    "";
+
+
+  let vacancy =
+    await findVacancyInFirestore(
+      character,
+      work
+    );
+
+
+  if (vacancy) {
+
+    await db
+      .collection(
+        "vagas"
+      )
+      .doc(
+        vacancy.id
+      )
+      .set(
+        {
+
+          character:
+            character ||
+            vacancyCharacter(
+              vacancy
+            ),
+
+          work:
+            work ||
+            vacancyWork(
+              vacancy
+            ),
+
+          photo:
+            request.photo ||
+            vacancyPhoto(
+              vacancy
+            ) ||
+            "",
+
+          open:
+            false,
+
+          status:
+            "closed",
+
+          updatedAt:
+            getTimestamp()
+
+        },
+        {
+          merge: true
+        }
+      );
+
+    return;
+  }
+
+
+  await db
+    .collection(
+      "vagas"
+    )
+    .add({
+
+      character,
+      work,
+
+      photo:
+        request.photo ||
+        "",
+
+      open:
+        false,
+
+      status:
+        "closed",
+
+      createdAt:
+        getTimestamp(),
+
+      updatedAt:
+        getTimestamp()
+    });
+}
+
+
+/* =========================================================
+   29. SOLICITAÇÃO
    ========================================================= */
 
 async function findRequestCollection(
   requestId
 ) {
+
   if (!db) {
-    throw new Error(
-      "Firebase não disponível."
-    );
+    return null;
   }
 
-  try {
-    const doc =
-      await db
-        .collection("characterRequests")
-        .doc(requestId)
-        .get();
 
-    if (doc.exists) {
-      return {
-        collection: "characterRequests",
-        id: requestId,
-        data: doc.data()
-      };
-    }
-  } catch {}
+  for (
+    const collectionName
+    of [
+      "characterRequests",
+      "requests"
+    ]
+  ) {
 
-  try {
-    const doc =
-      await db
-        .collection("requests")
-        .doc(requestId)
-        .get();
+    try {
 
-    if (doc.exists) {
-      return {
-        collection: "requests",
-        id: requestId,
-        data: doc.data()
-      };
-    }
-  } catch {}
+      const doc =
+        await db
+          .collection(
+            collectionName
+          )
+          .doc(
+            requestId
+          )
+          .get();
+
+      if (doc.exists) {
+
+        return {
+
+          collection:
+            collectionName,
+
+          id:
+            requestId,
+
+          data:
+            doc.data()
+        };
+      }
+
+    } catch {}
+  }
+
 
   return null;
 }
 
 
 /* =========================================================
-   33. APROVAR SOLICITAÇÃO
+   30. APROVAR
    ========================================================= */
 
 async function approveRequest(
   requestId
 ) {
+
   if (!db) {
+
     alert(
       "O Firebase não está disponível."
     );
@@ -2511,62 +2964,268 @@ async function approveRequest(
     return;
   }
 
-  const button =
-    [...document.querySelectorAll(
-      "[data-approve]"
-    )].find(
-      element =>
-        element.dataset.approve ===
-        requestId
+
+  const requestInfo =
+    await findRequestCollection(
+      requestId
     );
 
-  if (button) {
-    button.disabled = true;
-    button.textContent =
-      "Aprovando...";
+
+  if (!requestInfo) {
+
+    alert(
+      "Solicitação não encontrada."
+    );
+
+    return;
   }
 
+
+  const request =
+    requestInfo.data;
+
+
   try {
-    const requestInfo =
-      await findRequestCollection(
-        requestId
+
+    /*
+      FICHA NORMAL
+    */
+
+    if (
+      request.type !==
+      "exchange"
+    ) {
+
+      await createMemberFromRequest(
+        request
       );
 
-    if (!requestInfo) {
-      throw new Error(
-        "Solicitação não encontrada."
+      await closeVacancyFromApproval(
+        request
       );
+
     }
 
-    const request =
-      requestInfo.data;
+    /*
+      TROCA
+    */
+
+    else {
+
+      const oldCharacter =
+        request.oldCharacter ||
+        "";
+
+      const oldWork =
+        request.oldWork ||
+        "";
+
+      const newCharacter =
+        request.character ||
+        "";
+
+      const newWork =
+        request.work ||
+        "";
+
+
+      const members =
+        await getCollection(
+          "members"
+        );
+
+
+      const member =
+        members.find(
+          item =>
+
+            String(
+              item.phone ||
+              item.phoneLast4 ||
+              ""
+            ).slice(-4) ===
+            String(
+              request.phone ||
+              ""
+            ).slice(-4) &&
+
+            normalizeText(
+              memberCharacter(
+                item
+              )
+            ) ===
+            normalizeText(
+              oldCharacter
+            )
+        );
+
+
+      if (!member) {
+
+        throw new Error(
+          "Membro da troca não foi encontrado."
+        );
+      }
+
+
+      const oldVacancy =
+        await findVacancyInFirestore(
+          oldCharacter,
+          oldWork
+        );
+
+
+      if (oldVacancy) {
+
+        await db
+          .collection(
+            "vagas"
+          )
+          .doc(
+            oldVacancy.id
+          )
+          .set(
+            {
+
+              open:
+                true,
+
+              status:
+                "open",
+
+              updatedAt:
+                getTimestamp()
+
+            },
+            {
+              merge: true
+            }
+          );
+      }
+
+
+      const newVacancy =
+        await findVacancyInFirestore(
+          newCharacter,
+          newWork
+        );
+
+
+      if (newVacancy) {
+
+        await db
+          .collection(
+            "vagas"
+          )
+          .doc(
+            newVacancy.id
+          )
+          .set(
+            {
+
+              open:
+                false,
+
+              status:
+                "closed",
+
+              photo:
+                request.photo ||
+                vacancyPhoto(
+                  newVacancy
+                ),
+
+              updatedAt:
+                getTimestamp()
+
+            },
+            {
+              merge: true
+            }
+          );
+
+      } else {
+
+        await db
+          .collection(
+            "vagas"
+          )
+          .add({
+
+            character:
+              newCharacter,
+
+            work:
+              newWork,
+
+            photo:
+              request.photo ||
+              "",
+
+            open:
+              false,
+
+            status:
+              "closed",
+
+            createdAt:
+              getTimestamp(),
+
+            updatedAt:
+              getTimestamp()
+          });
+      }
+
+
+      await db
+        .collection(
+          "members"
+        )
+        .doc(
+          member.id
+        )
+        .set(
+          {
+
+            character:
+              newCharacter,
+
+            work:
+              newWork,
+
+            photo:
+              request.photo ||
+              memberPhoto(
+                member
+              ),
+
+            updatedAt:
+              getTimestamp()
+
+          },
+          {
+            merge: true
+          }
+        );
+    }
+
 
     /*
-      1. Cria o membro primeiro.
+      MARCA SOLICITAÇÃO COMO APROVADA
     */
-    await createMemberFromRequest(
-      request
-    );
 
-    /*
-      2. Fecha a vaga existente.
-         Se não existir, cria a vaga fechada.
-    */
-    await closeVacancyFromApproval(
-      request
-    );
-
-    /*
-      3. Marca a solicitação como aprovada.
-    */
     await db
       .collection(
         requestInfo.collection
       )
-      .doc(requestInfo.id)
+      .doc(
+        requestInfo.id
+      )
       .set(
         {
-          status: "approved",
+
+          status:
+            "approved",
 
           approvedAt:
             getTimestamp(),
@@ -2577,28 +3236,33 @@ async function approveRequest(
 
           updatedAt:
             getTimestamp()
+
         },
-        { merge: true }
+        {
+          merge: true
+        }
       );
 
-    /*
-      4. Log.
-    */
+
     await createLog(
       "Aprovação de solicitação",
-      `Solicitação de ${request.character || request.personagem || "personagem"} aprovada.`
+      `Solicitação de ${
+        request.character ||
+        request.personagem ||
+        "personagem"
+      } aprovada.`
     );
 
-    /*
-      5. Atualiza tudo.
-    */
+
     await refreshAll();
 
+
     alert(
-      "Solicitação aprovada!\n\nO membro foi cadastrado e a vaga foi fechada."
+      "Solicitação aprovada!"
     );
 
   } catch (error) {
+
     console.error(
       "Erro ao aprovar:",
       error
@@ -2606,62 +3270,53 @@ async function approveRequest(
 
     alert(
       "Não foi possível aprovar a solicitação.\n\n" +
-      (error.message || error)
+      (
+        error.message ||
+        error
+      )
     );
-
-    if (button) {
-      button.disabled = false;
-      button.textContent =
-        "Aprovar";
-    }
   }
 }
 
 
 /* =========================================================
-   34. RECUSAR SOLICITAÇÃO
+   31. RECUSAR
    ========================================================= */
 
 async function rejectRequest(
   requestId
 ) {
-  if (!db) return;
 
-  const button =
-    [...document.querySelectorAll(
-      "[data-reject]"
-    )].find(
-      element =>
-        element.dataset.reject ===
-        requestId
-    );
-
-  if (button) {
-    button.disabled = true;
-    button.textContent =
-      "Recusando...";
+  if (!db) {
+    return;
   }
 
-  try {
-    const requestInfo =
-      await findRequestCollection(
-        requestId
-      );
 
-    if (!requestInfo) {
-      throw new Error(
-        "Solicitação não encontrada."
-      );
-    }
+  const requestInfo =
+    await findRequestCollection(
+      requestId
+    );
+
+
+  if (!requestInfo) {
+    return;
+  }
+
+
+  try {
 
     await db
       .collection(
         requestInfo.collection
       )
-      .doc(requestInfo.id)
+      .doc(
+        requestInfo.id
+      )
       .set(
         {
-          status: "rejected",
+
+          status:
+            "rejected",
 
           rejectedAt:
             getTimestamp(),
@@ -2672,18 +3327,27 @@ async function rejectRequest(
 
           updatedAt:
             getTimestamp()
+
         },
-        { merge: true }
+        {
+          merge: true
+        }
       );
+
 
     await createLog(
       "Recusa de solicitação",
-      `Solicitação de ${requestInfo.data.character || "personagem"} recusada.`
+      `Solicitação de ${
+        requestInfo.data.character ||
+        "personagem"
+      } recusada.`
     );
+
 
     await refreshAll();
 
   } catch (error) {
+
     console.error(
       "Erro ao recusar:",
       error
@@ -2692,43 +3356,56 @@ async function rejectRequest(
     alert(
       "Não foi possível recusar a solicitação."
     );
-
-    if (button) {
-      button.disabled = false;
-      button.textContent =
-        "Recusar";
-    }
   }
 }
 
 
 /* =========================================================
-   35. VAGAS — SALVAR
+   32. SALVAR VAGA
    ========================================================= */
 
 async function saveVacancy(
   vacancyId = null
 ) {
-  if (!db) return;
+
+  if (!db) {
+    return;
+  }
+
+
+  const characterInput =
+    $("vacCharacter") ||
+    $("vacancyCharacter");
+
+  const workInput =
+    $("vacWork") ||
+    $("vacancyWork");
+
+  const imageInput =
+    $("vacImage") ||
+    $("vacancyPhoto");
+
 
   const character =
-    $("vacancyCharacter")?.value.trim() ||
-    $("editCharacter")?.value.trim() ||
-    "";
+    characterInput
+      ?.value
+      .trim() || "";
 
   const work =
-    $("vacancyWork")?.value.trim() ||
-    $("editWork")?.value.trim() ||
-    "";
-
-  const photoInput =
-    $("vacancyPhoto") ||
-    $("editPhoto");
+    workInput
+      ?.value
+      .trim() || "";
 
   const file =
-    photoInput?.files?.[0];
+    imageInput
+      ?.files?.[0];
 
-  if (!character || !work) {
+
+  if (
+    !character ||
+    !work
+  ) {
+
     alert(
       "Preencha personagem e obra."
     );
@@ -2736,36 +3413,52 @@ async function saveVacancy(
     return;
   }
 
+
   try {
-    let photo = "";
+
+    let image = "";
+
 
     if (file) {
-      photo =
-        await uploadToCloudinary(file);
+
+      image =
+        await uploadToCloudinary(
+          file
+        );
     }
 
+
     const data = {
+
       character,
       work,
-
-      open: true,
-      status: "open",
 
       updatedAt:
         getTimestamp()
     };
 
-    if (photo) {
-      data.photo = photo;
+
+    if (image) {
+
+      data.photo =
+        image;
     }
 
+
     if (vacancyId) {
+
       await db
-        .collection("vagas")
-        .doc(vacancyId)
+        .collection(
+          "vagas"
+        )
+        .doc(
+          vacancyId
+        )
         .set(
           data,
-          { merge: true }
+          {
+            merge: true
+          }
         );
 
       await createLog(
@@ -2774,12 +3467,24 @@ async function saveVacancy(
       );
 
     } else {
-      data.createdAt =
-        getTimestamp();
 
       await db
-        .collection("vagas")
-        .add(data);
+        .collection(
+          "vagas"
+        )
+        .add({
+
+          ...data,
+
+          open:
+            true,
+
+          status:
+            "open",
+
+          createdAt:
+            getTimestamp()
+        });
 
       await createLog(
         "Criação de vaga",
@@ -2787,11 +3492,13 @@ async function saveVacancy(
       );
     }
 
+
     await refreshAll();
 
     closeVacancyModal();
 
   } catch (error) {
+
     console.error(
       "Erro ao salvar vaga:",
       error
@@ -2805,79 +3512,118 @@ async function saveVacancy(
 
 
 /* =========================================================
-   36. VAGAS — EDITAR
+   33. EDITAR VAGA
    ========================================================= */
 
-function editVacancy(vacancyId) {
+function editVacancy(
+  vacancyId
+) {
+
   const vacancy =
     state.vacancies.find(
-      item => item.id === vacancyId
+      item =>
+        item.id ===
+        vacancyId
     );
 
-  if (!vacancy) return;
+
+  if (!vacancy) {
+    return;
+  }
+
 
   const modal =
+    $("modal") ||
     $("vacancyModal");
 
-  if (!modal) return;
 
-  const character =
-    vacancyCharacter(vacancy);
+  if (!modal) {
+    return;
+  }
 
-  const work =
-    vacancyWork(vacancy);
 
   const characterInput =
-    $("vacancyCharacter") ||
-    $("editCharacter");
+    $("vacCharacter") ||
+    $("vacancyCharacter");
 
   const workInput =
-    $("vacancyWork") ||
-    $("editWork");
+    $("vacWork") ||
+    $("vacancyWork");
+
 
   if (characterInput) {
+
     characterInput.value =
-      character;
+      vacancyCharacter(
+        vacancy
+      );
   }
 
+
   if (workInput) {
+
     workInput.value =
-      work;
+      vacancyWork(
+        vacancy
+      );
   }
+
 
   modal.dataset.editing =
     vacancyId;
 
-  modal.classList.remove("hidden");
+  modal.classList.remove(
+    "hidden"
+  );
 }
 
 
 /* =========================================================
-   37. VAGAS — ABRIR/FECHAR
+   34. ABRIR / FECHAR VAGA
    ========================================================= */
 
 async function toggleVacancy(
   vacancyId
 ) {
-  if (!db) return;
+
+  if (!db) {
+    return;
+  }
+
 
   const vacancy =
     state.vacancies.find(
-      item => item.id === vacancyId
+      item =>
+        item.id ===
+        vacancyId
     );
 
-  if (!vacancy) return;
+
+  if (!vacancy) {
+    return;
+  }
+
 
   const next =
-    !isOpenVacancy(vacancy);
+    !isOpenVacancy(
+      vacancy
+    );
+
 
   try {
+
     await db
-      .collection("vagas")
-      .doc(vacancyId)
+      .collection(
+        "vagas"
+      )
+      .doc(
+        vacancyId
+      )
       .set(
         {
-          open: next,
+
+          open:
+            next,
 
           status:
             next
@@ -2886,20 +3632,31 @@ async function toggleVacancy(
 
           updatedAt:
             getTimestamp()
+
         },
-        { merge: true }
+        {
+          merge: true
+        }
       );
+
 
     await createLog(
       next
         ? "Abertura de vaga"
         : "Fechamento de vaga",
-      `${vacancyCharacter(vacancy)} — ${vacancyWork(vacancy)}`
+
+      `${vacancyCharacter(
+        vacancy
+      )} — ${vacancyWork(
+        vacancy
+      )}`
     );
+
 
     await refreshAll();
 
   } catch (error) {
+
     console.error(
       "Erro alterando vaga:",
       error
@@ -2913,42 +3670,70 @@ async function toggleVacancy(
 
 
 /* =========================================================
-   38. VAGAS — EXCLUIR
+   35. EXCLUIR VAGA
    ========================================================= */
 
 async function deleteVacancy(
   vacancyId
 ) {
-  if (!db) return;
+
+  if (!db) {
+    return;
+  }
+
 
   const vacancy =
     state.vacancies.find(
-      item => item.id === vacancyId
+      item =>
+        item.id ===
+        vacancyId
     );
 
-  if (!vacancy) return;
+
+  if (!vacancy) {
+    return;
+  }
+
 
   const confirmed =
     confirm(
-      `Excluir a vaga "${vacancyCharacter(vacancy)}"?`
+      `Excluir a vaga "${vacancyCharacter(
+        vacancy
+      )}"?`
     );
 
-  if (!confirmed) return;
+
+  if (!confirmed) {
+    return;
+  }
+
 
   try {
+
     await db
-      .collection("vagas")
-      .doc(vacancyId)
+      .collection(
+        "vagas"
+      )
+      .doc(
+        vacancyId
+      )
       .delete();
+
 
     await createLog(
       "Exclusão de vaga",
-      `${vacancyCharacter(vacancy)} — ${vacancyWork(vacancy)}`
+      `${vacancyCharacter(
+        vacancy
+      )} — ${vacancyWork(
+        vacancy
+      )}`
     );
+
 
     await refreshAll();
 
   } catch (error) {
+
     console.error(
       "Erro excluindo vaga:",
       error
@@ -2962,44 +3747,67 @@ async function deleteVacancy(
 
 
 /* =========================================================
-   39. MODAL DE VAGA
+   36. MODAL
    ========================================================= */
 
 function closeVacancyModal() {
+
   const modal =
+    $("modal") ||
     $("vacancyModal");
 
-  if (!modal) return;
 
-  modal.classList.add("hidden");
-  modal.removeAttribute("data-editing");
-
-  const characterInput =
-    $("vacancyCharacter") ||
-    $("editCharacter");
-
-  const workInput =
-    $("vacancyWork") ||
-    $("editWork");
-
-  if (characterInput) {
-    characterInput.value = "";
+  if (!modal) {
+    return;
   }
 
-  if (workInput) {
-    workInput.value = "";
-  }
-}
 
-function openNewVacancyModal() {
-  const modal =
-    $("vacancyModal");
-
-  if (!modal) return;
+  modal.classList.add(
+    "hidden"
+  );
 
   modal.removeAttribute(
     "data-editing"
   );
+}
+
+
+function openNewVacancyModal() {
+
+  const modal =
+    $("modal") ||
+    $("vacancyModal");
+
+
+  if (!modal) {
+    return;
+  }
+
+
+  modal.removeAttribute(
+    "data-editing"
+  );
+
+
+  const characterInput =
+    $("vacCharacter") ||
+    $("vacancyCharacter");
+
+  const workInput =
+    $("vacWork") ||
+    $("vacancyWork");
+
+
+  if (characterInput) {
+    characterInput.value =
+      "";
+  }
+
+  if (workInput) {
+    workInput.value =
+      "";
+  }
+
 
   modal.classList.remove(
     "hidden"
@@ -3008,27 +3816,43 @@ function openNewVacancyModal() {
 
 
 /* =========================================================
-   40. CHAT — ENVIAR
+   37. CHAT
    ========================================================= */
 
 async function sendAdminChat() {
-  if (!db) return;
+
+  if (!db) {
+    return;
+  }
+
 
   const input =
     $("chatInput") ||
     $("adminChatInput");
 
-  if (!input) return;
+
+  if (!input) {
+    return;
+  }
+
 
   const message =
     input.value.trim();
 
-  if (!message) return;
+
+  if (!message) {
+    return;
+  }
+
 
   try {
+
     await db
-      .collection("adminChat")
+      .collection(
+        "adminChat"
+      )
       .add({
+
         message,
 
         adminName:
@@ -3043,96 +3867,201 @@ async function sendAdminChat() {
           getTimestamp()
       });
 
-    input.value = "";
+
+    input.value =
+      "";
+
 
     state.chat =
       await getCollection(
         "adminChat"
       );
 
+
     renderChat();
 
   } catch (error) {
+
     console.error(
       "Erro no chat:",
       error
+    );
+
+    alert(
+      "Não foi possível enviar a mensagem."
     );
   }
 }
 
 
 /* =========================================================
-   41. NAVEGAÇÃO ADM
+   38. NAVEGAÇÃO ADMIN
    ========================================================= */
 
-function showView(view) {
+function showView(
+  view
+) {
+
   state.currentView =
-    view || "home";
+    view ||
+    "home";
 
-  const views =
-    document.querySelectorAll(
+
+  document
+    .querySelectorAll(
       "[data-view]"
+    )
+    .forEach(
+      element => {
+
+        const active =
+          element.dataset.view ===
+          state.currentView;
+
+
+        element.classList.toggle(
+          "active",
+          active
+        );
+
+
+        element.classList.toggle(
+          "hidden",
+          !active
+        );
+      }
     );
 
-  views.forEach(element => {
-    const matches =
-      element.dataset.view ===
-      state.currentView;
 
-    element.classList.toggle(
-      "active",
-      matches
-    );
-
-    element.classList.toggle(
-      "hidden",
-      !matches
-    );
-  });
-
-  const navItems =
-    document.querySelectorAll(
+  document
+    .querySelectorAll(
       "[data-nav]"
-    );
+    )
+    .forEach(
+      item => {
 
-  navItems.forEach(item => {
-    item.classList.toggle(
-      "active",
-      item.dataset.nav ===
-        state.currentView
+        item.classList.toggle(
+          "active",
+          item.dataset.nav ===
+          state.currentView
+        );
+      }
     );
-  });
 }
 
 
 /* =========================================================
-   42. EVENTOS GERAIS
+   39. ADMIN — ATUALIZAR
+   ========================================================= */
+
+async function refreshAll() {
+
+  if (!db) {
+    return;
+  }
+
+
+  const [
+    requests,
+    vacancies,
+    members,
+    admins,
+    logs,
+    chat
+  ] =
+    await Promise.all([
+
+      getCollection(
+        "characterRequests"
+      ),
+
+      getCollection(
+        "vagas"
+      ),
+
+      getCollection(
+        "members"
+      ),
+
+      getCollection(
+        "adminProfiles"
+      ),
+
+      getCollection(
+        "accessLogs"
+      ),
+
+      getCollection(
+        "adminChat"
+      )
+    ]);
+
+
+  state.requests =
+    requests;
+
+  state.vacancies =
+    vacancies;
+
+  state.members =
+    members;
+
+  state.admins =
+    admins;
+
+  state.logs =
+    logs;
+
+  state.chat =
+    chat;
+
+
+  renderStats();
+  renderRequests();
+  renderVacancies();
+  renderMembers();
+  renderAdmins();
+  renderChat();
+  renderLogs();
+}
+
+
+/* =========================================================
+   40. EVENTOS
    ========================================================= */
 
 function bindEvents() {
 
-  /* -------------------------
-     LOGIN
-     ------------------------- */
+  /*
+    LOGIN
+  */
 
   const loginButton =
     $("loginBtn");
 
   if (loginButton) {
+
     loginButton.addEventListener(
       "click",
       loginAdmin
     );
   }
 
+
   const adminCode =
     $("adminCode");
 
   if (adminCode) {
+
     adminCode.addEventListener(
       "keydown",
       event => {
-        if (event.key === "Enter") {
+
+        if (
+          event.key ===
+          "Enter"
+        ) {
+
           loginAdmin();
         }
       }
@@ -3140,15 +4069,16 @@ function bindEvents() {
   }
 
 
-  /* -------------------------
-     LOGOUT
-     ------------------------- */
+  /*
+    LOGOUT
+  */
 
   const logout =
     $("logoutBtn") ||
     $("logoutButton");
 
   if (logout) {
+
     logout.addEventListener(
       "click",
       logoutAdmin
@@ -3156,14 +4086,15 @@ function bindEvents() {
   }
 
 
-  /* -------------------------
-     INDEX — FICHA
-     ------------------------- */
+  /*
+    FICHA
+  */
 
   const requestForm =
     $("requestForm");
 
   if (requestForm) {
+
     requestForm.addEventListener(
       "submit",
       submitRequestForm
@@ -3171,14 +4102,15 @@ function bindEvents() {
   }
 
 
-  /* -------------------------
-     INDEX — TROCA
-     ------------------------- */
+  /*
+    TROCA
+  */
 
   const exchangeForm =
     $("exchangeForm");
 
   if (exchangeForm) {
+
     exchangeForm.addEventListener(
       "submit",
       submitExchangeForm
@@ -3186,9 +4118,9 @@ function bindEvents() {
   }
 
 
-  /* -------------------------
-     PREVIEWS
-     ------------------------- */
+  /*
+    PREVIEWS
+  */
 
   setupImagePreview(
     "requestPhoto",
@@ -3209,20 +4141,21 @@ function bindEvents() {
   );
 
   setupImagePreview(
-    "editPhoto",
-    "editPhotoPreview",
-    "editPhotoPlaceholder"
+    "vacImage",
+    "vacImagePreview",
+    "vacImagePlaceholder"
   );
 
 
-  /* -------------------------
-     BUSCA MEMBROS
-     ------------------------- */
+  /*
+    BUSCA
+  */
 
   const memberSearch =
     $("memberSearch");
 
   if (memberSearch) {
+
     memberSearch.addEventListener(
       "input",
       filterPublicMembers
@@ -3230,29 +4163,35 @@ function bindEvents() {
   }
 
 
-  /* -------------------------
-     NAVEGAÇÃO ADM
-     ------------------------- */
+  /*
+    NAVEGAÇÃO
+  */
 
   document
-    .querySelectorAll("[data-nav]")
-    .forEach(item => {
-      item.addEventListener(
-        "click",
-        event => {
-          event.preventDefault();
+    .querySelectorAll(
+      "[data-nav]"
+    )
+    .forEach(
+      item => {
 
-          showView(
-            item.dataset.nav
-          );
-        }
-      );
-    });
+        item.addEventListener(
+          "click",
+          event => {
+
+            event.preventDefault();
+
+            showView(
+              item.dataset.nav
+            );
+          }
+        );
+      }
+    );
 
 
-  /* -------------------------
-     BOTÃO NOVA VAGA
-     ------------------------- */
+  /*
+    NOVA VAGA
+  */
 
   const newVacancy =
     $("newVacancyBtn") ||
@@ -3260,6 +4199,7 @@ function bindEvents() {
     $("openVacancyModal");
 
   if (newVacancy) {
+
     newVacancy.addEventListener(
       "click",
       openNewVacancyModal
@@ -3267,40 +4207,47 @@ function bindEvents() {
   }
 
 
-  /* -------------------------
-     SALVAR VAGA
-     ------------------------- */
+  /*
+    SALVAR VAGA
+  */
 
   const saveButton =
     $("saveVacancyBtn") ||
     $("saveVacancy");
 
   if (saveButton) {
+
     saveButton.addEventListener(
       "click",
       () => {
+
         const modal =
+          $("modal") ||
           $("vacancyModal");
 
         const editing =
           modal?.dataset.editing ||
           null;
 
-        saveVacancy(editing);
+        saveVacancy(
+          editing
+        );
       }
     );
   }
 
 
-  /* -------------------------
-     FECHAR MODAL
-     ------------------------- */
+  /*
+    FECHAR MODAL
+  */
 
   const closeModal =
+    $("closeModal") ||
     $("closeVacancyModal") ||
     $("cancelVacancyBtn");
 
   if (closeModal) {
+
     closeModal.addEventListener(
       "click",
       closeVacancyModal
@@ -3308,34 +4255,41 @@ function bindEvents() {
   }
 
 
-  /* -------------------------
-     ENVIAR CHAT
-     ------------------------- */
+  /*
+    CHAT
+  */
 
   const sendChat =
     $("sendChatBtn") ||
     $("sendAdminChat");
 
   if (sendChat) {
+
     sendChat.addEventListener(
       "click",
       sendAdminChat
     );
   }
 
+
   const chatInput =
     $("chatInput") ||
     $("adminChatInput");
 
   if (chatInput) {
+
     chatInput.addEventListener(
       "keydown",
       event => {
+
         if (
-          event.key === "Enter" &&
+          event.key ===
+            "Enter" &&
           !event.shiftKey
         ) {
+
           event.preventDefault();
+
           sendAdminChat();
         }
       }
@@ -3343,15 +4297,13 @@ function bindEvents() {
   }
 
 
-  /* =======================================================
-     EVENTOS DINÂMICOS
-     ======================================================= */
+  /*
+    BOTÕES DINÂMICOS
+  */
 
   document.addEventListener(
     "click",
     event => {
-
-      /* APROVAR */
 
       const approve =
         event.target.closest(
@@ -3359,20 +4311,14 @@ function bindEvents() {
         );
 
       if (approve) {
-        event.preventDefault();
 
-        const id =
-          approve.dataset.approve;
-
-        if (id) {
-          approveRequest(id);
-        }
+        approveRequest(
+          approve.dataset.approve
+        );
 
         return;
       }
 
-
-      /* RECUSAR */
 
       const reject =
         event.target.closest(
@@ -3380,20 +4326,14 @@ function bindEvents() {
         );
 
       if (reject) {
-        event.preventDefault();
 
-        const id =
-          reject.dataset.reject;
-
-        if (id) {
-          rejectRequest(id);
-        }
+        rejectRequest(
+          reject.dataset.reject
+        );
 
         return;
       }
 
-
-      /* EDITAR VAGA */
 
       const edit =
         event.target.closest(
@@ -3401,7 +4341,6 @@ function bindEvents() {
         );
 
       if (edit) {
-        event.preventDefault();
 
         editVacancy(
           edit.dataset.editVacancy
@@ -3411,15 +4350,12 @@ function bindEvents() {
       }
 
 
-      /* ABRIR/FECHAR VAGA */
-
       const toggle =
         event.target.closest(
           "[data-toggle-vacancy]"
         );
 
       if (toggle) {
-        event.preventDefault();
 
         toggleVacancy(
           toggle.dataset.toggleVacancy
@@ -3429,15 +4365,12 @@ function bindEvents() {
       }
 
 
-      /* EXCLUIR VAGA */
-
       const remove =
         event.target.closest(
           "[data-delete-vacancy]"
         );
 
       if (remove) {
-        event.preventDefault();
 
         deleteVacancy(
           remove.dataset.deleteVacancy
@@ -3445,79 +4378,248 @@ function bindEvents() {
 
         return;
       }
-
     }
   );
 }
 
 
 /* =========================================================
-   43. SESSÃO ADM
+   41. SESSÃO ADMIN
    ========================================================= */
 
 async function startAdminSession() {
-  if (!state.admin) return;
+
+  if (!state.admin) {
+    return;
+  }
+
 
   try {
+
     await ensureAnonymousAuth();
+
   } catch {}
 
+
   try {
+
     await createLog(
       "Entrada no painel",
       `${state.admin.name} entrou no painel ADM.`
     );
+
   } catch {}
+
+
+  await refreshAll();
+
+  showView(
+    "home"
+  );
 }
 
 
 /* =========================================================
-   44. BOOT PÚBLICO
+   42. BOOT PÚBLICO
    ========================================================= */
 
 async function bootPublic() {
 
   /*
-    O loading NÃO depende do Firebase.
-    Isso impede o Index de ficar preso.
+    PRIMEIRO:
+    liga os eventos.
   */
 
   bindEvents();
 
+
   /*
-    Libera a página rapidamente.
+    SEGUNDO:
+    libera o loading IMEDIATAMENTE.
+
+    Não espera Firebase.
+    Não espera Auth.
+    Não espera Firestore.
   */
-  setTimeout(
-    finishPublicLoading,
-    1000
+
+  publicLoadingFailsafe();
+
+
+  /*
+    TERCEIRO:
+    tenta Firebase em segundo plano.
+  */
+
+  ensureAnonymousAuth()
+    .catch(
+      error =>
+        console.warn(
+          "Auth público:",
+          error
+        )
+    );
+
+
+  /*
+    QUARTO:
+    carrega vagas e membros.
+
+    Mesmo que isso dê erro,
+    a página continua aberta.
+  */
+
+  loadPublicData()
+    .catch(
+      error =>
+        console.warn(
+          "Dados públicos:",
+          error
+        )
+    );
+}
+
+
+/* =========================================================
+   43. BOOT ADMIN
+   ========================================================= */
+
+async function bootAdmin() {
+
+  bindEvents();
+
+
+  const saved =
+    getStoredAdmin();
+
+
+  if (
+    saved &&
+    saved.code &&
+    ADMIN_ACCOUNTS[
+      saved.code
+    ]
+  ) {
+
+    state.admin =
+      saved;
+
+    showApp();
+
+
+    try {
+
+      await startAdminSession();
+
+    } catch (error) {
+
+      console.error(
+        "Erro no painel:",
+        error
+      );
+
+      showApp();
+    }
+
+  } else {
+
+    showLogin();
+  }
+}
+
+
+/* =========================================================
+   44. BOOT GERAL
+   ========================================================= */
+
+function boot() {
+
+  const page =
+    document.body?.dataset?.page;
+
+
+  /*
+    INDEX
+  */
+
+  if (
+    page ===
+    "public"
+  ) {
+
+    bootPublic();
+
+    return;
+  }
+
+
+  /*
+    ADMIN
+  */
+
+  if (
+    page ===
+    "admin"
+  ) {
+
+    bootAdmin();
+
+    return;
+  }
+
+
+  /*
+    FALLBACK:
+    se não tiver data-page,
+    ainda garante que o loading
+    não fique preso.
+  */
+
+  publicLoadingFailsafe();
+}
+
+
+/* =========================================================
+   45. INICIALIZAÇÃO
+   ========================================================= */
+
+if (
+  document.readyState ===
+  "loading"
+) {
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    boot,
+    {
+      once: true
+    }
   );
 
-  /*
-    Firebase roda em segundo plano.
-  */
-  ensureAnonymousAuth()
-    .catch(() => {});
+} else {
 
-  /*
-    Carrega dados sem bloquear
-    o carregamento visual.
-  */
-  try {
+  boot();
+}
 
-    await Promise.race([
-      loadPublicData(),
 
-      new Promise(resolve =>
-        setTimeout(
-          resolve,
-          5000
-        )
-      )
-    ]);
+/* =========================================================
+   46. ÚLTIMO FALLBACK DO INDEX
+   ========================================================= */
 
-  } catch (error) {
-    console.warn(
-      "Dados públicos:",
-      error
-    );
- 
+window.addEventListener(
+  "load",
+  () => {
+
+    if (
+      document.body?.dataset?.page ===
+      "public"
+    ) {
+
+      publicLoadingFailsafe();
+    }
+  }
+);
+
+
+/* =========================================================
+   FIM
+   ========================================================= */
