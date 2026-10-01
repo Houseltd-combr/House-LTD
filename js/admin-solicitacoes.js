@@ -5,21 +5,17 @@ import {
     collection, 
     query, 
     where, 
-    orderBy, 
     onSnapshot,
     doc,
     updateDoc,
-    deleteDoc,
     getDoc,
     addDoc,
     serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Elementos da tela
 const listaSolicitacoes = document.getElementById('lista-solicitacoes');
 const carregando = document.getElementById('carregando');
 
-// Carregar solicitações pendentes em TEMPO REAL
 function carregarSolicitacoes() {
     if (!listaSolicitacoes) return;
 
@@ -28,11 +24,9 @@ function carregarSolicitacoes() {
 
     const q = query(
         collection(db, "characterRequests"),
-        where("status", "==", "pendente"),
-        orderBy("data", "desc")
+        where("status", "==", "pendente")
     );
 
-    // Escutar mudanças em tempo real
     const unsubscribe = onSnapshot(q, (snapshot) => {
         carregando.style.display = 'none';
         listaSolicitacoes.innerHTML = '';
@@ -59,15 +53,11 @@ function carregarSolicitacoes() {
         listaSolicitacoes.innerHTML = `
             <div class="card" style="text-align: center; padding: 40px;">
                 <p style="color: #ff4444;">❌ Erro ao carregar: ${erro.message}</p>
-                <p style="color: rgba(255,255,255,0.5); font-size: 0.8em; margin-top: 10px;">
-                    Verifique as regras do Firestore
-                </p>
             </div>
         `;
     });
 }
 
-// Criar o card de cada solicitação
 function criarCardSolicitacao(id, dados) {
     const card = document.createElement('div');
     card.className = 'card';
@@ -96,7 +86,6 @@ function criarCardSolicitacao(id, dados) {
     listaSolicitacoes.appendChild(card);
 }
 
-// Aprovar solicitação
 window.aprovarSolicitacao = async function(id) {
     if (!confirm('✅ Tem certeza que deseja APROVAR esta solicitação?')) return;
 
@@ -111,13 +100,11 @@ window.aprovarSolicitacao = async function(id) {
 
         const dados = solicitacaoSnap.data();
 
-        // 1. Atualizar status da solicitação
         await updateDoc(solicitacaoRef, {
             status: "aprovado",
             dataAprovacao: serverTimestamp()
         });
 
-        // 2. Adicionar aos personagens ocupados
         await addDoc(collection(db, "occupiedCharacters"), {
             personagem: dados.personagem,
             obra: dados.obra,
@@ -135,7 +122,6 @@ window.aprovarSolicitacao = async function(id) {
     }
 };
 
-// Recusar solicitação
 window.recusarSolicitacao = async function(id) {
     if (!confirm('❌ Tem certeza que deseja RECUSAR esta solicitação?')) return;
 
@@ -152,5 +138,4 @@ window.recusarSolicitacao = async function(id) {
     }
 };
 
-// Iniciar quando a página carregar
 document.addEventListener('DOMContentLoaded', carregarSolicitacoes);
