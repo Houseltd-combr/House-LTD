@@ -16,512 +16,1010 @@
 
 <body data-page="public">
 
-  <div class="background-effects">
-    <span></span>
-    <span></span>
-    <span></span>
+<div class="background-effects">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
+<header class="navbar">
+
+  <div class="logo">
+    HOUSE <span>LTD</span>
   </div>
 
-  <header class="navbar">
+  <nav>
+    <a href="#inicio">Início</a>
+    <a href="#vagas">Vagas</a>
+    <a href="#solicitar">Solicitar</a>
+    <a href="#trocar">Trocar</a>
+    <a href="#membros">Membros</a>
+    <a href="#historia">História</a>
+  </nav>
 
-    <div class="logo">
-      HOUSE <span>LTD</span>
-    </div>
+  <a href="admin.html" class="admin-button">
+    Administração
+  </a>
 
-    <nav>
-      <a href="#inicio">Início</a>
-      <a href="#vagas">Vagas</a>
-      <a href="#solicitar">Solicitar</a>
-      <a href="#trocar">Trocar</a>
-      <a href="#membros">Membros</a>
-      <a href="#historia">História</a>
-    </nav>
+</header>
 
-    <a href="admin.html" class="admin-button">
-      Administração
-    </a>
 
-  </header>
+<main>
 
+<section id="inicio" class="hero section">
 
-  <main>
+  <div class="hero-content">
 
-    <!-- HERO -->
+    <span class="small-label">HOUSE ALL • LTD</span>
 
-    <section id="inicio" class="hero section">
-
-      <div class="hero-content">
-
-        <span class="small-label">HOUSE ALL • LTD</span>
-
-        <h1>
-          Bem-vindo à
-          <span>House LTD</span>
-        </h1>
-
-        <p>
-          Uma comunidade para personagens, interação,
-          eventos, RPG e novas experiências.
-        </p>
-
-        <div class="hero-buttons">
-
-          <a href="#vagas" class="button primary">
-            Ver vagas
-          </a>
-
-          <a href="#solicitar" class="button secondary">
-            Fazer ficha
-          </a>
-
-        </div>
-
-      </div>
-
-      <div class="hero-decoration">
-
-        <div class="hero-circle">
-          LTD
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- VAGAS -->
-
-    <section id="vagas" class="section">
-
-      <div class="section-title">
-
-        <span>PERSONAGENS</span>
-
-        <h2>Vagas disponíveis</h2>
-
-        <p>
-          Escolha um personagem disponível para fazer sua ficha.
-        </p>
-
-      </div>
-
-
-      <div class="vacancy-title">
-
-        <h3>Vagas abertas</h3>
-
-      </div>
-
-
-      <div id="openVacancies" class="cards-grid">
-
-        <div class="empty-card">
-          Carregando vagas...
-        </div>
-
-      </div>
-
-
-      <div class="vacancy-title closed-title">
-
-        <h3>Vagas fechadas</h3>
-
-      </div>
-
-
-      <div id="closedVacancies" class="cards-grid">
-
-        <div class="empty-card">
-          Carregando vagas...
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- SOLICITAR -->
-
-    <section id="solicitar" class="section">
-
-      <div class="section-title">
-
-        <span>RECEPÇÃO</span>
-
-        <h2>Solicitar personagem</h2>
-
-        <p>
-          Preencha sua ficha para entrar na House LTD.
-        </p>
-
-      </div>
-
-
-      <form id="requestForm" class="glass-form">
-
-        <div class="form-grid">
-
-          <div class="field">
-
-            <label>Nome / Apelido</label>
-
-            <input
-              id="requestName"
-              type="text"
-              placeholder="Opcional"
-            >
-
-          </div>
-
-
-          <div class="field">
-
-            <label>Idade *</label>
-
-            <input
-              id="requestAge"
-              type="number"
-              min="1"
-              max="100"
-              required
-              placeholder="Sua idade"
-            >
-
-          </div>
-
-
-          <div class="field">
-
-            <label>Últimos 4 dígitos do telefone *</label>
-
-            <input
-              id="requestPhone"
-              type="text"
-              maxlength="4"
-              inputmode="numeric"
-              pattern="[0-9]{4}"
-              required
-              placeholder="0000"
-            >
-
-          </div>
-
-
-          <div class="field">
-
-            <label>Personagem *</label>
-
-            <input
-              id="requestCharacter"
-              type="text"
-              required
-              placeholder="Nome do personagem"
-            >
-
-          </div>
-
-
-          <div class="field">
-
-            <label>Obra *</label>
-
-            <input
-              id="requestWork"
-              type="text"
-              required
-              placeholder="Anime, jogo, série..."
-            >
-
-          </div>
-
-
-          <div class="field">
-
-            <label>Foto do personagem *</label>
-
-            <input
-              id="requestPhoto"
-              type="file"
-              accept="image/*"
-              required
-            >
-
-          </div>
-
-        </div>
-
-
-        <div class="photo-preview-box">
-
-          <img
-            id="requestPhotoPreview"
-            alt="Prévia"
-          >
-
-          <span id="requestPhotoPlaceholder">
-            Prévia da imagem
-          </span>
-
-        </div>
-
-
-        <div class="field">
-
-          <label>Mensagem</label>
-
-          <textarea
-            id="requestMessage"
-            rows="4"
-            placeholder="Alguma observação? Opcional."
-          ></textarea>
-
-        </div>
-
-
-        <button
-          type="submit"
-          class="button primary full"
-        >
-          Enviar ficha
-        </button>
-
-
-        <div id="requestStatus" class="form-status"></div>
-
-      </form>
-
-    </section>
-
-
-    <!-- TROCA -->
-
-    <section id="trocar" class="section">
-
-      <div class="section-title">
-
-        <span>TROCA</span>
-
-        <h2>Trocar personagem</h2>
-
-        <p>
-          Solicite a troca do seu personagem atual por outro disponível.
-        </p>
-
-      </div>
-
-
-      <form id="exchangeForm" class="glass-form">
-
-        <div class="form-grid">
-
-          <div class="field">
-
-            <label>Últimos 4 dígitos do telefone *</label>
-
-            <input
-              id="exchangePhone"
-              type="text"
-              maxlength="4"
-              inputmode="numeric"
-              pattern="[0-9]{4}"
-              required
-            >
-
-          </div>
-
-
-          <div class="field">
-
-            <label>Personagem atual *</label>
-
-            <input
-              id="exchangeOldCharacter"
-              type="text"
-              required
-            >
-
-          </div>
-
-
-          <div class="field">
-
-            <label>Obra atual *</label>
-
-            <input
-              id="exchangeOldWork"
-              type="text"
-              required
-            >
-
-          </div>
-
-
-          <div class="field">
-
-            <label>Novo personagem *</label>
-
-            <input
-              id="exchangeNewCharacter"
-              type="text"
-              required
-            >
-
-          </div>
-
-
-          <div class="field">
-
-            <label>Nova obra *</label>
-
-            <input
-              id="exchangeNewWork"
-              type="text"
-              required
-            >
-
-          </div>
-
-
-          <div class="field">
-
-            <label>Nova foto *</label>
-
-            <input
-              id="exchangePhoto"
-              type="file"
-              accept="image/*"
-              required
-            >
-
-          </div>
-
-        </div>
-
-
-        <div class="photo-preview-box">
-
-          <img
-            id="exchangePhotoPreview"
-            alt="Prévia"
-          >
-
-          <span id="exchangePhotoPlaceholder">
-            Prévia da imagem
-          </span>
-
-        </div>
-
-
-        <button
-          type="submit"
-          class="button primary full"
-        >
-          Solicitar troca
-        </button>
-
-
-        <div id="exchangeStatus" class="form-status"></div>
-
-      </form>
-
-    </section>
-
-
-    <!-- MEMBROS -->
-
-    <section id="membros" class="section">
-
-      <div class="section-title">
-
-        <span>HOUSE LTD</span>
-
-        <h2>Buscar membro</h2>
-
-        <p>
-          Encontre membros aprovados da comunidade.
-        </p>
-
-      </div>
-
-
-      <div class="search-box">
-
-        <input
-          id="memberSearch"
-          type="search"
-          placeholder="Nome, personagem ou obra..."
-        >
-
-      </div>
-
-
-      <div id="membersList" class="cards-grid">
-
-        <div class="empty-card">
-          Digite algo para pesquisar.
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- HISTÓRIA -->
-
-    <section id="historia" class="section history-section">
-
-      <div class="section-title">
-
-        <span>OUR STORY</span>
-
-        <h2>Nossa história</h2>
-
-      </div>
-
-
-      <div class="history-card">
-
-        <p>
-          A House LTD nasceu como uma comunidade voltada
-          para interação, criatividade, RPG, eventos e
-          convivência entre seus membros.
-        </p>
-
-        <p>
-          Hoje a LTD reúne diferentes espaços e atividades,
-          buscando manter uma comunidade ativa, organizada
-          e acolhedora.
-        </p>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <footer>
-
-    <div class="logo">
-      HOUSE <span>LTD</span>
-    </div>
+    <h1>
+      Bem-vindo à
+      <span>House LTD</span>
+    </h1>
 
     <p>
-      House LTD • House All
+      Uma comunidade para personagens, interação,
+      eventos, RPG e novas experiências.
     </p>
 
-  </footer>
+    <div class="hero-buttons">
+
+      <a href="#vagas" class="button primary">
+        Ver vagas
+      </a>
+
+      <a href="#solicitar" class="button secondary">
+        Fazer ficha
+      </a>
+
+    </div>
+
+  </div>
+
+  <div class="hero-decoration">
+    <div class="hero-circle">LTD</div>
+  </div>
+
+</section>
 
 
-  <!-- FIREBASE -->
+<section id="vagas" class="section">
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <div class="section-title">
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <span>PERSONAGENS</span>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <h2>Vagas disponíveis</h2>
 
-  <script src="app.js"></script>
+    <p>
+      Escolha um personagem disponível para fazer sua ficha.
+    </p>
+
+  </div>
+
+  <div class="vacancy-title">
+    <h3>Vagas abertas</h3>
+  </div>
+
+  <div id="openVacancies" class="cards-grid">
+    <div class="empty-card">
+      Carregando vagas...
+    </div>
+  </div>
+
+  <div class="vacancy-title closed-title">
+    <h3>Vagas fechadas</h3>
+  </div>
+
+  <div id="closedVacancies" class="cards-grid">
+    <div class="empty-card">
+      Carregando vagas...
+    </div>
+  </div>
+
+</section>
+
+
+<section id="solicitar" class="section">
+
+  <div class="section-title">
+
+    <span>RECEPÇÃO</span>
+
+    <h2>Solicitar personagem</h2>
+
+    <p>
+      Preencha sua ficha para entrar na House LTD.
+    </p>
+
+  </div>
+
+  <form id="requestForm" class="glass-form">
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Nome / Apelido</label>
+        <input id="requestName" type="text" placeholder="Opcional">
+      </div>
+
+      <div class="field">
+        <label>Idade *</label>
+        <input id="requestAge" type="number" min="1" max="100" required placeholder="Sua idade">
+      </div>
+
+      <div class="field">
+        <label>Últimos 4 dígitos do telefone *</label>
+        <input id="requestPhone" type="text" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" required placeholder="0000">
+      </div>
+
+      <div class="field">
+        <label>Personagem *</label>
+        <input id="requestCharacter" type="text" required placeholder="Nome do personagem">
+      </div>
+
+      <div class="field">
+        <label>Obra *</label>
+        <input id="requestWork" type="text" required placeholder="Anime, jogo, série...">
+      </div>
+
+      <div class="field">
+        <label>Foto do personagem *</label>
+        <input id="requestPhoto" type="file" accept="image/*" required>
+      </div>
+
+    </div>
+
+    <div class="photo-preview-box">
+      <img id="requestPhotoPreview" alt="Prévia">
+      <span id="requestPhotoPlaceholder">Prévia da imagem</span>
+    </div>
+
+    <div class="field">
+      <label>Mensagem</label>
+      <textarea id="requestMessage" rows="4" placeholder="Alguma observação? Opcional."></textarea>
+    </div>
+
+    <button type="submit" class="button primary full">
+      Enviar ficha
+    </button>
+
+    <div id="requestStatus" class="form-status"></div>
+
+  </form>
+
+</section>
+
+
+<section id="trocar" class="section">
+
+  <div class="section-title">
+
+    <span>TROCA</span>
+
+    <h2>Trocar personagem</h2>
+
+    <p>
+      Solicite a troca do seu personagem atual por outro disponível.
+    </p>
+
+  </div>
+
+  <form id="exchangeForm" class="glass-form">
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Últimos 4 dígitos do telefone *</label>
+        <input id="exchangePhone" type="text" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" required>
+      </div>
+
+      <div class="field">
+        <label>Personagem atual *</label>
+        <input id="exchangeOldCharacter" type="text" required>
+      </div>
+
+      <div class="field">
+        <label>Obra atual *</label>
+        <input id="exchangeOldWork" type="text" required>
+      </div>
+
+      <div class="field">
+        <label>Novo personagem *</label>
+        <input id="exchangeNewCharacter" type="text" required>
+      </div>
+
+      <div class="field">
+        <label>Nova obra *</label>
+        <input id="exchangeNewWork" type="text" required>
+      </div>
+
+      <div class="field">
+        <label>Nova foto *</label>
+        <input id="exchangePhoto" type="file" accept="image/*" required>
+      </div>
+
+    </div>
+
+    <div class="photo-preview-box">
+      <img id="exchangePhotoPreview" alt="Prévia">
+      <span id="exchangePhotoPlaceholder">Prévia da imagem</span>
+    </div>
+
+    <button type="submit" class="button primary full">
+      Solicitar troca
+    </button>
+
+    <div id="exchangeStatus" class="form-status"></div>
+
+  </form>
+
+</section>
+
+
+<section id="membros" class="section">
+
+  <div class="section-title">
+
+    <span>HOUSE LTD</span>
+
+    <h2>Buscar membro</h2>
+
+    <p>
+      Encontre membros aprovados da comunidade.
+    </p>
+
+  </div>
+
+  <div class="search-box">
+    <input id="memberSearch" type="search" placeholder="Nome, personagem ou obra...">
+  </div>
+
+  <div id="membersList" class="cards-grid">
+    <div class="empty-card">
+      Digite algo para pesquisar.
+    </div>
+  </div>
+
+</section>
+
+
+<section id="historia" class="section history-section">
+
+  <div class="section-title">
+    <span>OUR STORY</span>
+    <h2>Nossa história</h2>
+  </div>
+
+  <div class="history-card">
+
+    <p>
+      A House LTD nasceu como uma comunidade voltada
+      para interação, criatividade, RPG, eventos e
+      convivência entre seus membros.
+    </p>
+
+    <p>
+      Hoje a LTD reúne diferentes espaços e atividades,
+      buscando manter uma comunidade ativa, organizada
+      e acolhedora.
+    </p>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+  <div class="logo">
+    HOUSE <span>LTD</span>
+  </div>
+
+  <p>House LTD • House All</p>
+
+</footer>
+
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCRUNymKVh-UxKkSvNEUZkAjmRi_4_AQU",
+  authDomain: "house-ltd.firebaseapp.com",
+  projectId: "house-ltd",
+  storageBucket: "house-ltd.firebasestorage.app",
+  messagingSenderId: "821811124213",
+  appId: "1:821811124213:web:c8dd2b2f1e1a41bcd632bc",
+  measurementId: "G-P28WHBV9VB"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+const CLOUDINARY_UPLOAD_URL =
+  "https://api.cloudinary.com/v1_1/gsqmelxb/image/upload";
+
+const CLOUDINARY_UPLOAD_PRESET = "house-ltd";
+
+
+const $ = id => document.getElementById(id);
+
+function clean(value) {
+  return String(value || "").trim();
+}
+
+function normalize(value) {
+  return clean(value).toLowerCase();
+}
+
+function escapeHTML(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+function getCharacter(data) {
+  return data.character ||
+         data.personagem ||
+         data.characterName ||
+         "";
+}
+
+function getWork(data) {
+  return data.work ||
+         data.obra ||
+         data.workName ||
+         data.anime ||
+         "";
+}
+
+function getImage(data) {
+  return data.image ||
+         data.photo ||
+         data.characterPhoto ||
+         data.photoURL ||
+         data.imageUrl ||
+         "";
+}
+
+function isOpen(data) {
+  if (typeof data.open === "boolean") {
+    return data.open;
+  }
+
+  return normalize(data.status) === "aberta";
+}
+
+
+async function loadVacancies() {
+
+  const openBox = $("openVacancies");
+  const closedBox = $("closedVacancies");
+
+  try {
+
+    const snapshot = await db.collection("vagas").get();
+
+    const vacancies = [];
+
+    snapshot.forEach(doc => {
+      vacancies.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+
+    vacancies.sort((a, b) =>
+      getCharacter(a).localeCompare(getCharacter(b), "pt-BR")
+    );
+
+    const open = vacancies.filter(isOpen);
+    const closed = vacancies.filter(v => !isOpen(v));
+
+    renderVacancies(openBox, open, true);
+    renderVacancies(closedBox, closed, false);
+
+  } catch(error) {
+
+    console.error(error);
+
+    openBox.innerHTML =
+      `<div class="empty-card">Não foi possível carregar as vagas.</div>`;
+
+    closedBox.innerHTML =
+      `<div class="empty-card">Não foi possível carregar as vagas.</div>`;
+  }
+}
+
+
+function renderVacancies(container, vacancies, open) {
+
+  if (!vacancies.length) {
+
+    container.innerHTML = `
+      <div class="empty-card">
+        ${open ? "Nenhuma vaga aberta no momento." : "Nenhuma vaga fechada."}
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML = vacancies.map(vacancy => {
+
+    const character = escapeHTML(getCharacter(vacancy));
+    const work = escapeHTML(getWork(vacancy));
+    const image = escapeHTML(getImage(vacancy));
+
+    return `
+      <article class="vacancy-card ${open ? "" : "is-closed"}">
+
+        <div class="vacancy-image">
+
+          ${
+            image
+            ? `<img src="${image}" alt="${character}" loading="lazy">`
+            : `<div class="no-image">LTD</div>`
+          }
+
+          <span class="vacancy-status">
+            ${open ? "ABERTA" : "FECHADA"}
+          </span>
+
+        </div>
+
+        <div class="vacancy-info">
+
+          <h3>${character || "Personagem"}</h3>
+
+          <p>${work || "Obra não informada"}</p>
+
+          ${
+            open
+            ? `
+              <button
+                class="button small primary"
+                onclick="selectCharacter('${character.replaceAll("'", "\\'")}', '${work.replaceAll("'", "\\'")}')"
+              >
+                Quero este personagem
+              </button>
+            `
+            : `
+              <span class="closed-label">
+                Indisponível
+              </span>
+            `
+          }
+
+        </div>
+
+      </article>
+    `;
+
+  }).join("");
+}
+
+
+window.selectCharacter = function(character, work) {
+
+  $("requestCharacter").value = character;
+  $("requestWork").value = work;
+
+  document
+    .getElementById("solicitar")
+    .scrollIntoView({
+      behavior: "smooth"
+    });
+
+};
+
+
+async function uploadImage(file) {
+
+  if (!file) {
+    throw new Error("Selecione uma imagem.");
+  }
+
+  const formData = new FormData();
+
+  formData.append("file", file);
+  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+  const response = await fetch(
+    CLOUDINARY_UPLOAD_URL,
+    {
+      method: "POST",
+      body: formData
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Falha ao enviar a imagem.");
+  }
+
+  const data = await response.json();
+
+  if (!data.secure_url) {
+    throw new Error("O Cloudinary não retornou a imagem.");
+  }
+
+  return data.secure_url;
+}
+
+
+function previewImage(input, image, placeholder) {
+
+  input.addEventListener("change", () => {
+
+    const file = input.files[0];
+
+    if (!file) {
+      image.style.display = "none";
+      placeholder.style.display = "block";
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+
+    image.src = url;
+    image.style.display = "block";
+    placeholder.style.display = "none";
+
+  });
+}
+
+
+previewImage(
+  $("requestPhoto"),
+  $("requestPhotoPreview"),
+  $("requestPhotoPlaceholder")
+);
+
+previewImage(
+  $("exchangePhoto"),
+  $("exchangePhotoPreview"),
+  $("exchangePhotoPlaceholder")
+);
+
+
+$("requestPhone").addEventListener("input", e => {
+  e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4);
+});
+
+
+$("exchangePhone").addEventListener("input", e => {
+  e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4);
+});
+
+
+$("requestForm").addEventListener("submit", async event => {
+
+  event.preventDefault();
+
+  const status = $("requestStatus");
+
+  status.className = "form-status loading";
+  status.textContent = "Enviando sua ficha...";
+
+  try {
+
+    const name = clean($("requestName").value);
+    const age = Number($("requestAge").value);
+    const phoneLast4 = clean($("requestPhone").value);
+    const character = clean($("requestCharacter").value);
+    const work = clean($("requestWork").value);
+    const message = clean($("requestMessage").value);
+    const file = $("requestPhoto").files[0];
+
+    if (!/^\d{4}$/.test(phoneLast4)) {
+      throw new Error("Digite exatamente 4 números do telefone.");
+    }
+
+    if (!file) {
+      throw new Error("Selecione a foto do personagem.");
+    }
+
+    const vacancySnapshot = await db
+      .collection("vagas")
+      .where("status", "==", "aberta")
+      .get();
+
+    const alreadyClosed = vacancySnapshot.docs.some(doc => {
+
+      const data = doc.data();
+
+      return (
+        normalize(getCharacter(data)) === normalize(character) &&
+        normalize(getWork(data)) === normalize(work)
+      );
+
+    });
+
+    if (!alreadyClosed) {
+
+      const allVacancies =
+        await db.collection("vagas").get();
+
+      const duplicate = allVacancies.docs.find(doc => {
+
+        const data = doc.data();
+
+        return (
+          normalize(getCharacter(data)) === normalize(character) &&
+          normalize(getWork(data)) === normalize(work) &&
+          isOpen(data)
+        );
+
+      });
+
+      if (!duplicate) {
+        throw new Error(
+          "Esse personagem não possui uma vaga aberta."
+        );
+      }
+    }
+
+    const pendingSnapshot =
+      await db.collection("characterRequests")
+      .where("status", "==", "pendente")
+      .get();
+
+    const duplicateRequest =
+      pendingSnapshot.docs.some(doc => {
+
+        const data = doc.data();
+
+        return (
+          normalize(getCharacter(data)) === normalize(character) &&
+          normalize(getWork(data)) === normalize(work)
+        );
+
+      });
+
+    if (duplicateRequest) {
+      throw new Error(
+        "Já existe uma ficha pendente para esse personagem."
+      );
+    }
+
+    status.textContent = "Enviando foto...";
+
+    const photo = await uploadImage(file);
+
+    await db.collection("characterRequests").add({
+
+      type: "new",
+
+      name,
+      age,
+      phoneLast4,
+
+      character,
+      work,
+
+      photo,
+
+      message,
+
+      status: "pendente",
+
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+
+    });
+
+    status.className = "form-status success";
+    status.textContent =
+      "Ficha enviada! Aguarde a aprovação da administração.";
+
+    event.target.reset();
+
+    $("requestPhotoPreview").style.display = "none";
+    $("requestPhotoPlaceholder").style.display = "block";
+
+  } catch(error) {
+
+    console.error(error);
+
+    status.className = "form-status error";
+    status.textContent =
+      error.message || "Não foi possível enviar a ficha.";
+
+  }
+
+});
+
+
+$("exchangeForm").addEventListener("submit", async event => {
+
+  event.preventDefault();
+
+  const status = $("exchangeStatus");
+
+  status.className = "form-status loading";
+  status.textContent = "Enviando solicitação de troca...";
+
+  try {
+
+    const phoneLast4 = clean($("exchangePhone").value);
+    const oldCharacter = clean($("exchangeOldCharacter").value);
+    const oldWork = clean($("exchangeOldWork").value);
+    const newCharacter = clean($("exchangeNewCharacter").value);
+    const newWork = clean($("exchangeNewWork").value);
+    const file = $("exchangePhoto").files[0];
+
+    if (!/^\d{4}$/.test(phoneLast4)) {
+      throw new Error("Digite exatamente 4 números do telefone.");
+    }
+
+    if (!file) {
+      throw new Error("Selecione a nova foto.");
+    }
+
+    const members =
+      await db.collection("members").get();
+
+    const member = members.docs.find(doc => {
+
+      const data = doc.data();
+
+      return (
+        clean(data.phoneLast4) === phoneLast4 &&
+        normalize(getCharacter(data)) === normalize(oldCharacter) &&
+        normalize(getWork(data)) === normalize(oldWork)
+      );
+
+    });
+
+    if (!member) {
+      throw new Error(
+        "Não encontramos um membro com esses dados."
+      );
+    }
+
+    const vacancies =
+      await db.collection("vagas").get();
+
+    const target = vacancies.docs.find(doc => {
+
+      const data = doc.data();
+
+      return (
+        normalize(getCharacter(data)) === normalize(newCharacter) &&
+        normalize(getWork(data)) === normalize(newWork) &&
+        isOpen(data)
+      );
+
+    });
+
+    if (!target) {
+      throw new Error(
+        "O novo personagem não possui uma vaga aberta."
+      );
+    }
+
+    const pending =
+      await db.collection("characterRequests")
+      .where("status", "==", "pendente")
+      .get();
+
+    const already =
+      pending.docs.some(doc => {
+
+        const data = doc.data();
+
+        return (
+          data.type === "exchange" &&
+          clean(data.phoneLast4) === phoneLast4
+        );
+
+      });
+
+    if (already) {
+      throw new Error(
+        "Você já possui uma troca pendente."
+      );
+    }
+
+    status.textContent = "Enviando nova foto...";
+
+    const photo = await uploadImage(file);
+
+    await db.collection("characterRequests").add({
+
+      type: "exchange",
+
+      phoneLast4,
+
+      oldCharacter,
+      oldWork,
+
+      character: newCharacter,
+      work: newWork,
+
+      photo,
+
+      memberId: member.id,
+      vacancyId: target.id,
+
+      status: "pendente",
+
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+
+    });
+
+    status.className = "form-status success";
+    status.textContent =
+      "Troca enviada! Aguarde a aprovação da administração.";
+
+    event.target.reset();
+
+    $("exchangePhotoPreview").style.display = "none";
+    $("exchangePhotoPlaceholder").style.display = "block";
+
+  } catch(error) {
+
+    console.error(error);
+
+    status.className = "form-status error";
+    status.textContent =
+      error.message || "Não foi possível solicitar a troca.";
+
+  }
+
+});
+
+
+let allMembers = [];
+
+
+async function loadMembers() {
+
+  try {
+
+    const snapshot =
+      await db.collection("members").get();
+
+    allMembers = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+  } catch(error) {
+
+    console.error(error);
+    allMembers = [];
+
+  }
+
+}
+
+
+function renderMembers(search = "") {
+
+  const container = $("membersList");
+
+  const term = normalize(search);
+
+  if (!term) {
+
+    container.innerHTML = `
+      <div class="empty-card">
+        Digite algo para pesquisar.
+      </div>
+    `;
+
+    return;
+  }
+
+  const result = allMembers.filter(member => {
+
+    const text = [
+
+      member.name,
+      member.nome,
+      member.nickname,
+      member.apelido,
+
+      getCharacter(member),
+      getWork(member)
+
+    ].join(" ");
+
+    return normalize(text).includes(term);
+
+  });
+
+
+  if (!result.length) {
+
+    container.innerHTML = `
+      <div class="empty-card">
+        Nenhum membro encontrado.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  container.innerHTML = result.map(member => {
+
+    const name =
+      member.name ||
+      member.nome ||
+      member.nickname ||
+      member.apelido ||
+      "Membro";
+
+    const character = getCharacter(member);
+    const work = getWork(member);
+    const image = getImage(member);
+
+    return `
+      <article class="member-card">
+
+        <div class="member-photo">
+
+          ${
+            image
+            ? `<img src="${escapeHTML(image)}" alt="">`
+            : `<div class="no-image">LTD</div>`
+          }
+
+        </div>
+
+        <div class="member-info">
+
+          <span class="member-tag">MEMBRO</span>
+
+          <h3>${escapeHTML(name)}</h3>
+
+          <p>
+            <strong>${escapeHTML(character)}</strong>
+          </p>
+
+          <small>${escapeHTML(work)}</small>
+
+        </div>
+
+      </article>
+    `;
+
+  }).join("");
+
+}
+
+
+$("memberSearch").addEventListener(
+  "input",
+  e => renderMembers(e.target.value)
+);
+
+
+async function startPublicSite() {
+
+  await loadVacancies();
+  await loadMembers();
+
+  $("memberSearch").value = "";
+
+}
+
+
+startPublicSite();
+
+</script>
 
 </body>
   </html>
