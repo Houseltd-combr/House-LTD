@@ -1,7 +1,7 @@
 /* =========================================================
    HOUSE LTD
    APP.JS — ADMINISTRAÇÃO
-   VERSÃO CORRIGIDA
+   VERSÃO CORRIGIDA — APROVAÇÃO / VAGAS / MEMBROS
    ========================================================= */
 
 
@@ -121,16 +121,13 @@ let firebaseError = null;
 
 try {
 
-  if (
-    typeof firebase === "undefined"
-  ) {
+  if (typeof firebase === "undefined") {
 
     throw new Error(
       "Firebase não foi carregado pelo navegador."
     );
 
   }
-
 
   if (
     !firebase.apps ||
@@ -142,7 +139,6 @@ try {
     );
 
   }
-
 
   db =
     firebase.firestore();
@@ -231,6 +227,17 @@ function normalizeCode(value) {
 }
 
 
+function normalizeText(value) {
+
+  return String(
+    value || ""
+  )
+    .trim()
+    .toLowerCase();
+
+}
+
+
 function toast(message) {
 
   const element =
@@ -247,7 +254,6 @@ function toast(message) {
 
   }
 
-
   element.textContent =
     message;
 
@@ -255,11 +261,9 @@ function toast(message) {
     "hidden"
   );
 
-
   clearTimeout(
     window.__ltdToastTimer
   );
-
 
   window.__ltdToastTimer =
     setTimeout(
@@ -292,10 +296,8 @@ function setLoginMessage(
 
   }
 
-
   element.textContent =
     message;
-
 
   element.style.color =
     success
@@ -316,10 +318,8 @@ function setVacancyMessage(
   if (!element)
     return;
 
-
   element.textContent =
     message;
-
 
   element.style.color =
     success
@@ -342,10 +342,8 @@ function getStoredAdmin() {
         "houseLTDAdmin"
       );
 
-
     if (!raw)
       return null;
-
 
     return JSON.parse(
       raw
@@ -365,9 +363,7 @@ function getStoredAdmin() {
 }
 
 
-function saveStoredAdmin(
-  admin
-) {
+function saveStoredAdmin(admin) {
 
   sessionStorage.setItem(
     "houseLTDAdmin",
@@ -398,7 +394,6 @@ async function login() {
   const button =
     $("loginBtn");
 
-
   if (!input) {
 
     console.error(
@@ -409,16 +404,10 @@ async function login() {
 
   }
 
-
   const code =
     normalizeCode(
       input.value
     );
-
-
-  /* -------------------------
-     CAMPO VAZIO
-     ------------------------- */
 
   if (!code) {
 
@@ -432,14 +421,8 @@ async function login() {
 
   }
 
-
-  /* -------------------------
-     CÓDIGO INVÁLIDO
-     ------------------------- */
-
   const account =
     ADMIN_ACCOUNTS[code];
-
 
   if (!account) {
 
@@ -455,11 +438,6 @@ async function login() {
 
   }
 
-
-  /* -------------------------
-     MOSTRA CARREGAMENTO
-     ------------------------- */
-
   if (button) {
 
     button.disabled =
@@ -470,16 +448,10 @@ async function login() {
 
   }
 
-
   setLoginMessage(
     "Código correto. Entrando...",
     true
   );
-
-
-  /* -------------------------
-     CRIA SESSÃO LOCAL
-     ------------------------- */
 
   state.admin = {
 
@@ -489,26 +461,11 @@ async function login() {
 
   };
 
-
   saveStoredAdmin(
     state.admin
   );
 
-
-  /*
-   * IMPORTANTE:
-   * O painel NÃO fica esperando o Firebase
-   * para abrir.
-   */
-
   showApp();
-
-
-  /*
-   * Firebase é tratado em segundo plano.
-   * Se Anonymous Auth estiver ativado,
-   * ele cria a sessão.
-   */
 
   if (
     firebaseReady &&
@@ -517,9 +474,7 @@ async function login() {
 
     try {
 
-      if (
-        !auth.currentUser
-      ) {
+      if (!auth.currentUser) {
 
         await auth.signInAnonymously();
 
@@ -532,19 +487,13 @@ async function login() {
         error
       );
 
-      /*
-       * Não expulsa o ADM.
-       * O código já foi validado.
-       */
-
       toast(
-        "Painel aberto. Firebase Auth precisa ser ativado para acessar os dados."
+        "Painel aberto. A autenticação do Firebase precisa estar disponível para carregar os dados."
       );
 
     }
 
   }
-
 
   if (button) {
 
@@ -555,11 +504,6 @@ async function login() {
       "Entrar";
 
   }
-
-
-  /*
-   * Carrega os dados depois de entrar.
-   */
 
   try {
 
@@ -577,11 +521,6 @@ async function login() {
     );
 
   }
-
-
-  /*
-   * Log não pode impedir o login.
-   */
 
   try {
 
@@ -613,7 +552,6 @@ function logout() {
   state.admin =
     null;
 
-
   try {
 
     if (
@@ -634,7 +572,6 @@ function logout() {
 
   } catch {}
 
-
   location.reload();
 
 }
@@ -652,7 +589,6 @@ function showApp() {
   const appView =
     $("appView");
 
-
   if (loginView) {
 
     loginView.classList.add(
@@ -660,7 +596,6 @@ function showApp() {
     );
 
   }
-
 
   if (appView) {
 
@@ -670,7 +605,6 @@ function showApp() {
 
   }
 
-
   if ($("meName")) {
 
     $("meName").textContent =
@@ -679,7 +613,6 @@ function showApp() {
 
   }
 
-
   if ($("meRole")) {
 
     $("meRole").textContent =
@@ -687,7 +620,6 @@ function showApp() {
       "";
 
   }
-
 
   showView("home");
 
@@ -706,10 +638,8 @@ function dateValue(data) {
     data?.updatedAt ||
     data?.approvedAt;
 
-
   if (!raw)
     return 0;
-
 
   if (
     typeof raw.toMillis ===
@@ -720,7 +650,6 @@ function dateValue(data) {
 
   }
 
-
   if (
     raw instanceof Date
   ) {
@@ -729,14 +658,11 @@ function dateValue(data) {
 
   }
 
-
   const date =
     new Date(raw);
 
-
   const value =
     date.getTime();
-
 
   return Number.isNaN(value)
     ? 0
@@ -750,10 +676,8 @@ function formatDate(data) {
   const value =
     dateValue(data);
 
-
   if (!value)
     return "—";
-
 
   return new Date(
     value
@@ -768,9 +692,7 @@ function formatDate(data) {
    STATUS
    ========================================================= */
 
-function statusIsOpen(
-  vacancy
-) {
+function statusIsOpen(vacancy) {
 
   const status =
     String(
@@ -780,7 +702,6 @@ function statusIsOpen(
     )
       .trim()
       .toLowerCase();
-
 
   return (
 
@@ -797,9 +718,7 @@ function statusIsOpen(
 }
 
 
-function statusIsPending(
-  request
-) {
+function statusIsPending(request) {
 
   const status =
     String(
@@ -808,7 +727,6 @@ function statusIsPending(
     )
       .trim()
       .toLowerCase();
-
 
   return (
 
@@ -856,14 +774,12 @@ async function getCollectionSafe(
   if (!db)
     return [];
 
-
   try {
 
     let reference =
       db.collection(
         collectionName
       );
-
 
     if (orderField) {
 
@@ -879,10 +795,8 @@ async function getCollectionSafe(
 
     }
 
-
     const snapshot =
       await reference.get();
-
 
     return snapshot.docs.map(
       document => ({
@@ -900,7 +814,6 @@ async function getCollectionSafe(
 
       })
     );
-
 
   } catch (error) {
 
@@ -928,7 +841,6 @@ async function loadRequests() {
       "createdAt"
     );
 
-
   if (!rows.length) {
 
     rows =
@@ -938,7 +850,6 @@ async function loadRequests() {
       );
 
   }
-
 
   state.requests =
     rows.filter(
@@ -960,10 +871,8 @@ async function loadVacancies() {
       "createdAt"
     );
 
-
   /*
-   * Se vagas estiver vazia,
-   * tenta a coleção antiga.
+   * Mantém a coleção principal como prioridade.
    */
 
   if (!rows.length) {
@@ -975,7 +884,6 @@ async function loadVacancies() {
       );
 
   }
-
 
   state.vacancies =
     rows;
@@ -1010,10 +918,8 @@ async function loadAdmins() {
       "createdAt"
     );
 
-
   const byName =
     new Map();
-
 
   rows.forEach(
     item => {
@@ -1024,7 +930,6 @@ async function loadAdmins() {
         )
           .trim()
           .toLowerCase();
-
 
       if (name) {
 
@@ -1038,7 +943,6 @@ async function loadAdmins() {
     }
   );
 
-
   state.admins =
     Object.entries(
       ADMIN_ACCOUNTS
@@ -1047,10 +951,8 @@ async function loadAdmins() {
 
         const saved =
           byName.get(
-            base.name
-              .toLowerCase()
+            base.name.toLowerCase()
           ) || {};
-
 
         return {
 
@@ -1112,7 +1014,6 @@ async function refreshAll() {
 
   }
 
-
   await Promise.allSettled([
 
     loadRequests(),
@@ -1128,7 +1029,6 @@ async function refreshAll() {
     loadLogs()
 
   ]);
-
 
   renderAll();
 
@@ -1173,14 +1073,12 @@ function renderStats() {
       )
       .length;
 
-
   const closed =
     Math.max(
       0,
       state.vacancies.length -
       open
     );
-
 
   if ($("statRequests")) {
 
@@ -1190,7 +1088,6 @@ function renderStats() {
 
   }
 
-
   if ($("statOpen")) {
 
     $("statOpen")
@@ -1199,7 +1096,6 @@ function renderStats() {
 
   }
 
-
   if ($("statClosed")) {
 
     $("statClosed")
@@ -1207,7 +1103,6 @@ function renderStats() {
       closed;
 
   }
-
 
   if ($("statMembers")) {
 
@@ -1229,10 +1124,8 @@ function renderHome() {
   const element =
     $("homeSummary");
 
-
   if (!element)
     return;
-
 
   element.innerHTML = `
 
@@ -1251,7 +1144,6 @@ function renderHome() {
       </span>
 
     </div>
-
 
     <div class="card">
 
@@ -1272,7 +1164,6 @@ function renderHome() {
       </span>
 
     </div>
-
 
     <div class="card">
 
@@ -1304,10 +1195,8 @@ function renderRequests() {
   const element =
     $("requestsList");
 
-
   if (!element)
     return;
-
 
   if (!state.requests.length) {
 
@@ -1322,7 +1211,6 @@ function renderRequests() {
     return;
 
   }
-
 
   element.innerHTML =
     state.requests
@@ -1366,7 +1254,6 @@ function renderRequests() {
 
             </div>
 
-
             ${
               request.photo
                 ? `
@@ -1382,7 +1269,6 @@ function renderRequests() {
             }
 
           </div>
-
 
           <p class="muted">
 
@@ -1405,14 +1291,12 @@ function renderRequests() {
 
           </p>
 
-
           <p class="muted">
 
             Enviado:
             ${formatDate(request)}
 
           </p>
-
 
           <div class="actions">
 
@@ -1422,7 +1306,6 @@ function renderRequests() {
             >
               Aceitar
             </button>
-
 
             <button
               class="btn danger"
@@ -1451,10 +1334,8 @@ function renderVacancies() {
   const element =
     $("vacanciesList");
 
-
   if (!element)
     return;
-
 
   if (!state.vacancies.length) {
 
@@ -1470,7 +1351,6 @@ function renderVacancies() {
 
   }
 
-
   element.innerHTML =
     state.vacancies
       .map(
@@ -1481,26 +1361,23 @@ function renderVacancies() {
               vacancy
             );
 
-
           const character =
             vacancy.character ||
             vacancy.personagem ||
             vacancy.name ||
             "Sem personagem";
 
-
           const work =
             vacancy.work ||
             vacancy.obra ||
             "Sem obra";
 
-
           const image =
             vacancy.image ||
             vacancy.photo ||
             vacancy.characterPhoto ||
+            vacancy.foto ||
             "";
-
 
           return `
 
@@ -1520,7 +1397,6 @@ function renderVacancies() {
                   : ""
               }
 
-
               <div class="row">
 
                 <h3>
@@ -1537,11 +1413,9 @@ function renderVacancies() {
 
               </div>
 
-
               <div class="muted">
                 ${esc(work)}
               </div>
-
 
               <div class="actions">
 
@@ -1551,7 +1425,6 @@ function renderVacancies() {
                 >
                   Editar
                 </button>
-
 
                 <button
                   class="btn ghost"
@@ -1563,7 +1436,6 @@ function renderVacancies() {
                       : "Abrir"
                   }
                 </button>
-
 
                 <button
                   class="btn danger"
@@ -1594,10 +1466,8 @@ function renderMembers() {
   const element =
     $("membersList");
 
-
   if (!element)
     return;
-
 
   if (!state.members.length) {
 
@@ -1620,7 +1490,6 @@ function renderMembers() {
 
   }
 
-
   element.innerHTML =
     state.members
       .map(
@@ -1631,6 +1500,7 @@ function renderMembers() {
           <td>
             ${esc(
               member.name ||
+              member.nome ||
               member.nickname ||
               "—"
             )}
@@ -1682,10 +1552,8 @@ function renderAdmins() {
   const element =
     $("adminsList");
 
-
   if (!element)
     return;
-
 
   element.innerHTML =
     state.admins
@@ -1708,7 +1576,6 @@ function renderAdmins() {
               : ""
           }
 
-
           <div class="row">
 
             ${
@@ -1729,7 +1596,6 @@ function renderAdmins() {
                 `
             }
 
-
             <div style="flex:1">
 
               <h3>
@@ -1743,7 +1609,6 @@ function renderAdmins() {
             </div>
 
           </div>
-
 
           <div
             style="margin-top:12px"
@@ -1780,10 +1645,8 @@ function renderChat() {
   const element =
     $("chatList");
 
-
   if (!element)
     return;
-
 
   if (!state.chat.length) {
 
@@ -1798,7 +1661,6 @@ function renderChat() {
     return;
 
   }
-
 
   element.innerHTML =
     state.chat
@@ -1826,7 +1688,6 @@ function renderChat() {
 
           </div>
 
-
           <div style="margin-top:7px">
 
             ${esc(
@@ -1841,7 +1702,6 @@ function renderChat() {
       `
       )
       .join("");
-
 
   element.scrollTop =
     element.scrollHeight;
@@ -1858,10 +1718,8 @@ function renderLogs() {
   const element =
     $("logsList");
 
-
   if (!element)
     return;
-
 
   if (!state.logs.length) {
 
@@ -1883,7 +1741,6 @@ function renderLogs() {
     return;
 
   }
-
 
   element.innerHTML =
     state.logs
@@ -1945,7 +1802,6 @@ function showView(name) {
       }
     );
 
-
   document
     .querySelectorAll(".nav button")
     .forEach(
@@ -1958,10 +1814,8 @@ function showView(name) {
       }
     );
 
-
   const view =
     $("view-" + name);
-
 
   if (view) {
 
@@ -1971,12 +1825,10 @@ function showView(name) {
 
   }
 
-
   const navButton =
     document.querySelector(
       `.nav button[data-view="${name}"]`
     );
-
 
   if (navButton) {
 
@@ -1985,7 +1837,6 @@ function showView(name) {
     );
 
   }
-
 
   const titles = {
 
@@ -2026,11 +1877,9 @@ function showView(name) {
 
   };
 
-
   const title =
     titles[name] ||
     titles.home;
-
 
   if ($("pageTitle")) {
 
@@ -2038,7 +1887,6 @@ function showView(name) {
       title[0];
 
   }
-
 
   if ($("pageSubtitle")) {
 
@@ -2054,9 +1902,7 @@ function showView(name) {
    LOCALIZAR VAGA
    ========================================================= */
 
-function findVacancy(
-  id
-) {
+function findVacancy(id) {
 
   return state.vacancies.find(
     item =>
@@ -2067,12 +1913,703 @@ function findVacancy(
 
 
 /* =========================================================
+   LOCALIZAR VAGA POR PERSONAGEM + OBRA
+   ========================================================= */
+
+function findMatchingVacancy(
+  character,
+  work
+) {
+
+  const normalizedCharacter =
+    normalizeText(character);
+
+  const normalizedWork =
+    normalizeText(work);
+
+  return state.vacancies.find(
+    vacancy => {
+
+      const vacancyCharacter =
+        normalizeText(
+          vacancy.character ||
+          vacancy.personagem ||
+          vacancy.name
+        );
+
+      const vacancyWork =
+        normalizeText(
+          vacancy.work ||
+          vacancy.obra
+        );
+
+      return (
+
+        vacancyCharacter ===
+        normalizedCharacter
+
+        &&
+
+        vacancyWork ===
+        normalizedWork
+
+      );
+
+    }
+  ) || null;
+
+}
+
+
+/* =========================================================
+   LOCALIZAR VAGA DIRETAMENTE NO FIRESTORE
+   ========================================================= */
+
+async function findVacancyInFirestore(
+  character,
+  work
+) {
+
+  if (!db)
+    return null;
+
+  const normalizedCharacter =
+    normalizeText(character);
+
+  const normalizedWork =
+    normalizeText(work);
+
+
+  const collections = [
+    "vagas",
+    "occupiedCharacters"
+  ];
+
+
+  for (const collectionName of collections) {
+
+    try {
+
+      const snapshot =
+        await db
+          .collection(collectionName)
+          .get();
+
+
+      for (const document of snapshot.docs) {
+
+        const data =
+          document.data() || {};
+
+
+        const documentCharacter =
+          normalizeText(
+            data.character ||
+            data.personagem ||
+            data.name
+          );
+
+
+        const documentWork =
+          normalizeText(
+            data.work ||
+            data.obra
+          );
+
+
+        if (
+
+          documentCharacter ===
+          normalizedCharacter
+
+          &&
+
+          documentWork ===
+          normalizedWork
+
+        ) {
+
+          return {
+
+            id:
+              document.id,
+
+            ref:
+              document.ref,
+
+            collection:
+              collectionName,
+
+            ...data
+
+          };
+
+        }
+
+      }
+
+    } catch (error) {
+
+      console.warn(
+        `Não foi possível procurar em ${collectionName}:`,
+        error
+      );
+
+    }
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   CRIAR VAGA FECHADA
+   ========================================================= */
+
+async function createClosedVacancyFromRequest(
+  request,
+  character,
+  work
+) {
+
+  const image =
+    request.photo ||
+    request.foto ||
+    request.characterPhoto ||
+    "";
+
+
+  const memberName =
+    request.name ||
+    request.nome ||
+    request.nickname ||
+    "";
+
+
+  const data = {
+
+    character,
+
+    personagem:
+      character,
+
+    work,
+
+    obra:
+      work,
+
+    image,
+
+    photo:
+      image,
+
+    characterPhoto:
+      image,
+
+    foto:
+      image,
+
+    status:
+      "fechada",
+
+    estado:
+      "fechada",
+
+    occupied:
+      true,
+
+    occupiedBy:
+      memberName,
+
+    occupiedCharacter:
+      character,
+
+    occupiedAt:
+      firebase.firestore
+        .FieldValue
+        .serverTimestamp(),
+
+    createdAt:
+      firebase.firestore
+        .FieldValue
+        .serverTimestamp(),
+
+    updatedAt:
+      firebase.firestore
+        .FieldValue
+        .serverTimestamp()
+
+  };
+
+
+  const result =
+    await db
+      .collection("vagas")
+      .add(data);
+
+
+  return result;
+
+}
+
+
+/* =========================================================
+   FECHAR VAGA
+   ========================================================= */
+
+async function closeVacancyFromApproval(
+  request,
+  character,
+  work
+) {
+
+  /*
+   * Primeiro tenta usar o que já foi carregado.
+   */
+
+  let vacancy =
+    findMatchingVacancy(
+      character,
+      work
+    );
+
+
+  /*
+   * Se não encontrou, procura diretamente
+   * no Firestore.
+   */
+
+  if (!vacancy) {
+
+    vacancy =
+      await findVacancyInFirestore(
+        character,
+        work
+      );
+
+  }
+
+
+  /*
+   * Se encontrou uma vaga em qualquer coleção,
+   * atualiza essa vaga.
+   */
+
+  if (vacancy?.ref) {
+
+    const image =
+      request.photo ||
+      request.foto ||
+      request.characterPhoto ||
+      vacancy.image ||
+      vacancy.photo ||
+      vacancy.characterPhoto ||
+      "";
+
+
+    await vacancy.ref.update({
+
+      character,
+
+      personagem:
+        character,
+
+      work,
+
+      obra:
+        work,
+
+      image,
+
+      photo:
+        image,
+
+      characterPhoto:
+        image,
+
+      foto:
+        image,
+
+      status:
+        "fechada",
+
+      estado:
+        "fechada",
+
+      occupied:
+        true,
+
+      occupiedBy:
+        request.name ||
+        request.nome ||
+        request.nickname ||
+        "",
+
+      occupiedCharacter:
+        character,
+
+      occupiedAt:
+        firebase.firestore
+          .FieldValue
+          .serverTimestamp(),
+
+      updatedAt:
+        firebase.firestore
+          .FieldValue
+          .serverTimestamp()
+
+    });
+
+
+    /*
+     * IMPORTANTE:
+     *
+     * O site público usa "vagas" como coleção principal.
+     *
+     * Se a vaga antiga estava em
+     * "occupiedCharacters", cria também uma cópia
+     * fechada em "vagas".
+     */
+
+    if (
+      vacancy.collection !== "vagas"
+    ) {
+
+      try {
+
+        await createClosedVacancyFromRequest(
+          request,
+          character,
+          work
+        );
+
+      } catch (error) {
+
+        console.warn(
+          "Não foi possível criar a vaga espelho em vagas:",
+          error
+        );
+
+      }
+
+    }
+
+    return;
+
+  }
+
+
+  /*
+   * NÃO ENCONTROU VAGA.
+   *
+   * Mesmo assim, a aprovação precisa gerar
+   * uma vaga fechada.
+   */
+
+  await createClosedVacancyFromRequest(
+    request,
+    character,
+    work
+  );
+
+}
+
+
+/* =========================================================
+   PROCURAR MEMBRO JÁ EXISTENTE
+   ========================================================= */
+
+async function findExistingMember(
+  request,
+  character,
+  work
+) {
+
+  if (!db)
+    return null;
+
+  try {
+
+    const snapshot =
+      await db
+        .collection("members")
+        .get();
+
+
+    const requestName =
+      normalizeText(
+        request.name ||
+        request.nome ||
+        request.nickname
+      );
+
+
+    const requestPhone =
+      String(
+        request.phoneLast4 ||
+        request.last4 ||
+        request.ultimos4 ||
+        ""
+      ).trim();
+
+
+    for (const document of snapshot.docs) {
+
+      const member =
+        document.data() || {};
+
+
+      const memberCharacter =
+        normalizeText(
+          member.character ||
+          member.personagem
+        );
+
+
+      const memberWork =
+        normalizeText(
+          member.work ||
+          member.obra
+        );
+
+
+      const memberName =
+        normalizeText(
+          member.name ||
+          member.nome ||
+          member.nickname
+        );
+
+
+      const memberPhone =
+        String(
+          member.phoneLast4 ||
+          member.last4 ||
+          member.ultimos4 ||
+          ""
+        ).trim();
+
+
+      const sameCharacter =
+        memberCharacter ===
+        normalizeText(character);
+
+
+      const sameWork =
+        memberWork ===
+        normalizeText(work);
+
+
+      const sameName =
+        requestName &&
+        memberName &&
+        requestName ===
+        memberName;
+
+
+      const samePhone =
+        requestPhone &&
+        memberPhone &&
+        requestPhone ===
+        memberPhone;
+
+
+      if (
+        sameCharacter &&
+        sameWork &&
+        (sameName || samePhone)
+      ) {
+
+        return {
+
+          id:
+            document.id,
+
+          ref:
+            document.ref,
+
+          ...member
+
+        };
+
+      }
+
+    }
+
+  } catch (error) {
+
+    console.warn(
+      "Não foi possível verificar membro existente:",
+      error
+    );
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   CRIAR MEMBRO
+   ========================================================= */
+
+async function createMemberFromRequest(
+  request,
+  character,
+  work
+) {
+
+  const existing =
+    await findExistingMember(
+      request,
+      character,
+      work
+    );
+
+
+  /*
+   * Evita cadastrar o mesmo membro duas vezes
+   * caso o botão seja pressionado novamente.
+   */
+
+  if (existing) {
+
+    return {
+
+      existing: true,
+
+      id:
+        existing.id,
+
+      ref:
+        existing.ref
+
+    };
+
+  }
+
+
+  const name =
+    request.name ||
+    request.nome ||
+    request.nickname ||
+    "";
+
+
+  const age =
+    request.age ||
+    request.idade ||
+    "";
+
+
+  const phoneLast4 =
+    request.phoneLast4 ||
+    request.last4 ||
+    request.ultimos4 ||
+    "";
+
+
+  const photo =
+    request.photo ||
+    request.foto ||
+    request.characterPhoto ||
+    "";
+
+
+  const data = {
+
+    name,
+
+    nome:
+      name,
+
+    nickname:
+      request.nickname ||
+      "",
+
+    age,
+
+    idade:
+      age,
+
+    phoneLast4,
+
+    last4:
+      phoneLast4,
+
+    ultimos4:
+      phoneLast4,
+
+    character,
+
+    personagem:
+      character,
+
+    work,
+
+    obra:
+      work,
+
+    photo,
+
+    foto:
+      photo,
+
+    characterPhoto:
+      photo,
+
+    approvedBy:
+      state.admin?.name ||
+      "",
+
+    approvedByCode:
+      state.admin?.code ||
+      "",
+
+    approvedAt:
+      firebase.firestore
+        .FieldValue
+        .serverTimestamp(),
+
+    createdAt:
+      firebase.firestore
+        .FieldValue
+        .serverTimestamp()
+
+  };
+
+
+  const result =
+    await db
+      .collection("members")
+      .add(data);
+
+
+  return {
+
+    existing: false,
+
+    id:
+      result.id,
+
+    ref:
+      result
+
+  };
+
+}
+
+
+/* =========================================================
    APROVAR SOLICITAÇÃO
    ========================================================= */
 
-async function approveRequest(
-  id
-) {
+async function approveRequest(id) {
 
   const request =
     state.requests.find(
@@ -2113,92 +2650,95 @@ async function approveRequest(
   }
 
 
-  const vacancy =
-    state.vacancies.find(
-      item => {
-
-        const itemCharacter =
-          String(
-            item.character ||
-            item.personagem ||
-            item.name ||
-            ""
-          )
-            .trim()
-            .toLowerCase();
+  if (!firestoreAvailable())
+    return;
 
 
-        const itemWork =
-          String(
-            item.work ||
-            item.obra ||
-            ""
-          )
-            .trim()
-            .toLowerCase();
+  /*
+   * Evita clique duplo enquanto aprova.
+   */
 
-
-        return (
-
-          itemCharacter ===
-          String(character)
-            .trim()
-            .toLowerCase()
-
-          &&
-
-          itemWork ===
-          String(work)
-            .trim()
-            .toLowerCase()
-
-          &&
-
-          statusIsOpen(item)
-
-        );
-
-      }
+  const approveButton =
+    document.querySelector(
+      `[data-approve="${CSS.escape(id)}"]`
     );
+
+
+  if (approveButton) {
+
+    approveButton.disabled =
+      true;
+
+    approveButton.textContent =
+      "Aprovando...";
+
+  }
 
 
   try {
 
-    if (!firestoreAvailable())
-      return;
+    /*
+     * =====================================================
+     * 1. CADASTRA O MEMBRO
+     * =====================================================
+     */
+
+    const memberResult =
+      await createMemberFromRequest(
+        request,
+        character,
+        work
+      );
 
 
     /*
-     * CRIA MEMBRO
+     * =====================================================
+     * 2. FECHA A VAGA
+     *
+     * Mesmo que não exista uma vaga aberta,
+     * cria uma nova vaga fechada.
+     * =====================================================
      */
 
+    await closeVacancyFromApproval(
+      request,
+      character,
+      work
+    );
+
+
+    /*
+     * =====================================================
+     * 3. ATUALIZA A SOLICITAÇÃO
+     * =====================================================
+     */
+
+    const collection =
+      request.collection ||
+      await findRequestCollection(
+        id
+      );
+
+
+    if (!collection) {
+
+      throw new Error(
+        "Solicitação não encontrada no Firestore."
+      );
+
+    }
+
+
     await db
-      .collection("members")
-      .add({
+      .collection(collection)
+      .doc(id)
+      .update({
 
-        name:
-          request.name ||
-          request.nickname ||
-          "",
+        status:
+          "aprovado",
 
-        age:
-          request.age ||
-          request.idade ||
-          "",
-
-        phoneLast4:
-          request.phoneLast4 ||
-          request.last4 ||
-          request.ultimos4 ||
-          "",
-
-        character,
-
-        work,
-
-        photo:
-          request.photo ||
-          "",
+        aprovado:
+          true,
 
         approvedBy:
           state.admin?.name ||
@@ -2209,79 +2749,20 @@ async function approveRequest(
             .FieldValue
             .serverTimestamp(),
 
-        createdAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
+        memberCreated:
+          !memberResult.existing,
+
+        vacancyClosed:
+          true
 
       });
 
 
     /*
-     * FECHA A VAGA ENCONTRADA
+     * =====================================================
+     * 4. LOG
+     * =====================================================
      */
-
-    if (vacancy?.ref) {
-
-      await vacancy.ref.update({
-
-        status:
-          "fechada",
-
-        occupiedBy:
-          request.name ||
-          request.nickname ||
-          "",
-
-        occupiedAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp(),
-
-        updatedAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
-
-      });
-
-    }
-
-
-    /*
-     * ATUALIZA SOLICITAÇÃO
-     */
-
-    const collection =
-      request.collection ||
-      await findRequestCollection(
-        id
-      );
-
-
-    if (collection) {
-
-      await db
-        .collection(collection)
-        .doc(id)
-        .update({
-
-          status:
-            "aprovado",
-
-          approvedBy:
-            state.admin?.name ||
-            "",
-
-          approvedAt:
-            firebase.firestore
-              .FieldValue
-              .serverTimestamp()
-
-        });
-
-    }
-
 
     await logAction(
       "aprovar_solicitacao",
@@ -2289,24 +2770,74 @@ async function approveRequest(
     );
 
 
+    /*
+     * =====================================================
+     * 5. ATUALIZA A INTERFACE
+     * =====================================================
+     */
+
     toast(
-      "Solicitação aprovada."
+      memberResult.existing
+        ? "Solicitação aprovada e vaga fechada."
+        : "Solicitação aprovada! Membro cadastrado e vaga fechada."
     );
 
 
     await refreshAll();
 
+
   } catch (error) {
 
     console.error(
-      "Erro ao aprovar:",
+      "Erro completo ao aprovar solicitação:",
       error
     );
 
 
+    let message =
+      "Não foi possível concluir a aprovação.";
+
+
+    if (
+      error?.code ===
+      "permission-denied"
+    ) {
+
+      message =
+        "O Firebase bloqueou uma das operações. Verifique as regras do Firestore.";
+
+    }
+
+
+    if (
+      error?.message &&
+      error.message.includes(
+        "Solicitação não encontrada"
+      )
+    ) {
+
+      message =
+        "A solicitação não foi encontrada no Firebase.";
+
+    }
+
+
     toast(
-      "Não foi possível aprovar a solicitação."
+      message
     );
+
+
+  } finally {
+
+    if (approveButton) {
+
+      approveButton.disabled =
+        false;
+
+      approveButton.textContent =
+        "Aceitar";
+
+    }
 
   }
 
@@ -2317,9 +2848,7 @@ async function approveRequest(
    RECUSAR SOLICITAÇÃO
    ========================================================= */
 
-async function rejectRequest(
-  id
-) {
+async function rejectRequest(id) {
 
   try {
 
@@ -2392,7 +2921,6 @@ async function rejectRequest(
       error
     );
 
-
     toast(
       "Não foi possível recusar a solicitação."
     );
@@ -2406,9 +2934,7 @@ async function rejectRequest(
    ENCONTRAR SOLICITAÇÃO
    ========================================================= */
 
-async function findRequestCollection(
-  id
-) {
+async function findRequestCollection(id) {
 
   if (!db)
     return null;
@@ -2457,9 +2983,7 @@ async function findRequestCollection(
    MODAL DE VAGA
    ========================================================= */
 
-function openVacancyModal(
-  id = null
-) {
+function openVacancyModal(id = null) {
 
   state.editVacancyId =
     id;
@@ -2513,6 +3037,8 @@ function openVacancyModal(
     $("vacImage").value =
       vacancy?.image ||
       vacancy?.photo ||
+      vacancy?.characterPhoto ||
+      vacancy?.foto ||
       "";
 
   }
@@ -2529,7 +3055,6 @@ function openVacancyModal(
 
 
   setVacancyMessage("");
-
 
   $("modal")
     ?.classList
@@ -2610,11 +3135,29 @@ async function saveVacancy() {
 
       character,
 
+      personagem:
+        character,
+
       work,
+
+      obra:
+        work,
 
       image,
 
+      photo:
+        image,
+
+      characterPhoto:
+        image,
+
+      foto:
+        image,
+
       status,
+
+      estado:
+        status,
 
       updatedAt:
         firebase.firestore
@@ -2623,10 +3166,6 @@ async function saveVacancy() {
 
     };
 
-
-    /*
-     * EDITAR
-     */
 
     if (state.editVacancyId) {
 
@@ -2653,14 +3192,7 @@ async function saveVacancy() {
         "Vaga atualizada."
       );
 
-    }
-
-
-    /*
-     * CRIAR
-     */
-
-    else {
+    } else {
 
       await db
         .collection("vagas")
@@ -2714,9 +3246,7 @@ async function saveVacancy() {
    ABRIR / FECHAR VAGA
    ========================================================= */
 
-async function toggleVacancy(
-  id
-) {
+async function toggleVacancy(id) {
 
   const vacancy =
     findVacancy(id);
@@ -2756,6 +3286,9 @@ async function toggleVacancy(
       .update({
 
         status:
+          nextStatus,
+
+        estado:
           nextStatus,
 
         updatedAt:
@@ -2818,9 +3351,7 @@ async function toggleVacancy(
    EXCLUIR VAGA
    ========================================================= */
 
-async function deleteVacancy(
-  id
-) {
+async function deleteVacancy(id) {
 
   const vacancy =
     findVacancy(id);
@@ -3031,9 +3562,7 @@ async function logAction(
    CLOUDINARY
    ========================================================= */
 
-async function uploadToCloudinary(
-  file
-) {
+async function uploadToCloudinary(file) {
 
   if (!file)
     return "";
@@ -3392,16 +3921,8 @@ function bindEvents() {
 
 async function boot() {
 
-  /*
-   * Primeiro garante que os eventos existem.
-   */
-
   bindEvents();
 
-
-  /*
-   * Verifica sessão salva.
-   */
 
   const saved =
     getStoredAdmin();
@@ -3435,10 +3956,6 @@ async function boot() {
 
     showApp();
 
-
-    /*
-     * Firebase em segundo plano.
-     */
 
     if (
       firebaseReady &&
@@ -3484,11 +4001,6 @@ async function boot() {
 
   }
 
-
-  /*
-   * Sem sessão:
-   * permanece na tela de login.
-   */
 
   if ($("loginView")) {
 
