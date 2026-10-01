@@ -3,198 +3,708 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Solicitar Personagem | HOUSE LTD</title>
+
     <link rel="stylesheet" href="css/style.css">
-    
-    <!-- Firebase - carregando direto -->
+
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
+
 <body>
-    <div class="container">
-        <header>
-            <h1>SOI<span>CITAR</span></h1>
-            <p>Preencha os dados abaixo para reservar seu personagem!</p>
-        </header>
 
-        <main>
-            <form id="form-solicitacao">
-                <label>NOME COMPLETO *</label>
-                <input type="text" id="nome" placeholder="Seu nome completo" required>
+<div class="container">
 
-                <label>ÚLTIMOS 4 DÍGITOS DO TELEFONE *</label>
-                <input type="text" id="telefone" maxlength="4" placeholder="____" required>
+    <header>
+        <h1>SOLICITAR</h1>
 
-                <label>NOME DO PERSONAGEM *</label>
-                <input type="text" id="personagem" placeholder="Ex: Nejire Hadou" required>
+        <p>
+            Preencha os dados abaixo para reservar seu personagem!
+        </p>
+    </header>
 
-                <label>OBRA / FANDOM *</label>
-                <input type="text" id="obra" placeholder="Ex: My Hero Academia" required>
 
-                <label>FOTO DO PERSONAGEM *</label>
-                <input type="file" id="foto" accept="image/*" required style="padding: 10px 0;">
-                <div id="preview-container" style="display: none; margin: 10px 0;">
-                    <p style="font-size: 0.9em; color: #00a8ff; margin-bottom: 5px;">✅ Pré-visualização:</p>
-                    <img id="preview-foto" style="max-width: 150px; max-height: 150px; border-radius: 8px; border: 2px solid #00a8ff;">
-                </div>
+    <main>
 
-                <label>MENSAGEM (opcional)</label>
-                <textarea id="mensagem" rows="4" placeholder="Algo que queira nos dizer..."></textarea>
+        <!-- =========================
+             FORMULÁRIO
+        ========================== -->
 
-                <button type="submit" id="btn-enviar">ENVIAR SOLICITAÇÃO</button>
-            </form>
+        <form id="form-solicitacao">
 
-            <div id="mensagem-sucesso" style="display: none; text-align: center; margin-top: 30px; padding: 25px; background: rgba(0,200,100,0.1); border: 1px solid #00c864; border-radius: 8px;">
-                <h3 style="color: #00c864; margin-top: 0; font-size: 1.4em;">✅ ENVIADO COM SUCESSO!</h3>
-                <p style="color: #ddd; margin: 10px 0;">Sua solicitação foi enviada. Aguarde a aprovação!</p>
-                <button type="button" onclick="voltar()" style="background: #00c864; color: white; border: none; padding: 10px 24px; border-radius: 4px; font-size: 1em; cursor: pointer;">ENVIAR OUTRA</button>
+            <label for="nome">
+                NOME COMPLETO *
+            </label>
+
+            <input
+                type="text"
+                id="nome"
+                placeholder="Seu nome completo"
+                required
+            >
+
+
+            <label for="telefone">
+                ÚLTIMOS 4 DÍGITOS DO TELEFONE *
+            </label>
+
+            <input
+                type="text"
+                id="telefone"
+                maxlength="4"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="____"
+                required
+            >
+
+
+            <label for="personagem">
+                NOME DO PERSONAGEM *
+            </label>
+
+            <input
+                type="text"
+                id="personagem"
+                placeholder="Ex: Nejire Hadou"
+                required
+            >
+
+
+            <label for="obra">
+                OBRA / FANDOM *
+            </label>
+
+            <input
+                type="text"
+                id="obra"
+                placeholder="Ex: My Hero Academia"
+                required
+            >
+
+
+            <label for="foto">
+                FOTO DO PERSONAGEM *
+            </label>
+
+            <input
+                type="file"
+                id="foto"
+                accept="image/*"
+                required
+            >
+
+
+            <!-- =========================
+                 PRÉ-VISUALIZAÇÃO
+            ========================== -->
+
+            <div
+                id="preview-container"
+                style="display:none; margin:15px 0;"
+            >
+
+                <p>
+                    ✅ Pré-visualização:
+                </p>
+
+                <img
+                    id="preview-foto"
+                    alt="Pré-visualização do personagem"
+                    style="
+                        max-width:150px;
+                        max-height:150px;
+                        border-radius:8px;
+                        object-fit:cover;
+                    "
+                >
+
             </div>
-        </main>
-    </div>
 
-    <script>
-        // ======================
-        // CONFIGURAÇÃO DO FIREBASE — COLOQUE OS SEUS DADOS AQUI
-        // ======================
-        const firebaseConfig = {
-            apiKey: "COLOQUE_SUA_API_KEY_AQUI",
-            authDomain: "SEU_PROJETO.firebaseapp.com",
-            projectId: "SEU_PROJETO_ID",
-            storageBucket: "SEU_PROJETO.appspot.com",
-            messagingSenderId: "XXXXXX",
-            appId: "XXXXXX"
+
+            <label for="mensagem">
+                MENSAGEM (opcional)
+            </label>
+
+            <textarea
+                id="mensagem"
+                rows="4"
+                placeholder="Algo que queira nos dizer..."
+            ></textarea>
+
+
+            <button
+                type="submit"
+                id="btn-enviar"
+            >
+                ENVIAR SOLICITAÇÃO
+            </button>
+
+        </form>
+
+
+        <!-- =========================
+             MENSAGEM DE SUCESSO
+        ========================== -->
+
+        <div
+            id="mensagem-sucesso"
+            style="
+                display:none;
+                text-align:center;
+                margin-top:30px;
+                padding:25px;
+            "
+        >
+
+            <h3>
+                ✅ ENVIADO COM SUCESSO!
+            </h3>
+
+            <p>
+                Sua solicitação foi enviada.
+                Aguarde a aprovação!
+            </p>
+
+            <button
+                type="button"
+                id="btn-outra"
+            >
+                ENVIAR OUTRA
+            </button>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   FIREBASE — HOUSE LTD
+========================================================= */
+
+const firebaseConfig = {
+
+    apiKey: "AIzaSyCRUNymKVh-UxKkSvNEUZkzAjmRi_4_AQU",
+
+    authDomain: "house-ltd.firebaseapp.com",
+
+    projectId: "house-ltd",
+
+    storageBucket: "house-ltd.firebasestorage.app",
+
+    messagingSenderId: "821811124213",
+
+    appId: "1:821811124213:web:c8dd2b2f1e1a41bcd632bc",
+
+    measurementId: "G-P28WHBV9VB"
+
+};
+
+
+/* =========================================================
+   INICIALIZAR FIREBASE
+========================================================= */
+
+let db;
+
+try {
+
+    firebase.initializeApp(firebaseConfig);
+
+    db = firebase.firestore();
+
+    console.log("✅ Firebase conectado.");
+
+} catch (erro) {
+
+    console.error(
+        "❌ Erro ao iniciar Firebase:",
+        erro
+    );
+
+}
+
+
+/* =========================================================
+   ELEMENTOS
+========================================================= */
+
+const form =
+    document.getElementById("form-solicitacao");
+
+const btnEnviar =
+    document.getElementById("btn-enviar");
+
+const btnOutra =
+    document.getElementById("btn-outra");
+
+const mensagemSucesso =
+    document.getElementById("mensagem-sucesso");
+
+const inputFoto =
+    document.getElementById("foto");
+
+const previewContainer =
+    document.getElementById("preview-container");
+
+const previewFoto =
+    document.getElementById("preview-foto");
+
+const inputTelefone =
+    document.getElementById("telefone");
+
+
+/* =========================================================
+   TELEFONE — SOMENTE NÚMEROS
+========================================================= */
+
+inputTelefone.addEventListener(
+    "input",
+    function () {
+
+        this.value = this.value
+            .replace(/\D/g, "")
+            .slice(0, 4);
+
+    }
+);
+
+
+/* =========================================================
+   PRÉ-VISUALIZAÇÃO DA FOTO
+========================================================= */
+
+inputFoto.addEventListener(
+    "change",
+    function () {
+
+        const arquivo =
+            this.files[0];
+
+        if (!arquivo) {
+
+            previewContainer.style.display =
+                "none";
+
+            previewFoto.src = "";
+
+            return;
+        }
+
+
+        /* Limite de 10 MB */
+
+        if (
+            arquivo.size >
+            10 * 1024 * 1024
+        ) {
+
+            alert(
+                "❌ A imagem não pode ter mais de 10 MB."
+            );
+
+            this.value = "";
+
+            previewContainer.style.display =
+                "none";
+
+            return;
+        }
+
+
+        const leitor =
+            new FileReader();
+
+
+        leitor.onload =
+            function (evento) {
+
+                previewFoto.src =
+                    evento.target.result;
+
+                previewContainer.style.display =
+                    "block";
+
+            };
+
+
+        leitor.readAsDataURL(arquivo);
+
+    }
+);
+
+
+/* =========================================================
+   CLOUDINARY — HOUSE LTD
+========================================================= */
+
+async function enviarParaCloudinary(
+    arquivo
+) {
+
+    /*
+     * Cloudinary da House LTD
+     */
+
+    const cloudName =
+        "gsqmelxb";
+
+    const uploadPreset =
+        "House LTD";
+
+
+    const dados =
+        new FormData();
+
+
+    dados.append(
+        "file",
+        arquivo
+    );
+
+
+    dados.append(
+        "upload_preset",
+        uploadPreset
+    );
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                {
+                    method: "POST",
+                    body: dados
+                }
+            );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        console.log(
+            "Cloudinary:",
+            resultado
+        );
+
+
+        if (!resposta.ok) {
+
+            return {
+
+                sucesso: false,
+
+                erro:
+                    resultado?.error?.message ||
+                    "Erro no upload da imagem."
+
+            };
+
+        }
+
+
+        if (
+            !resultado.secure_url
+        ) {
+
+            return {
+
+                sucesso: false,
+
+                erro:
+                    "O Cloudinary não retornou a imagem."
+
+            };
+
+        }
+
+
+        return {
+
+            sucesso: true,
+
+            url: resultado.secure_url
+
         };
 
-        // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
 
-        // ======================
-        // CÓDIGO DO FORMULÁRIO
-        // ======================
-        const form = document.getElementById('form-solicitacao');
-        const mensagemSucesso = document.getElementById('mensagem-sucesso');
-        const inputFoto = document.getElementById('foto');
-        const previewContainer = document.getElementById('preview-container');
-        const previewFoto = document.getElementById('preview-foto');
+    } catch (erro) {
 
-        // Pré-visualização da foto
-        if (inputFoto) {
-            inputFoto.addEventListener('change', function(e) {
-                const arquivo = e.target.files[0];
-                if (arquivo) {
-                    const leitor = new FileReader();
-                    leitor.onload = function(e) {
-                        previewFoto.src = e.target.result;
-                        previewContainer.style.display = 'block';
-                    };
-                    leitor.readAsDataURL(arquivo);
-                } else {
-                    previewContainer.style.display = 'none';
-                }
-            });
+        console.error(
+            "Erro Cloudinary:",
+            erro
+        );
+
+
+        return {
+
+            sucesso: false,
+
+            erro:
+                "Não foi possível conectar ao Cloudinary."
+
+        };
+
+    }
+
+}
+
+
+/* =========================================================
+   ENVIAR SOLICITAÇÃO
+========================================================= */
+
+form.addEventListener(
+    "submit",
+    async function (evento) {
+
+        evento.preventDefault();
+
+
+        /* Evitar clique duplo */
+
+        if (
+            btnEnviar.disabled
+        ) {
+            return;
         }
 
-        // Enviar foto para o Cloudinary
-        async function enviarParaCloudinary(arquivo) {
-            const cloudName = "dum5yqzbo"; // ⚠️ TROQUE PELO SEU CLOUD NAME!
-            const uploadPreset = "house_ltd";
 
-            const formData = new FormData();
-            formData.append("file", arquivo);
-            formData.append("upload_preset", uploadPreset);
+        btnEnviar.disabled =
+            true;
 
-            try {
-                const resposta = await fetch(
-                    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-                    { method: "POST", body: formData }
+
+        const textoOriginal =
+            btnEnviar.textContent;
+
+
+        try {
+
+            /* =============================================
+               PEGAR VALORES
+            ============================================= */
+
+            const nome =
+                document
+                    .getElementById("nome")
+                    .value
+                    .trim();
+
+
+            const telefone =
+                document
+                    .getElementById("telefone")
+                    .value
+                    .trim();
+
+
+            const personagem =
+                document
+                    .getElementById("personagem")
+                    .value
+                    .trim();
+
+
+            const obra =
+                document
+                    .getElementById("obra")
+                    .value
+                    .trim();
+
+
+            const mensagem =
+                document
+                    .getElementById("mensagem")
+                    .value
+                    .trim();
+
+
+            const arquivoFoto =
+                inputFoto.files[0];
+
+
+            /* =============================================
+               VALIDAÇÃO
+            ============================================= */
+
+            if (
+                !nome ||
+                !telefone ||
+                !personagem ||
+                !obra ||
+                !arquivoFoto
+            ) {
+
+                throw new Error(
+                    "Preencha todos os campos obrigatórios."
                 );
-                const dados = await resposta.json();
-                if (dados.secure_url) {
-                    return { sucesso: true, url: dados.secure_url };
-                }
-                return { sucesso: false, erro: "Sem URL na resposta" };
-            } catch (erro) {
-                return { sucesso: false, erro: erro.message };
+
             }
-        }
 
-        // Envio do formulário
-        if (form) {
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
 
-                const btn = document.getElementById('btn-enviar');
-                const textoOriginal = btn.innerHTML;
-                btn.innerHTML = 'ENVIANDO...';
-                btn.disabled = true;
+            if (
+                !/^\d{4}$/.test(
+                    telefone
+                )
+            ) {
 
-                // Pegar valores
-                const nome = document.getElementById('nome').value.trim();
-                const telefone = document.getElementById('telefone').value.trim();
-                const personagem = document.getElementById('personagem').value.trim();
-                const obra = document.getElementById('obra').value.trim();
-                const arquivoFoto = inputFoto.files[0];
-                const mensagem = document.getElementById('mensagem').value.trim() || '';
+                throw new Error(
+                    "Digite exatamente os 4 últimos dígitos do telefone."
+                );
 
-                // Validar
-                if (!nome || !telefone || !personagem || !obra || !arquivoFoto) {
-                    alert('❌ Preencha TODOS os campos e escolha uma foto!');
-                    btn.innerHTML = textoOriginal;
-                    btn.disabled = false;
-                    return;
-                }
+            }
 
-                if (telefone.length !== 4) {
-                    alert('❌ Digite exatamente os 4 últimos dígitos do telefone!');
-                    btn.innerHTML = textoOriginal;
-                    btn.disabled = false;
-                    return;
-                }
 
-                // Enviar foto primeiro
-                alert('📸 Enviando foto, aguarde um instante...');
-                const upload = await enviarParaCloudinary(arquivoFoto);
-                
-                if (!upload.sucesso) {
-                    alert('❌ Erro ao enviar foto: ' + upload.erro);
-                    btn.innerHTML = textoOriginal;
-                    btn.disabled = false;
-                    return;
-                }
+            /* =============================================
+               UPLOAD
+            ============================================= */
 
-                // Salvar no Firebase
-                try {
-                    await db.collection("characterRequests").add({
-                        nome: nome,
-                        telefone: telefone,
-                        personagem: personagem,
-                        obra: obra,
-                        foto: upload.url,
-                        mensagem: mensagem,
-                        status: 'pendente',
-                        data: new Date()
-                    });
+            btnEnviar.textContent =
+                "ENVIANDO FOTO...";
 
-                    form.style.display = 'none';
-                    mensagemSucesso.style.display = 'block';
-                    
-                } catch (erro) {
-                    console.error('❌ Erro ao salvar:', erro);
-                    alert('❌ Erro: ' + erro.message);
-                }
 
-                btn.innerHTML = textoOriginal;
-                btn.disabled = false;
-            });
-        }
+            const upload =
+                await enviarParaCloudinary(
+                    arquivoFoto
+                );
 
-        function voltar() {
+
+            if (
+                !upload.sucesso
+            ) {
+
+                throw new Error(
+                    upload.erro
+                );
+
+            }
+
+
+            /* =============================================
+               FIRESTORE
+            ============================================= */
+
+            btnEnviar.textContent =
+                "ENVIANDO SOLICITAÇÃO...";
+
+
+            if (!db) {
+
+                throw new Error(
+                    "Firebase não foi inicializado."
+                );
+
+            }
+
+
+            await db
+                .collection(
+                    "characterRequests"
+                )
+                .add({
+
+                    nome: nome,
+
+                    telefone: telefone,
+
+                    personagem: personagem,
+
+                    obra: obra,
+
+                    foto: upload.url,
+
+                    mensagem: mensagem,
+
+                    status: "pendente",
+
+                    data:
+                        firebase.firestore
+                            .FieldValue
+                            .serverTimestamp()
+
+                });
+
+
+            /* =============================================
+               SUCESSO
+            ============================================= */
+
             form.reset();
-            previewContainer.style.display = 'none';
-            form.style.display = 'block';
-            mensagemSucesso.style.display = 'none';
+
+            previewFoto.src = "";
+
+            previewContainer.style.display =
+                "none";
+
+            form.style.display =
+                "none";
+
+            mensagemSucesso.style.display =
+                "block";
+
+
+        } catch (erro) {
+
+            console.error(
+                "❌ Erro na solicitação:",
+                erro
+            );
+
+
+            alert(
+                "❌ Não foi possível enviar a solicitação.\n\n" +
+                erro.message
+            );
+
+
+        } finally {
+
+            btnEnviar.disabled =
+                false;
+
+            btnEnviar.textContent =
+                textoOriginal;
+
         }
-    </script>
+
+    }
+);
+
+
+/* =========================================================
+   ENVIAR OUTRA SOLICITAÇÃO
+========================================================= */
+
+btnOutra.addEventListener(
+    "click",
+    function () {
+
+        form.reset();
+
+        previewFoto.src = "";
+
+        previewContainer.style.display =
+            "none";
+
+        mensagemSucesso.style.display =
+            "none";
+
+        form.style.display =
+            "block";
+
+    }
+);
+
+</script>
+
 </body>
-</html>
+    </html>
