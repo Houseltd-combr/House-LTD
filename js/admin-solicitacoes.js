@@ -10,6 +10,7 @@ import {
     updateDoc,
     getDoc,
     addDoc,
+    getDocs,
     serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -100,11 +101,13 @@ window.aprovarSolicitacao = async function(id) {
 
         const dados = solicitacaoSnap.data();
 
+        // 1. Atualizar status da solicitação
         await updateDoc(solicitacaoRef, {
             status: "aprovado",
             dataAprovacao: serverTimestamp()
         });
 
+        // 2. Adicionar aos personagens ocupados (busca de MEMBROS)
         await addDoc(collection(db, "occupiedCharacters"), {
             personagem: dados.personagem,
             obra: dados.obra,
@@ -115,7 +118,28 @@ window.aprovarSolicitacao = async function(id) {
             dataEntrada: serverTimestamp()
         });
 
-        alert('✅ Solicitação APROVADA! Personagem agora está ocupado.');
+        // 3. FECHAR a vaga correspondente
+        const vagasRef = collection(db, "vagas");
+        const qVaga = query(
+            vagasRef,
+            where("personagem", "==", dados.personagem),
+            where("obra", "==", dados.obra),
+            where("status", "==", "aberta")
+        );
+        const vagaSnapshot = await getDocs(qVaga);
+        
+        if (!vagaSnapshot.empty) {
+            vagaSnapshot.forEach(async (vagaDoc) => {
+                await updateDoc(doc(db, "vagas", vagaDoc.id), {
+                    status: "fechada",
+                    ocupadaPor: dados.nome,
+                    telefoneMembro: dados.telefone,
+                    dataFechamento: serverTimestamp()
+                });
+            });
+        }
+
+        alert('✅ Solicitação APROVADA!\n• Vaga marcada como FECHADA\n• Membro adicionado na busca!');
     } catch (erro) {
         console.error('❌ Erro ao aprovar:', erro);
         alert('❌ Erro: ' + erro.message);
