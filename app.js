@@ -1,1113 +1,429 @@
 /* =========================================================
-   HOUSE LTD
-   SISTEMA PRINCIPAL
-   Firebase + Firestore + Cloudinary
-   ========================================================= */
+   HOUSE LTD — APP.JS
+   Sistema principal da House LTD
+
+   Firebase:
+   Projeto: house-ltd
+
+   Cloudinary:
+   Cloud: gsqmelxb
+   Preset: House LTD
+========================================================= */
 
 
 /* =========================================================
    FIREBASE
-   ========================================================= */
+========================================================= */
 
 const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyCRUNymKVh-UxKkSvNEUZkAjmRi_4_AQU",
-
-  authDomain:
-    "house-ltd.firebaseapp.com",
-
-  projectId:
-    "house-ltd",
-
-  storageBucket:
-    "house-ltd.firebasestorage.app",
-
-  messagingSenderId:
-    "821811124213",
-
-  appId:
-    "1:821811124213:web:c8dd2b2f1e1a41bcd632bc",
-
-  measurementId:
-    "G-P28WHBV9VB"
-
+  apiKey: "AIzaSyCRUNymKVh-UxKxSvNEUZkAjmRi_4_AQU",
+  authDomain: "house-ltd.firebaseapp.com",
+  projectId: "house-ltd",
+  storageBucket: "house-ltd.firebasestorage.app",
+  messagingSenderId: "821811124213",
+  appId: "1:821811124213:web:c8dd2b2f1e1a41bcd632bc",
+  measurementId: "G-P28WHBV9VB"
 };
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const auth = firebase.auth();
+const db = firebase.firestore();
 
 
 /* =========================================================
    CLOUDINARY
-   ========================================================= */
+========================================================= */
 
-const CLOUDINARY_CLOUD_NAME =
-  "gsqmelxb";
-
-const CLOUDINARY_UPLOAD_PRESET =
-  "House LTD";
+const CLOUDINARY_CLOUD_NAME = "gsqmelxb";
+const CLOUDINARY_UPLOAD_PRESET = "House LTD";
 
 const CLOUDINARY_UPLOAD_URL =
-  "https://api.cloudinary.com/v1_1/gsqmelxb/image/upload";
+  `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
 
 /* =========================================================
-   FIREBASE INIT
-   ========================================================= */
+   ESTADO GLOBAL
+========================================================= */
 
-let db = null;
-let auth = null;
+let currentAdmin = null;
+let currentAdminUser = null;
 
-try {
+let vacanciesCache = [];
+let requestsCache = [];
+let membersCache = [];
+let adminsCache = [];
 
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-
-  db = firebase.firestore();
-  auth = firebase.auth();
-
-} catch (error) {
-
-  console.error(
-    "Erro ao iniciar Firebase:",
-    error
-  );
-
-}
+let currentEditingVacancy = null;
 
 
 /* =========================================================
-   HELPERS
-   ========================================================= */
+   CONFIGURAÇÃO DOS ADMINISTRADORES
 
-const $ = (id) =>
-  document.getElementById(id);
+   NÃO colocar códigos aqui.
+
+   O código digitado pelo administrador é usado
+   para autenticar no Firebase Authentication.
+
+   Depois disso, o documento adminProfiles/{uid}
+   identifica:
+   - nome
+   - cargo
+   - status
+   - foto
+   - capa
+========================================================= */
 
 
-function normalize(value) {
+/* =========================================================
+   FUNÇÕES AUXILIARES
+========================================================= */
 
-  return String(value || "")
-    .trim()
-    .toLocaleLowerCase("pt-BR");
-
+function $(id) {
+  return document.getElementById(id);
 }
 
 
 function escapeHTML(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
 
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+function normalizeText(value) {
   return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
+    .trim()
+    .toLowerCase();
 }
 
 
-function formatDate(timestamp) {
-
-  if (!timestamp) {
-    return "Data não disponível";
-  }
-
-  try {
-
-    const date =
-      timestamp.toDate
-        ? timestamp.toDate()
-        : new Date(timestamp);
-
-    return date.toLocaleString(
-      "pt-BR",
-      {
-        dateStyle: "short",
-        timeStyle: "short"
-      }
-    );
-
-  } catch {
-
-    return "Data não disponível";
-
-  }
-
+function serverTimestamp() {
+  return firebase.firestore.FieldValue.serverTimestamp();
 }
 
 
-function vacancyStatus(data) {
-
-  const status =
-    normalize(data.status);
-
-  if (
-    status === "fechada" ||
-    status === "fechado" ||
-    status === "closed"
-  ) {
-
-    return "fechada";
-
+function showElement(element) {
+  if (element) {
+    element.style.display = "";
   }
-
-  return "aberta";
-
 }
 
 
-function showStatus(element, message, type = "") {
-
-  if (!element) return;
-
-  element.textContent = message;
-
-  element.className =
-    `form-status ${type}`;
-
+function hideElement(element) {
+  if (element) {
+    element.style.display = "none";
+  }
 }
 
 
-function isFirebaseReady() {
+function setText(id, value) {
+  const element = $(id);
 
-  if (!db || !auth) {
+  if (element) {
+    element.textContent = value ?? "";
+  }
+}
 
-    alert(
-      "O Firebase não foi inicializado corretamente."
-    );
 
-    return false;
+function showMessage(message, type = "info") {
 
+  let box = $("ltdMessage");
+
+  if (!box) {
+
+    box = document.createElement("div");
+
+    box.id = "ltdMessage";
+
+    box.style.position = "fixed";
+    box.style.bottom = "20px";
+    box.style.left = "50%";
+    box.style.transform = "translateX(-50%)";
+    box.style.zIndex = "99999";
+    box.style.padding = "12px 18px";
+    box.style.borderRadius = "12px";
+    box.style.maxWidth = "90%";
+    box.style.fontWeight = "600";
+
+    document.body.appendChild(box);
   }
 
-  return true;
+  box.textContent = message;
+  box.dataset.type = type;
 
+  clearTimeout(window.ltdMessageTimer);
+
+  window.ltdMessageTimer = setTimeout(() => {
+    box.remove();
+  }, 3500);
 }
 
 
 /* =========================================================
-   CLOUDINARY
-   ========================================================= */
+   LOADING
+========================================================= */
 
-async function uploadImage(file) {
+function showLoading(text = "Carregando...") {
+
+  let loading = $("ltdLoading");
+
+  if (!loading) {
+
+    loading = document.createElement("div");
+
+    loading.id = "ltdLoading";
+
+    loading.innerHTML = `
+      <div class="ltd-loading-content">
+        <div class="ltd-spinner"></div>
+        <p id="ltdLoadingText"></p>
+      </div>
+    `;
+
+    loading.style.position = "fixed";
+    loading.style.inset = "0";
+    loading.style.zIndex = "99998";
+    loading.style.display = "flex";
+    loading.style.alignItems = "center";
+    loading.style.justifyContent = "center";
+
+    document.body.appendChild(loading);
+  }
+
+  const textElement = $("ltdLoadingText");
+
+  if (textElement) {
+    textElement.textContent = text;
+  }
+
+  loading.style.display = "flex";
+}
+
+
+function hideLoading() {
+
+  const loading = $("ltdLoading");
+
+  if (loading) {
+    loading.style.display = "none";
+  }
+}
+
+
+/* =========================================================
+   CLOUDINARY — UPLOAD
+========================================================= */
+
+async function uploadToCloudinary(file) {
 
   if (!file) {
-    throw new Error(
-      "Nenhuma imagem foi selecionada."
-    );
+    throw new Error("Nenhuma imagem selecionada.");
   }
-
 
   if (!file.type.startsWith("image/")) {
-
-    throw new Error(
-      "O arquivo precisa ser uma imagem."
-    );
-
+    throw new Error("O arquivo precisa ser uma imagem.");
   }
 
+  const maxSize = 10 * 1024 * 1024;
 
-  if (file.size > 8 * 1024 * 1024) {
-
-    throw new Error(
-      "A imagem deve ter no máximo 8 MB."
-    );
-
+  if (file.size > maxSize) {
+    throw new Error("A imagem deve ter no máximo 10 MB.");
   }
 
+  const formData = new FormData();
 
-  const formData =
-    new FormData();
-
-  formData.append(
-    "file",
-    file
-  );
-
+  formData.append("file", file);
   formData.append(
     "upload_preset",
     CLOUDINARY_UPLOAD_PRESET
   );
 
-
-  const response =
-    await fetch(
-      CLOUDINARY_UPLOAD_URL,
-      {
-        method: "POST",
-        body: formData
-      }
-    );
-
-
-  const data =
-    await response.json();
-
-
-  if (
-    !response.ok ||
-    !data.secure_url
-  ) {
-
-    throw new Error(
-      data?.error?.message ||
-      "Erro ao enviar imagem para o Cloudinary."
-    );
-
-  }
-
-
-  return data.secure_url;
-
-}
-
-
-/* =========================================================
-   PREVIEW
-   ========================================================= */
-
-function setupPreview(
-  inputId,
-  imageId,
-  placeholderId
-) {
-
-  const input = $(inputId);
-  const image = $(imageId);
-  const placeholder = $(placeholderId);
-
-  if (!input) return;
-
-
-  input.addEventListener(
-    "change",
-    () => {
-
-      const file =
-        input.files?.[0];
-
-      if (!file) {
-
-        image.style.display =
-          "none";
-
-        placeholder.style.display =
-          "block";
-
-        return;
-
-      }
-
-
-      const url =
-        URL.createObjectURL(file);
-
-      image.src = url;
-
-      image.style.display =
-        "block";
-
-      placeholder.style.display =
-        "none";
-
+  const response = await fetch(
+    CLOUDINARY_UPLOAD_URL,
+    {
+      method: "POST",
+      body: formData
     }
   );
 
+  if (!response.ok) {
+    throw new Error("Falha ao enviar a imagem.");
+  }
+
+  const result = await response.json();
+
+  if (!result.secure_url) {
+    throw new Error("O Cloudinary não retornou a imagem.");
+  }
+
+  return result.secure_url;
 }
 
 
 /* =========================================================
-   VAGAS PÚBLICAS
-   ========================================================= */
+   LOGIN ADMINISTRATIVO
+========================================================= */
 
-async function loadPublicVacancies() {
+async function loginAdmin(code) {
 
-  if (!db) return;
+  code = String(code || "").trim();
 
-
-  const openContainer =
-    $("openVacancies");
-
-  const closedContainer =
-    $("closedVacancies");
-
-
-  try {
-
-    const snapshot =
-      await db
-        .collection("vagas")
-        .get();
-
-
-    const vacancies =
-      snapshot.docs.map(
-        doc => ({
-          id: doc.id,
-          ...doc.data()
-        })
-      );
-
-
-    const open =
-      vacancies.filter(
-        item =>
-          vacancyStatus(item) === "aberta"
-      );
-
-
-    const closed =
-      vacancies.filter(
-        item =>
-          vacancyStatus(item) === "fechada"
-      );
-
-
-    renderPublicVacancies(
-      openContainer,
-      open,
-      false
-    );
-
-
-    renderPublicVacancies(
-      closedContainer,
-      closed,
-      true
-    );
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    openContainer.innerHTML =
-      `<div class="empty-card">
-        Não foi possível carregar as vagas.
-      </div>`;
-
-    closedContainer.innerHTML =
-      `<div class="empty-card">
-        Não foi possível carregar as vagas.
-      </div>`;
-
+  if (!code) {
+    throw new Error("Digite o código de administração.");
   }
 
-}
+  /*
+   * O código funciona como senha da conta do Firebase Auth.
+   *
+   * Não colocamos os códigos dos administradores
+   * no JavaScript público.
+   */
 
+  const email =
+    `${code.toLowerCase()}@admin.houseltd.local`;
 
-function renderPublicVacancies(
-  container,
-  vacancies,
-  closed
-) {
+  const credential =
+    await auth.signInWithEmailAndPassword(
+      email,
+      code
+    );
 
-  if (!container) return;
-
-
-  if (!vacancies.length) {
-
-    container.innerHTML =
-      `<div class="empty-card">
-        ${
-          closed
-            ? "Nenhuma vaga fechada."
-            : "Nenhuma vaga aberta no momento."
-        }
-      </div>`;
-
-    return;
-
-  }
-
-
-  container.innerHTML =
-    vacancies
-      .map(vacancy => {
-
-        const photo =
-          vacancy.foto ||
-          vacancy.photo ||
-          "https://placehold.co/600x800/130b10/ffffff?text=LTD";
-
-
-        return `
-
-          <article class="vacancy-card">
-
-            <img
-              class="card-image"
-              src="${escapeHTML(photo)}"
-              alt="${escapeHTML(vacancy.personagem)}"
-              loading="lazy"
-            >
-
-            <div class="card-content">
-
-              <h3>
-                ${escapeHTML(
-                  vacancy.personagem ||
-                  "Personagem"
-                )}
-              </h3>
-
-              <p>
-                ${escapeHTML(
-                  vacancy.obra ||
-                  "Obra não informada"
-                )}
-              </p>
-
-              <span class="status ${
-                closed
-                  ? "closed"
-                  : "open"
-              }">
-
-                ${
-                  closed
-                    ? "OCUPADO"
-                    : "DISPONÍVEL"
-                }
-
-              </span>
-
-            </div>
-
-          </article>
-
-        `;
-
-      })
-      .join("");
-
+  return credential.user;
 }
 
 
 /* =========================================================
-   VERIFICAR VAGA
-   ========================================================= */
-
-async function findOpenVacancy(
-  personagem,
-  obra
-) {
-
-  const snapshot =
-    await db
-      .collection("vagas")
-      .get();
-
-
-  return snapshot.docs.find(
-    doc => {
-
-      const data =
-        doc.data();
-
-      return (
-        normalize(data.personagem) ===
-          normalize(personagem) &&
-
-        normalize(data.obra) ===
-          normalize(obra) &&
-
-        vacancyStatus(data) ===
-          "aberta"
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   SOLICITAÇÃO
-   ========================================================= */
-
-async function submitRequest(event) {
-
-  event.preventDefault();
-
-
-  const status =
-    $("requestStatus");
-
-
-  if (!isFirebaseReady()) return;
-
-
-  try {
-
-    const nome =
-      $("requestName").value.trim();
-
-    const idade =
-      $("requestAge").value.trim();
-
-    const telefone =
-      $("requestPhone").value.trim();
-
-    const personagem =
-      $("requestCharacter").value.trim();
-
-    const obra =
-      $("requestWork").value.trim();
-
-    const mensagem =
-      $("requestMessage").value.trim();
-
-    const file =
-      $("requestPhoto").files?.[0];
-
-
-    if (!/^[0-9]{4}$/.test(telefone)) {
-
-      throw new Error(
-        "Digite exatamente os últimos 4 dígitos do telefone."
-      );
-
-    }
-
-
-    if (!file) {
-
-      throw new Error(
-        "A foto do personagem é obrigatória."
-      );
-
-    }
-
-
-    const vacancy =
-      await findOpenVacancy(
-        personagem,
-        obra
-      );
-
-
-    if (!vacancy) {
-
-      throw new Error(
-        "Esse personagem não possui uma vaga aberta."
-      );
-
-    }
-
-
-    showStatus(
-      status,
-      "Enviando imagem..."
-    );
-
-
-    const photo =
-      await uploadImage(file);
-
-
-    showStatus(
-      status,
-      "Salvando ficha..."
-    );
-
-
-    await db
-      .collection("characterRequests")
-      .add({
-
-        tipo: "nova",
-
-        nome,
-
-        idade,
-
-        telefone4: telefone,
-
-        personagem,
-
-        obra,
-
-        foto: photo,
-
-        mensagem,
-
-        status: "pendente",
-
-        vacancyId:
-          vacancy.id,
-
-        createdAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
-
-      });
-
-
-    showStatus(
-      status,
-      "Ficha enviada com sucesso! Aguarde a análise da administração.",
-      "success"
-    );
-
-
-    $("requestForm").reset();
-
-
-    $("requestPhotoPreview")
-      .style.display = "none";
-
-    $("requestPhotoPlaceholder")
-      .style.display = "block";
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    showStatus(
-      status,
-      error.message ||
-        "Não foi possível enviar a ficha.",
-      "error"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   TROCA
-   ========================================================= */
-
-async function submitExchange(event) {
-
-  event.preventDefault();
-
-
-  const status =
-    $("exchangeStatus");
-
-
-  if (!isFirebaseReady()) return;
-
-
-  try {
-
-    const telefone =
-      $("exchangePhone").value.trim();
-
-    const antigo =
-      $("exchangeOldCharacter").value.trim();
-
-    const antigaObra =
-      $("exchangeOldWork").value.trim();
-
-    const novo =
-      $("exchangeNewCharacter").value.trim();
-
-    const novaObra =
-      $("exchangeNewWork").value.trim();
-
-    const file =
-      $("exchangePhoto").files?.[0];
-
-
-    if (!/^[0-9]{4}$/.test(telefone)) {
-
-      throw new Error(
-        "Digite os últimos 4 dígitos corretamente."
-      );
-
-    }
-
-
-    if (!file) {
-
-      throw new Error(
-        "A nova foto é obrigatória."
-      );
-
-    }
-
-
-    const newVacancy =
-      await findOpenVacancy(
-        novo,
-        novaObra
-      );
-
-
-    if (!newVacancy) {
-
-      throw new Error(
-        "O novo personagem não está disponível."
-      );
-
-    }
-
-
-    showStatus(
-      status,
-      "Enviando nova foto..."
-    );
-
-
-    const photo =
-      await uploadImage(file);
-
-
-    await db
-      .collection("characterRequests")
-      .add({
-
-        tipo: "troca",
-
-        telefone4: telefone,
-
-        antigoPersonagem: antigo,
-
-        antigaObra,
-
-        personagem: novo,
-
-        obra: novaObra,
-
-        foto: photo,
-
-        status: "pendente",
-
-        newVacancyId:
-          newVacancy.id,
-
-        createdAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
-
-      });
-
-
-    showStatus(
-      status,
-      "Solicitação de troca enviada para a administração.",
-      "success"
-    );
-
-
-    $("exchangeForm").reset();
-
-
-    $("exchangePhotoPreview")
-      .style.display = "none";
-
-    $("exchangePhotoPlaceholder")
-      .style.display = "block";
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    showStatus(
-      status,
-      error.message ||
-        "Não foi possível solicitar a troca.",
-      "error"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   BUSCAR MEMBROS
-   ========================================================= */
-
-let membersCache = [];
-
-
-async function loadMembers() {
-
-  if (!db) return;
-
-
-  try {
-
-    const snapshot =
-      await db
-        .collection("members")
-        .get();
-
-
-    membersCache =
-      snapshot.docs.map(
-        doc => ({
-          id: doc.id,
-          ...doc.data()
-        })
-      );
-
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao carregar membros:",
-      error
-    );
-
-  }
-
-}
-
-
-function renderMembers(search = "") {
-
-  const container =
-    $("membersList");
-
-  if (!container) return;
-
-
-  const term =
-    normalize(search);
-
-
-  const members =
-    membersCache.filter(
-      member => {
-
-        if (!term) {
-          return false;
-        }
-
-        return (
-
-          normalize(member.nome)
-            .includes(term) ||
-
-          normalize(member.personagem)
-            .includes(term) ||
-
-          normalize(member.obra)
-            .includes(term)
-
-        );
-
-      }
-    );
-
-
-  if (!members.length) {
-
-    container.innerHTML =
-      `<div class="empty-card">
-        ${
-          term
-            ? "Nenhum membro encontrado."
-            : "Digite algo para pesquisar."
-        }
-      </div>`;
-
-    return;
-
-  }
-
-
-  container.innerHTML =
-    members
-      .map(member => {
-
-        const photo =
-          member.foto ||
-          "https://placehold.co/500x500/130b10/ffffff?text=LTD";
-
-
-        return `
-
-          <article class="member-card">
-
-            <img
-              class="card-image"
-              src="${escapeHTML(photo)}"
-              alt="${escapeHTML(member.nome || member.personagem)}"
-              loading="lazy"
-            >
-
-            <div class="card-content">
-
-              <h3>
-                ${escapeHTML(
-                  member.nome ||
-                  "Membro"
-                )}
-              </h3>
-
-              <p>
-                ${escapeHTML(
-                  member.personagem
-                )}
-              </p>
-
-              <p>
-                ${escapeHTML(
-                  member.obra
-                )}
-              </p>
-
-            </div>
-
-          </article>
-
-        `;
-
-      })
-      .join("");
-
-}
-
-
-/* =========================================================
-   ADMIN
-   ========================================================= */
-
-let currentAdmin = null;
-
-
-function adminEmailFromCode(code) {
-
-  return (
-    code
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "")
-    +
-    "@admin.houseltd.local"
-  );
-
-}
-
-
-async function adminLogin(event) {
-
-  event.preventDefault();
-
-
-  const status =
-    $("adminLoginStatus");
-
-
-  if (!isFirebaseReady()) return;
-
-
-  const code =
-    $("adminCode")
-      .value
-      .trim();
-
-
-  if (!code) return;
-
-
-  try {
-
-    showStatus(
-      status,
-      "Verificando..."
-    );
-
-
-    const email =
-      adminEmailFromCode(code);
-
-
-    await auth
-      .signInWithEmailAndPassword(
-        email,
-        code
-      );
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    showStatus(
-      status,
-      "Código inválido ou acesso não configurado.",
-      "error"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   VERIFICAR ADMIN
-   ========================================================= */
+   VERIFICAÇÃO DO ADMIN
+========================================================= */
 
 async function loadCurrentAdmin(user) {
 
   if (!user) {
-
-    showAdminLogin();
-
-    return;
-
+    currentAdmin = null;
+    currentAdminUser = null;
+    return null;
   }
 
+  currentAdminUser = user;
 
-  try {
+  const possibleCollections = [
+    "adminProfiles",
+    "admins"
+  ];
+
+  let adminData = null;
+  let adminId = null;
+
+  /*
+   * Primeiro tenta adminProfiles.
+   */
+
+  for (const collectionName of possibleCollections) {
 
     const doc =
       await db
-        .collection("adminProfiles")
+        .collection(collectionName)
         .doc(user.uid)
         .get();
 
+    if (doc.exists) {
 
-    if (!doc.exists) {
+      adminData = doc.data();
+      adminId = doc.id;
 
-      await auth.signOut();
+      break;
+    }
+  }
+
+  if (!adminData) {
+
+    await auth.signOut();
+
+    throw new Error(
+      "Esta conta não está cadastrada como administrador."
+    );
+  }
+
+  if (
+    adminData.status === false ||
+    adminData.active === false
+  ) {
+
+    await auth.signOut();
+
+    throw new Error(
+      "Este administrador está desativado."
+    );
+  }
+
+  currentAdmin = {
+    id: adminId,
+    uid: user.uid,
+    name:
+      adminData.name ||
+      adminData.nome ||
+      "Administrador",
+
+    role:
+      adminData.role ||
+      adminData.cargo ||
+      "ADM",
+
+    photo:
+      adminData.photo ||
+      adminData.profilePhoto ||
+      "",
+
+    cover:
+      adminData.cover ||
+      adminData.coverPhoto ||
+      "",
+
+    ...adminData
+  };
+
+  return currentAdmin;
+}
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+auth.onAuthStateChanged(async (user) => {
+
+  try {
+
+    if (!user) {
+
+      currentAdmin = null;
+      currentAdminUser = null;
 
       showAdminLogin();
 
       return;
-
     }
 
+    showLoading("Verificando acesso...");
 
-    const data =
-      doc.data();
-
-
-    if (data.status === false) {
-
-      await auth.signOut();
-
-      showAdminLogin();
-
-      return;
-
-    }
-
-
-    currentAdmin = {
-
-      uid: user.uid,
-
-      ...data
-
-    };
-
+    await loadCurrentAdmin(user);
 
     showAdminPanel();
 
+    await registerAdminOnline();
+    await registerAccessLog("login");
 
-    await loadAdminData();
-
+    await loadDashboard();
 
   } catch (error) {
 
@@ -1117,1406 +433,1729 @@ async function loadCurrentAdmin(user) {
 
     showAdminLogin();
 
-  }
+    showLoginError(
+      error.message ||
+      "Não foi possível entrar."
+    );
 
-}
+  } finally {
+
+    hideLoading();
+  }
+});
 
 
 /* =========================================================
    MOSTRAR LOGIN
-   ========================================================= */
+========================================================= */
 
 function showAdminLogin() {
 
-  const login =
-    $("adminLogin");
-
-  const panel =
-    $("adminPanel");
-
-  const loading =
-    $("adminLoading");
-
+  const login = $("adminLogin");
+  const panel = $("adminPanel");
 
   if (login) {
-    login.classList.remove("hidden");
+    login.style.display = "flex";
   }
 
   if (panel) {
-    panel.classList.add("hidden");
+    panel.style.display = "none";
   }
-
-  if (loading) {
-    loading.classList.add("hide");
-  }
-
 }
 
 
 /* =========================================================
    MOSTRAR PAINEL
-   ========================================================= */
+========================================================= */
 
 function showAdminPanel() {
 
-  const login =
-    $("adminLogin");
-
-  const panel =
-    $("adminPanel");
-
-  const loading =
-    $("adminLoading");
-
+  const login = $("adminLogin");
+  const panel = $("adminPanel");
 
   if (login) {
-    login.classList.add("hidden");
+    login.style.display = "none";
   }
 
   if (panel) {
-    panel.classList.remove("hidden");
+    panel.style.display = "block";
   }
 
-  if (loading) {
-    loading.classList.add("hide");
+  if (currentAdmin) {
+
+    setText(
+      "adminName",
+      currentAdmin.name
+    );
+
+    setText(
+      "welcomeName",
+      currentAdmin.name
+    );
+
+    setText(
+      "adminRole",
+      currentAdmin.role
+    );
   }
-
-
-  const welcome =
-    $("adminWelcome");
-
-
-  if (welcome && currentAdmin) {
-
-    welcome.textContent =
-      `${currentAdmin.nome || "Administrador"} • ${
-        currentAdmin.cargo || "ADM"
-      }`;
-
-  }
-
 }
 
 
 /* =========================================================
-   ADMIN DATA
-   ========================================================= */
+   ERRO LOGIN
+========================================================= */
 
-async function loadAdminData() {
+function showLoginError(message) {
 
-  await Promise.all([
-    loadAdminRequests(),
-    loadAdminVacancies(),
-    loadAdminMembers(),
-    loadAdminProfiles(),
-    loadAdminLogs()
-  ]);
+  const error = $("loginError");
 
+  if (error) {
+    error.textContent = message;
+  }
 }
 
 
 /* =========================================================
-   SOLICITAÇÕES ADMIN
-   ========================================================= */
+   FORM LOGIN
+========================================================= */
 
-async function loadAdminRequests() {
+document.addEventListener("DOMContentLoaded", () => {
 
-  const container =
-    $("requestsAdminList");
+  const loginForm = $("loginForm");
 
-  if (!container) return;
+  if (loginForm) {
 
+    loginForm.addEventListener(
+      "submit",
+      async (event) => {
+
+        event.preventDefault();
+
+        const input = $("adminCode");
+
+        const code =
+          input ? input.value.trim() : "";
+
+        try {
+
+          showLoading("Entrando...");
+
+          await loginAdmin(code);
+
+        } catch (error) {
+
+          console.error(error);
+
+          showLoginError(
+            "Código inválido ou acesso não autorizado."
+          );
+
+        } finally {
+
+          hideLoading();
+        }
+      }
+    );
+  }
+
+
+  const logoutButton = $("logoutButton");
+
+  if (logoutButton) {
+
+    logoutButton.addEventListener(
+      "click",
+      logoutAdmin
+    );
+  }
+
+
+  setupNavigation();
+
+  setupPublicForms();
+
+});
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logoutAdmin() {
 
   try {
 
-    const snapshot =
+    if (currentAdmin) {
+
       await db
-        .collection("characterRequests")
-        .get();
+        .collection("adminsOnline")
+        .doc(currentAdmin.uid)
+        .delete()
+        .catch(() => {});
 
-
-    const requests =
-      snapshot.docs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-        .sort(
-          (a, b) =>
-            getTime(b.createdAt) -
-            getTime(a.createdAt)
-        );
-
-
-    $("statRequests").textContent =
-      requests.filter(
-        item =>
-          item.status === "pendente"
-      ).length;
-
-
-    if (!requests.length) {
-
-      container.innerHTML =
-        `<div class="empty-card">
-          Nenhuma solicitação.
-        </div>`;
-
-      return;
-
+      await registerAccessLog("logout");
     }
-
-
-    container.innerHTML =
-      requests
-        .map(request =>
-          renderRequestAdmin(request)
-        )
-        .join("");
-
 
   } catch (error) {
 
     console.error(error);
 
+  } finally {
+
+    await auth.signOut();
+
+    currentAdmin = null;
+    currentAdminUser = null;
+
+    showAdminLogin();
+  }
+}
+
+
+/* =========================================================
+   ADMIN ONLINE
+========================================================= */
+
+async function registerAdminOnline() {
+
+  if (!currentAdmin) {
+    return;
+  }
+
+  await db
+    .collection("adminsOnline")
+    .doc(currentAdmin.uid)
+    .set({
+      uid: currentAdmin.uid,
+      name: currentAdmin.name,
+      role: currentAdmin.role,
+      online: true,
+      lastSeen: serverTimestamp()
+    });
+}
+
+
+/* =========================================================
+   ADMIN OFFLINE
+========================================================= */
+
+async function setAdminOffline() {
+
+  if (!currentAdmin) {
+    return;
+  }
+
+  await db
+    .collection("adminsOnline")
+    .doc(currentAdmin.uid)
+    .set({
+      uid: currentAdmin.uid,
+      name: currentAdmin.name,
+      role: currentAdmin.role,
+      online: false,
+      lastSeen: serverTimestamp()
+    });
+}
+
+
+/* =========================================================
+   LOGS
+========================================================= */
+
+async function registerAccessLog(action, extra = {}) {
+
+  if (!currentAdmin) {
+    return;
+  }
+
+  try {
+
+    await db
+      .collection("accessLogs")
+      .add({
+        adminId: currentAdmin.uid,
+        adminName: currentAdmin.name,
+        role: currentAdmin.role,
+        action,
+        timestamp: serverTimestamp(),
+        ...extra
+      });
+
+  } catch (error) {
+
+    console.error(
+      "Erro ao registrar log:",
+      error
+    );
+  }
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+async function loadDashboard() {
+
+  showLoading("Carregando painel...");
+
+  try {
+
+    await Promise.all([
+      loadRequests(),
+      loadVacancies(),
+      loadMembers(),
+      loadAdmins(),
+      loadChat(),
+      loadLogs()
+    ]);
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "Algumas informações não puderam ser carregadas.",
+      "error"
+    );
+
+  } finally {
+
+    hideLoading();
+  }
+}
+
+
+/* =========================================================
+   SOLICITAÇÕES
+========================================================= */
+
+async function loadRequests() {
+
+  const container =
+    $("requestsList");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML =
+    "<p>Carregando solicitações...</p>";
+
+  let snapshot;
+
+  try {
+
+    snapshot =
+      await db
+        .collection("characterRequests")
+        .where("status", "==", "pendente")
+        .get();
+
+  } catch (error) {
+
+    /*
+     * Compatibilidade com coleção antiga.
+     */
+
+    try {
+
+      snapshot =
+        await db
+          .collection("requests")
+          .where("status", "==", "pendente")
+          .get();
+
+    } catch (secondError) {
+
+      console.error(secondError);
+
+      container.innerHTML =
+        "<p>Não foi possível carregar as solicitações.</p>";
+
+      return;
+    }
+  }
+
+  requestsCache = [];
+
+  snapshot.forEach(doc => {
+
+    requestsCache.push({
+      id: doc.id,
+      ref: doc.ref,
+      ...doc.data()
+    });
+
+  });
+
+  setText(
+    "pendingCount",
+    requestsCache.length
+  );
+
+  renderRequests();
+}
+
+
+/* =========================================================
+   RENDER SOLICITAÇÕES
+========================================================= */
+
+function renderRequests() {
+
+  const container =
+    $("requestsList");
+
+  if (!container) {
+    return;
+  }
+
+  if (!requestsCache.length) {
+
     container.innerHTML =
-      `<div class="empty-card">
-        Erro ao carregar solicitações.
-      </div>`;
+      "<p>Nenhuma solicitação pendente.</p>";
 
+    return;
   }
 
-}
+  container.innerHTML = "";
 
+  requestsCache.forEach(request => {
 
-function getTime(value) {
+    const card =
+      document.createElement("div");
 
-  if (!value) return 0;
+    card.className =
+      "request-card";
 
-  if (value.toMillis) {
-    return value.toMillis();
-  }
+    const photo =
+      request.photo ||
+      request.image ||
+      "";
 
-  return new Date(value).getTime() || 0;
+    card.innerHTML = `
 
-}
+      ${
+        photo
+          ? `
+            <img
+              src="${escapeHTML(photo)}"
+              class="request-photo"
+              alt="Foto do personagem"
+            >
+          `
+          : ""
+      }
 
+      <div class="request-info">
 
-function renderRequestAdmin(request) {
-
-  const photo =
-    request.foto ||
-    "https://placehold.co/300x400/130b10/ffffff?text=LTD";
-
-
-  const type =
-    request.tipo === "troca"
-      ? "TROCA"
-      : "NOVA FICHA";
-
-
-  let details = "";
-
-
-  if (request.tipo === "troca") {
-
-    details = `
-      <p>
-        Atual:
-        <strong>
+        <h3>
           ${escapeHTML(
-            request.antigoPersonagem
+            request.character ||
+            "Personagem não informado"
           )}
-        </strong>
-        •
-        ${escapeHTML(
-          request.antigaObra
-        )}
-      </p>
+        </h3>
 
-      <p>
-        Novo:
-        <strong>
+        <p>
+          <strong>Obra:</strong>
           ${escapeHTML(
-            request.personagem
+            request.work ||
+            "Não informado"
           )}
-        </strong>
-        •
-        ${escapeHTML(
-          request.obra
-        )}
-      </p>
-    `;
+        </p>
 
-  } else {
-
-    details = `
-      <p>
-        Personagem:
-        <strong>
+        <p>
+          <strong>Nome:</strong>
           ${escapeHTML(
-            request.personagem
+            request.name ||
+            request.nickname ||
+            "Não informado"
           )}
-        </strong>
-      </p>
+        </p>
 
-      <p>
-        Obra:
-        ${escapeHTML(
-          request.obra
-        )}
-      </p>
+        <p>
+          <strong>Idade:</strong>
+          ${escapeHTML(
+            request.age ||
+            "Não informado"
+          )}
+        </p>
 
-      <p>
-        Idade:
-        ${escapeHTML(
-          request.idade
-        )}
-      </p>
-
-      <p>
-        Telefone:
-        ****${escapeHTML(
-          request.telefone4
-        )}
-      </p>
-    `;
-
-  }
-
-
-  const actions =
-    request.status === "pendente"
-
-      ? `
-
-        <button
-          class="button primary"
-          onclick="approveRequest('${request.id}')"
-        >
-          Aceitar
-        </button>
-
-        <button
-          class="button danger"
-          onclick="rejectRequest('${request.id}')"
-        >
-          Recusar
-        </button>
-
-      `
-
-      : "";
-
-
-  return `
-
-    <article class="request-card">
-
-      <div class="request-top">
-
-        <div class="request-info">
-
-          <img
-            class="request-photo"
-            src="${escapeHTML(photo)}"
-            alt="Personagem"
-          >
-
-          <div>
-
-            <span class="small-label">
-              ${type}
-            </span>
-
-            <h3>
-              ${escapeHTML(
-                request.nome ||
-                request.personagem ||
-                "Solicitação"
-              )}
-            </h3>
-
-            ${details}
-
-            <p>
-              Status:
-              ${escapeHTML(
-                request.status
-              )}
-            </p>
-
-            <p>
-              ${formatDate(
-                request.createdAt
-              )}
-            </p>
-
-          </div>
-
-        </div>
-
+        <p>
+          <strong>Últimos 4 números:</strong>
+          ${escapeHTML(
+            request.last4 ||
+            request.phoneLast4 ||
+            "Não informado"
+          )}
+        </p>
 
         <div class="request-actions">
 
-          ${actions}
+          <button
+            type="button"
+            onclick="approveRequest('${request.id}')"
+          >
+            Aceitar
+          </button>
+
+          <button
+            type="button"
+            onclick="rejectRequest('${request.id}')"
+          >
+            Recusar
+          </button>
 
         </div>
 
       </div>
+    `;
 
-    </article>
-
-  `;
-
+    container.appendChild(card);
+  });
 }
 
 
 /* =========================================================
-   APROVAR SOLICITAÇÃO
-   ========================================================= */
+   ACEITAR SOLICITAÇÃO
+========================================================= */
 
 async function approveRequest(id) {
 
-  if (!currentAdmin) return;
+  if (!currentAdmin) {
+    return;
+  }
 
+  const request =
+    requestsCache.find(
+      item => item.id === id
+    );
+
+  if (!request) {
+    showMessage(
+      "Solicitação não encontrada.",
+      "error"
+    );
+
+    return;
+  }
 
   try {
 
-    const requestRef =
-      db
-        .collection("characterRequests")
-        .doc(id);
+    showLoading("Aprovando solicitação...");
 
+    /*
+     * Procurar a vaga correspondente.
+     */
 
-    const requestSnap =
-      await requestRef.get();
-
-
-    if (!requestSnap.exists) {
-
-      throw new Error(
-        "Solicitação não encontrada."
+    const vacancy =
+      await findVacancy(
+        request.character,
+        request.work
       );
 
+    if (
+      vacancy &&
+      vacancy.status === "fechada"
+    ) {
+
+      throw new Error(
+        "Esse personagem já está ocupado."
+      );
     }
 
 
-    const request =
-      requestSnap.data();
+    const batch =
+      db.batch();
 
 
-    if (request.status !== "pendente") {
+    /* Atualizar solicitação */
 
-      throw new Error(
-        "Essa solicitação já foi processada."
+    batch.update(
+      request.ref,
+      {
+        status: "aprovado",
+
+        approvedAt:
+          serverTimestamp(),
+
+        approvedBy:
+          currentAdmin.name
+      }
+    );
+
+
+    /* Criar membro */
+
+    const memberRef =
+      db.collection("members").doc();
+
+    batch.set(
+      memberRef,
+      {
+        name:
+          request.name ||
+          request.nickname ||
+          "",
+
+        nickname:
+          request.nickname ||
+          request.name ||
+          "",
+
+        age:
+          request.age ||
+          null,
+
+        character:
+          request.character ||
+          "",
+
+        work:
+          request.work ||
+          "",
+
+        photo:
+          request.photo ||
+          "",
+
+        joinedAt:
+          serverTimestamp(),
+
+        approvedBy:
+          currentAdmin.name,
+
+        status:
+          "ativo"
+      }
+    );
+
+
+    /*
+     * Dados privados ficam separados.
+     */
+
+    const privateRef =
+      db.collection("memberPrivate").doc(
+        memberRef.id
       );
 
-    }
+    batch.set(
+      privateRef,
+      {
+        memberId:
+          memberRef.id,
+
+        last4:
+          request.last4 ||
+          request.phoneLast4 ||
+          "",
+
+        age:
+          request.age ||
+          null,
+
+        sourceRequest:
+          request.id,
+
+        createdAt:
+          serverTimestamp()
+      }
+    );
 
 
-    if (request.tipo === "troca") {
+    /*
+     * Fechar a vaga correspondente.
+     */
 
-      await approveExchange(
-        requestRef,
-        request
+    if (vacancy) {
+
+      batch.update(
+        vacancy.ref,
+        {
+          status: "fechada",
+
+          occupiedBy:
+            memberRef.id,
+
+          occupiedCharacter:
+            request.character,
+
+          occupiedWork:
+            request.work,
+
+          occupiedPhoto:
+            request.photo || "",
+
+          closedAt:
+            serverTimestamp()
+        }
       );
 
     } else {
 
-      await approveNewMember(
-        requestRef,
-        request
-      );
+      /*
+       * Se a vaga ainda não existir,
+       * cria o registro para manter o controle.
+       */
 
+      const newVacancy =
+        db.collection("vagas").doc();
+
+      batch.set(
+        newVacancy,
+        {
+          character:
+            request.character,
+
+          work:
+            request.work,
+
+          photo:
+            request.photo || "",
+
+          status:
+            "fechada",
+
+          occupiedBy:
+            memberRef.id,
+
+          createdAt:
+            serverTimestamp(),
+
+          closedAt:
+            serverTimestamp()
+        }
+      );
     }
 
 
-    await writeLog(
-      "solicitacao_aprovada",
-      `Solicitação ${id} aprovada.`
+    /*
+     * Compatibilidade com occupiedCharacters.
+     */
+
+    const occupiedRef =
+      db.collection("occupiedCharacters").doc();
+
+    batch.set(
+      occupiedRef,
+      {
+        character:
+          request.character,
+
+        work:
+          request.work,
+
+        memberId:
+          memberRef.id,
+
+        photo:
+          request.photo || "",
+
+        status:
+          "ocupado",
+
+        createdAt:
+          serverTimestamp()
+      }
     );
 
 
-    await loadAdminData();
+    await batch.commit();
 
 
-    await loadPublicVacancies();
+    await registerAccessLog(
+      "approve_request",
+      {
+        requestId: request.id,
+        character: request.character,
+        work: request.work
+      }
+    );
+
+
+    showMessage(
+      "Solicitação aprovada com sucesso!",
+      "success"
+    );
+
+
+    await loadDashboard();
 
   } catch (error) {
 
     console.error(error);
 
-    alert(
+    showMessage(
       error.message ||
-      "Erro ao aprovar solicitação."
+      "Erro ao aprovar solicitação.",
+      "error"
     );
 
+  } finally {
+
+    hideLoading();
   }
+}
+
+
+/* =========================================================
+   RECUSAR SOLICITAÇÃO
+========================================================= */
+
+async function rejectRequest(id) {
+
+  if (!currentAdmin) {
+    return;
+  }
+
+  const request =
+    requestsCache.find(
+      item => item.id === id
+    );
+
+  if (!request) {
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "Deseja realmente recusar esta solicitação?"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+
+    showLoading("Recusando...");
+
+    await request.ref.update({
+
+      status:
+        "recusado",
+
+      rejectedAt:
+        serverTimestamp(),
+
+      rejectedBy:
+        currentAdmin.name
+
+    });
+
+
+    await registerAccessLog(
+      "reject_request",
+      {
+        requestId:
+          request.id,
+
+        character:
+          request.character,
+
+        work:
+          request.work
+      }
+    );
+
+
+    showMessage(
+      "Solicitação recusada.",
+      "success"
+    );
+
+
+    await loadRequests();
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "Não foi possível recusar.",
+      "error"
+    );
+
+  } finally {
+
+    hideLoading();
+  }
+}
+
+
+/* =========================================================
+   VAGAS
+========================================================= */
+
+async function loadVacancies() {
+
+  const container =
+    $("vacanciesList");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML =
+    "<p>Carregando vagas...</p>";
+
+  let snapshot;
+
+  try {
+
+    snapshot =
+      await db
+        .collection("vagas")
+        .get();
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML =
+      "<p>Não foi possível carregar as vagas.</p>";
+
+    return;
+  }
+
+
+  vacanciesCache = [];
+
+  snapshot.forEach(doc => {
+
+    vacanciesCache.push({
+      id: doc.id,
+      ref: doc.ref,
+      ...doc.data()
+    });
+
+  });
+
+
+  renderVacancies();
 
 }
 
 
 /* =========================================================
-   APROVAR NOVO MEMBRO
-   ========================================================= */
+   RENDER VAGAS
+========================================================= */
 
-async function approveNewMember(
-  requestRef,
-  request
-) {
+function renderVacancies() {
 
-  const vacancy =
-    await findOpenVacancy(
-      request.personagem,
-      request.obra
+  const container =
+    $("vacanciesList");
+
+  if (!container) {
+    return;
+  }
+
+  if (!vacanciesCache.length) {
+
+    container.innerHTML =
+      "<p>Nenhuma vaga cadastrada.</p>";
+
+    setText(
+      "openVacanciesCount",
+      0
     );
 
-
-  if (!vacancy) {
-
-    throw new Error(
-      "A vaga desse personagem não está mais aberta."
+    setText(
+      "closedVacanciesCount",
+      0
     );
 
+    return;
   }
 
 
-  const memberRef =
-    db.collection("members").doc();
+  const open =
+    vacanciesCache.filter(
+      vacancy =>
+        vacancy.status === "aberta" ||
+        vacancy.status === "open"
+    );
+
+  const closed =
+    vacanciesCache.filter(
+      vacancy =>
+        vacancy.status === "fechada" ||
+        vacancy.status === "closed" ||
+        vacancy.status === "ocupada"
+    );
 
 
-  const batch =
-    db.batch();
+  setText(
+    "openVacanciesCount",
+    open.length
+  );
 
-
-  batch.set(
-    memberRef,
-    {
-
-      nome:
-        request.nome || "Membro",
-
-      personagem:
-        request.personagem,
-
-      obra:
-        request.obra,
-
-      foto:
-        request.foto || "",
-
-      createdAt:
-        firebase.firestore
-          .FieldValue
-          .serverTimestamp(),
-
-      updatedAt:
-        firebase.firestore
-          .FieldValue
-          .serverTimestamp()
-
-    }
+  setText(
+    "closedVacanciesCount",
+    closed.length
   );
 
 
-  batch.set(
-    db
-      .collection("memberPrivate")
-      .doc(memberRef.id),
-    {
-
-      memberId:
-        memberRef.id,
-
-      nome:
-        request.nome || "",
-
-      idade:
-        request.idade || "",
-
-      telefone4:
-        request.telefone4 || "",
-
-      createdAt:
-        firebase.firestore
-          .FieldValue
-          .serverTimestamp()
-
-    }
-  );
+  container.innerHTML = "";
 
 
-  batch.update(
-    vacancy.ref,
-    {
+  vacanciesCache.forEach(vacancy => {
 
-      status: "fechada",
-
-      membroId:
-        memberRef.id,
-
-      updatedAt:
-        firebase.firestore
-          .FieldValue
-          .serverTimestamp()
-
-    }
-  );
+    const isOpen =
+      vacancy.status === "aberta" ||
+      vacancy.status === "open";
 
 
-  batch.update(
-    requestRef,
-    {
+    const card =
+      document.createElement("div");
 
-      status: "aprovado",
-
-      memberId:
-        memberRef.id,
-
-      approvedBy:
-        currentAdmin.nome || "",
-
-      approvedAt:
-        firebase.firestore
-          .FieldValue
-          .serverTimestamp()
-
-    }
-  );
+    card.className =
+      "vacancy-card";
 
 
-  await batch.commit();
+    card.innerHTML = `
 
+      ${
+        vacancy.photo
+          ? `
+            <img
+              src="${escapeHTML(vacancy.photo)}"
+              alt="${escapeHTML(vacancy.character)}"
+              class="vacancy-photo"
+            >
+          `
+          : ""
+      }
+
+      <div class="vacancy-info">
+
+        <h3>
+          ${escapeHTML(
+            vacancy.character ||
+            "Personagem"
+          )}
+        </h3>
+
+        <p>
+          <strong>Obra:</strong>
+          ${escapeHTML(
+            vacancy.work ||
+            "Não informado"
+          )}
+        </p>
+
+        <p>
+          <strong>Status:</strong>
+          ${
+            isOpen
+              ? "Vaga aberta"
+              : "Vaga fechada"
+          }
+        </p>
+
+
+        <div class="vacancy-actions">
+
+          <button
+            type="button"
+            onclick="toggleVacancy('${vacancy.id}')"
+          >
+            ${
+              isOpen
+                ? "Fechar vaga"
+                : "Abrir vaga"
+            }
+          </button>
+
+
+          <button
+            type="button"
+            onclick="editVacancy('${vacancy.id}')"
+          >
+            Editar
+          </button>
+
+
+          <button
+            type="button"
+            onclick="deleteVacancy('${vacancy.id}')"
+          >
+            Excluir
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+
+    container.appendChild(card);
+
+  });
 }
 
 
 /* =========================================================
-   APROVAR TROCA
-   ========================================================= */
+   PROCURAR VAGA
+========================================================= */
 
-async function approveExchange(
-  requestRef,
-  request
+async function findVacancy(
+  character,
+  work
 ) {
 
-  const privateSnapshot =
-    await db
-      .collection("memberPrivate")
-      .where(
-        "telefone4",
-        "==",
-        request.telefone4
-      )
-      .limit(1)
-      .get();
+  const normalizedCharacter =
+    normalizeText(character);
+
+  const normalizedWork =
+    normalizeText(work);
 
 
-  if (privateSnapshot.empty) {
+  /*
+   * Procurar no cache primeiro.
+   */
 
-    throw new Error(
-      "Membro não encontrado pelos últimos 4 dígitos."
+  let found =
+    vacanciesCache.find(
+      vacancy =>
+        normalizeText(vacancy.character) ===
+          normalizedCharacter &&
+
+        normalizeText(vacancy.work) ===
+          normalizedWork
     );
 
+
+  if (found) {
+    return found;
   }
 
 
-  const privateDoc =
-    privateSnapshot.docs[0];
+  /*
+   * Procurar diretamente no Firebase.
+   */
 
-  const memberId =
-    privateDoc.id;
-
-
-  const memberRef =
-    db
-      .collection("members")
-      .doc(memberId);
-
-
-  const memberSnap =
-    await memberRef.get();
-
-
-  if (!memberSnap.exists) {
-
-    throw new Error(
-      "Perfil do membro não encontrado."
-    );
-
-  }
-
-
-  const vacanciesSnapshot =
+  const snapshot =
     await db
       .collection("vagas")
       .get();
 
 
-  const vacancies =
-    vacanciesSnapshot.docs
-      .map(doc => ({
-        ref: doc.ref,
+  for (const doc of snapshot.docs) {
+
+    const data = doc.data();
+
+    if (
+      normalizeText(data.character) ===
+        normalizedCharacter &&
+
+      normalizeText(data.work) ===
+        normalizedWork
+    ) {
+
+      return {
         id: doc.id,
-        ...doc.data()
-      }));
-
-
-  const newVacancy =
-    vacancies.find(
-      vacancy =>
-
-        normalize(
-          vacancy.personagem
-        ) ===
-          normalize(
-            request.personagem
-          ) &&
-
-        normalize(
-          vacancy.obra
-        ) ===
-          normalize(
-            request.obra
-          ) &&
-
-        vacancyStatus(vacancy) ===
-          "aberta"
-    );
-
-
-  if (!newVacancy) {
-
-    throw new Error(
-      "O novo personagem não está disponível."
-    );
-
+        ref: doc.ref,
+        ...data
+      };
+    }
   }
 
 
-  const oldVacancy =
-    vacancies.find(
-      vacancy =>
-
-        vacancy.membroId ===
-          memberId ||
-
-        (
-          normalize(
-            vacancy.personagem
-          ) ===
-            normalize(
-              request.antigoPersonagem
-            ) &&
-
-          normalize(
-            vacancy.obra
-          ) ===
-            normalize(
-              request.antigaObra
-            ) &&
-
-          vacancyStatus(vacancy) ===
-            "fechada"
-        )
-    );
-
-
-  if (!oldVacancy) {
-
-    throw new Error(
-      "A vaga do personagem antigo não foi encontrada."
-    );
-
-  }
-
-
-  if (
-    oldVacancy.id ===
-    newVacancy.id
-  ) {
-
-    throw new Error(
-      "O personagem novo não pode ser igual ao atual."
-    );
-
-  }
-
-
-  const batch =
-    db.batch();
-
-
-  batch.update(
-    oldVacancy.ref,
-    {
-
-      status: "aberta",
-
-      membroId:
-        firebase.firestore
-          .FieldValue
-          .delete(),
-
-      updatedAt:
-        firebase.firestore
-          .FieldValue
-          .serverTimestamp()
-
-    }
-  );
-
-
-  batch.update(
-    newVacancy.ref,
-    {
-
-      status: "fechada",
-
-      membroId:
-        memberId,
-
-      updatedAt:
-        firebase.firestore
-          .FieldValue
-          .serverTimestamp()
-
-    }
-  );
-
-
-  batch.update(
-    memberRef,
-    {
-
-      personagem:
-        request.personagem,
-
-      obra:
-        request.obra,
-
-      foto:
-        request.foto,
-
-      updatedAt:
-        firebase.firestore
-          .FieldValue
-          .serverTimestamp()
-
-    }
-  );
-
-
-  batch.update(
-    requestRef,
-    {
-
-      status: "aprovado",
-
-      memberId,
-
-      approvedBy:
-        currentAdmin.nome || "",
-
-      approvedAt:
-        firebase.firestore
-          .FieldValue
-          .serverTimestamp()
-
-    }
-  );
-
-
-  await batch.commit();
-
-}
-
-
-/* =========================================================
-   RECUSAR
-   ========================================================= */
-
-async function rejectRequest(id) {
-
-  if (!currentAdmin) return;
-
-
-  try {
-
-    await db
-      .collection("characterRequests")
-      .doc(id)
-      .update({
-
-        status: "recusado",
-
-        rejectedBy:
-          currentAdmin.nome || "",
-
-        rejectedAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
-
-      });
-
-
-    await writeLog(
-      "solicitacao_recusada",
-      `Solicitação ${id} recusada.`
-    );
-
-
-    await loadAdminData();
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert(
-      "Não foi possível recusar a solicitação."
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   VAGAS ADMIN
-   ========================================================= */
-
-let adminVacancies = [];
-
-
-async function loadAdminVacancies() {
-
-  const container =
-    $("adminVacanciesList");
-
-  if (!container) return;
-
-
-  try {
-
-    const snapshot =
-      await db
-        .collection("vagas")
-        .get();
-
-
-    adminVacancies =
-      snapshot.docs.map(
-        doc => ({
-          id: doc.id,
-          ref: doc.ref,
-          ...doc.data()
-        })
-      );
-
-
-    const open =
-      adminVacancies.filter(
-        item =>
-          vacancyStatus(item) ===
-          "aberta"
-      ).length;
-
-
-    const closed =
-      adminVacancies.length -
-      open;
-
-
-    $("statOpen").textContent =
-      open;
-
-    $("statClosed").textContent =
-      closed;
-
-
-    if (!adminVacancies.length) {
-
-      container.innerHTML =
-        `<div class="empty-card">
-          Nenhuma vaga cadastrada.
-        </div>`;
-
-      return;
-
-    }
-
-
-    container.innerHTML =
-      adminVacancies
-        .map(
-          vacancy =>
-            renderAdminVacancy(vacancy)
-        )
-        .join("");
-
-
-  } catch (error) {
-
-    console.error(error);
-
-  }
-
-}
-
-
-function renderAdminVacancy(vacancy) {
-
-  const photo =
-    vacancy.foto ||
-    vacancy.photo ||
-    "https://placehold.co/300x300/130b10/ffffff?text=LTD";
-
-
-  const closed =
-    vacancyStatus(vacancy) ===
-    "fechada";
-
-
-  return `
-
-    <article class="admin-vacancy">
-
-      <img
-        src="${escapeHTML(photo)}"
-        alt="${escapeHTML(vacancy.personagem)}"
-      >
-
-
-      <div class="admin-vacancy-info">
-
-        <strong>
-          ${escapeHTML(
-            vacancy.personagem
-          )}
-        </strong>
-
-        <span>
-          ${escapeHTML(
-            vacancy.obra
-          )}
-        </span>
-
-        <span>
-          •
-          ${
-            closed
-              ? "Fechada"
-              : "Aberta"
-          }
-        </span>
-
-      </div>
-
-
-      <div class="admin-vacancy-actions">
-
-        <button
-          onclick="editVacancy('${vacancy.id}')"
-        >
-          Editar
-        </button>
-
-
-        <button
-          onclick="toggleVacancy('${vacancy.id}')"
-        >
-          ${
-            closed
-              ? "Abrir"
-              : "Fechar"
-          }
-        </button>
-
-
-        <button
-          onclick="deleteVacancy('${vacancy.id}')"
-        >
-          Excluir
-        </button>
-
-      </div>
-
-    </article>
-
-  `;
-
-}
-
-
-/* =========================================================
-   SALVAR VAGA
-   ========================================================= */
-
-async function saveVacancy(event) {
-
-  event.preventDefault();
-
-
-  if (!currentAdmin) return;
-
-
-  const status =
-    $("vacancyStatusMessage");
-
-
-  try {
-
-    const id =
-      $("vacancyId").value.trim();
-
-    const personagem =
-      $("vacancyCharacter")
-        .value
-        .trim();
-
-    const obra =
-      $("vacancyWork")
-        .value
-        .trim();
-
-    const vacancyStatusValue =
-      $("vacancyStatus")
-        .value;
-
-    const file =
-      $("vacancyPhoto")
-        .files?.[0];
-
-
-    if (!personagem || !obra) {
-
-      throw new Error(
-        "Preencha personagem e obra."
-      );
-
-    }
-
-
-    let photo = "";
-
-
-    if (id) {
-
-      const old =
-        await db
-          .collection("vagas")
-          .doc(id)
-          .get();
-
-      photo =
-        old.data()?.foto ||
-        old.data()?.photo ||
-        "";
-
-    }
-
-
-    if (file) {
-
-      showStatus(
-        status,
-        "Enviando imagem..."
-      );
-
-      photo =
-        await uploadImage(file);
-
-    }
-
-
-    const data = {
-
-      personagem,
-
-      obra,
-
-      foto: photo,
-
-      status:
-        vacancyStatusValue,
-
-      updatedAt:
-        firebase.firestore
-          .FieldValue
-          .serverTimestamp()
-
-    };
-
-
-    if (id) {
-
-      await db
-        .collection("vagas")
-        .doc(id)
-        .update(data);
-
-
-      await writeLog(
-        "vaga_editada",
-        `${personagem} • ${obra}`
-      );
-
-
-    } else {
-
-      data.createdAt =
-        firebase.firestore
-          .FieldValue
-          .serverTimestamp();
-
-
-      await db
-        .collection("vagas")
-        .add(data);
-
-
-      await writeLog(
-        "vaga_criada",
-        `${personagem} • ${obra}`
-      );
-
-    }
-
-
-    showStatus(
-      status,
-      "Vaga salva com sucesso.",
-      "success"
-    );
-
-
-    clearVacancyForm();
-
-
-    await loadAdminData();
-
-
-    await loadPublicVacancies();
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    showStatus(
-      status,
-      error.message ||
-        "Erro ao salvar vaga.",
-      "error"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   EDITAR VAGA
-   ========================================================= */
-
-function editVacancy(id) {
-
-  const vacancy =
-    adminVacancies.find(
-      item => item.id === id
-    );
-
-
-  if (!vacancy) return;
-
-
-  $("vacancyId").value =
-    vacancy.id;
-
-  $("vacancyCharacter").value =
-    vacancy.personagem || "";
-
-  $("vacancyWork").value =
-    vacancy.obra || "";
-
-  $("vacancyStatus").value =
-    vacancyStatus(vacancy);
-
-
-  window.scrollTo({
-    top:
-      $("vacancyForm")
-        .getBoundingClientRect()
-        .top +
-      window.scrollY -
-      100,
-
-    behavior: "smooth"
-  });
-
-}
-
-
-/* =========================================================
-   LIMPAR FORM VAGA
-   ========================================================= */
-
-function clearVacancyForm() {
-
-  $("vacancyForm").reset();
-
-  $("vacancyId").value = "";
-
+  return null;
 }
 
 
 /* =========================================================
    ABRIR / FECHAR VAGA
-   ========================================================= */
+========================================================= */
 
 async function toggleVacancy(id) {
 
+  if (!currentAdmin) {
+    return;
+  }
+
+  const vacancy =
+    vacanciesCache.find(
+      item => item.id === id
+    );
+
+  if (!vacancy) {
+    return;
+  }
+
+
+  const isOpen =
+    vacancy.status === "aberta" ||
+    vacancy.status === "open";
+
+
+  const newStatus =
+    isOpen
+      ? "fechada"
+      : "aberta";
+
+
   try {
 
-    const ref =
-      db
-        .collection("vagas")
-        .doc(id);
-
-
-    const snap =
-      await ref.get();
-
-
-    if (!snap.exists) return;
-
-
-    const data =
-      snap.data();
-
-
-    const current =
-      vacancyStatus(data);
-
-
-    const next =
-      current === "aberta"
-        ? "fechada"
-        : "aberta";
-
-
-    await ref.update({
-
-      status: next,
-
-      updatedAt:
-        firebase.firestore
-          .FieldValue
-          .serverTimestamp()
-
-    });
-
-
-    await writeLog(
-      next === "aberta"
-        ? "vaga_aberta"
-        : "vaga_fechada",
-      `${data.personagem} • ${data.obra}`
+    showLoading(
+      isOpen
+        ? "Fechando vaga..."
+        : "Abrindo vaga..."
     );
 
 
-    await loadAdminData();
+    await vacancy.ref.update({
+
+      status:
+        newStatus,
+
+      updatedAt:
+        serverTimestamp(),
+
+      updatedBy:
+        currentAdmin.name,
+
+      ...(newStatus === "aberta"
+        ? {
+            occupiedBy:
+              firebase.firestore.FieldValue.delete(),
+
+            occupiedCharacter:
+              firebase.firestore.FieldValue.delete(),
+
+            occupiedWork:
+              firebase.firestore.FieldValue.delete(),
+
+            closedAt:
+              firebase.firestore.FieldValue.delete()
+          }
+        : {
+            closedAt:
+              serverTimestamp()
+          })
+    });
 
 
-    await loadPublicVacancies();
+    await registerAccessLog(
+      isOpen
+        ? "close_vacancy"
+        : "open_vacancy",
+      {
+        vacancyId:
+          vacancy.id,
 
+        character:
+          vacancy.character,
+
+        work:
+          vacancy.work
+      }
+    );
+
+
+    await loadVacancies();
+
+
+    showMessage(
+      isOpen
+        ? "Vaga fechada."
+        : "Vaga aberta.",
+      "success"
+    );
 
   } catch (error) {
 
     console.error(error);
 
-    alert(
-      "Não foi possível alterar a vaga."
+    showMessage(
+      "Não foi possível alterar a vaga.",
+      "error"
     );
 
+  } finally {
+
+    hideLoading();
+  }
+}
+
+
+/* =========================================================
+   EDITAR VAGA
+========================================================= */
+
+function editVacancy(id) {
+
+  const vacancy =
+    vacanciesCache.find(
+      item => item.id === id
+    );
+
+  if (!vacancy) {
+    return;
   }
 
+  currentEditingVacancy = vacancy;
+
+
+  /*
+   * Se existir um modal criado no HTML,
+   * preencher os campos.
+   */
+
+  const characterInput =
+    $("editCharacter");
+
+  const workInput =
+    $("editWork");
+
+  const photoInput =
+    $("editPhoto");
+
+
+  if (characterInput) {
+    characterInput.value =
+      vacancy.character || "";
+  }
+
+  if (workInput) {
+    workInput.value =
+      vacancy.work || "";
+  }
+
+  if (photoInput) {
+    photoInput.value =
+      vacancy.photo || "";
+  }
+
+
+  const modal =
+    $("editVacancyModal");
+
+  if (modal) {
+
+    modal.style.display =
+      "flex";
+
+    return;
+  }
+
+
+  /*
+   * Fallback caso o modal ainda não exista.
+   */
+
+  const character =
+    prompt(
+      "Nome do personagem:",
+      vacancy.character || ""
+    );
+
+  if (character === null) {
+    return;
+  }
+
+
+  const work =
+    prompt(
+      "Nome da obra:",
+      vacancy.work || ""
+    );
+
+  if (work === null) {
+    return;
+  }
+
+
+  updateVacancy(
+    vacancy.id,
+    {
+      character,
+      work
+    }
+  );
+}
+
+
+/* =========================================================
+   SALVAR EDIÇÃO DA VAGA
+========================================================= */
+
+async function saveEditedVacancy() {
+
+  if (!currentEditingVacancy) {
+    return;
+  }
+
+
+  const character =
+    $("editCharacter")?.value.trim();
+
+
+  const work =
+    $("editWork")?.value.trim();
+
+
+  const photo =
+    $("editPhoto")?.value.trim();
+
+
+  await updateVacancy(
+    currentEditingVacancy.id,
+    {
+      character,
+      work,
+      photo:
+        photo ||
+        currentEditingVacancy.photo ||
+        ""
+    }
+  );
+
+
+  closeEditVacancyModal();
+}
+
+
+/* =========================================================
+   ATUALIZAR VAGA
+========================================================= */
+
+async function updateVacancy(
+  id,
+  data
+) {
+
+  if (!currentAdmin) {
+    return;
+  }
+
+
+  if (!data.character) {
+
+    showMessage(
+      "Digite o nome do personagem.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!data.work) {
+
+    showMessage(
+      "Digite o nome da obra.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  try {
+
+    showLoading("Salvando vaga...");
+
+
+    const vacancy =
+      vacanciesCache.find(
+        item => item.id === id
+      );
+
+
+    if (!vacancy) {
+      throw new Error(
+        "Vaga não encontrada."
+      );
+    }
+
+
+    await vacancy.ref.update({
+
+      character:
+        data.character,
+
+      work:
+        data.work,
+
+      photo:
+        data.photo || "",
+
+      updatedAt:
+        serverTimestamp(),
+
+      updatedBy:
+        currentAdmin.name
+
+    });
+
+
+    await registerAccessLog(
+      "edit_vacancy",
+      {
+        vacancyId:
+          id,
+
+        character:
+          data.character,
+
+        work:
+          data.work
+      }
+    );
+
+
+    await loadVacancies();
+
+
+    showMessage(
+      "Vaga atualizada!",
+      "success"
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "Não foi possível editar a vaga.",
+      "error"
+    );
+
+  } finally {
+
+    hideLoading();
+  }
+}
+
+
+/* =========================================================
+   FECHAR MODAL
+========================================================= */
+
+function closeEditVacancyModal() {
+
+  const modal =
+    $("editVacancyModal");
+
+  if (modal) {
+    modal.style.display = "none";
+  }
+
+  currentEditingVacancy = null;
 }
 
 
 /* =========================================================
    EXCLUIR VAGA
-   ========================================================= */
+========================================================= */
 
 async function deleteVacancy(id) {
 
-  if (
-    !confirm(
-      "Tem certeza que deseja excluir esta vaga?"
-    )
-  ) {
-
+  if (!currentAdmin) {
     return;
+  }
 
+
+  const vacancy =
+    vacanciesCache.find(
+      item => item.id === id
+    );
+
+
+  if (!vacancy) {
+    return;
+  }
+
+
+  const confirmed =
+    confirm(
+      `Excluir a vaga de "${vacancy.character}"?`
+    );
+
+
+  if (!confirmed) {
+    return;
   }
 
 
   try {
 
-    const ref =
-      db
-        .collection("vagas")
-        .doc(id);
+    showLoading("Excluindo vaga...");
 
 
-    const snap =
-      await ref.get();
+    await vacancy.ref.delete();
 
 
-    const data =
-      snap.data();
+    await registerAccessLog(
+      "delete_vacancy",
+      {
+        vacancyId:
+          id,
 
+        character:
+          vacancy.character,
 
-    await ref.delete();
-
-
-    await writeLog(
-      "vaga_excluida",
-      `${data?.personagem || ""} • ${data?.obra || ""}`
+        work:
+          vacancy.work
+      }
     );
 
 
-    await loadAdminData();
+    await loadVacancies();
 
 
-    await loadPublicVacancies();
-
+    showMessage(
+      "Vaga excluída.",
+      "success"
+    );
 
   } catch (error) {
 
     console.error(error);
 
-    alert(
-      "Não foi possível excluir a vaga."
+    showMessage(
+      "Não foi possível excluir a vaga.",
+      "error"
     );
 
-  }
+  } finally {
 
+    hideLoading();
+  }
 }
 
 
 /* =========================================================
-   MEMBROS ADMIN
-   ========================================================= */
+   CRIAR NOVA VAGA
+========================================================= */
 
-async function loadAdminMembers() {
+async function createVacancy(data) {
+
+  if (!currentAdmin) {
+    return;
+  }
+
+
+  if (!data.character || !data.work) {
+
+    showMessage(
+      "Personagem e obra são obrigatórios.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  try {
+
+    showLoading("Criando vaga...");
+
+
+    const existing =
+      await findVacancy(
+        data.character,
+        data.work
+      );
+
+
+    if (existing) {
+
+      throw new Error(
+        "Essa vaga já existe."
+      );
+    }
+
+
+    const ref =
+      db.collection("vagas").doc();
+
+
+    await ref.set({
+
+      character:
+        data.character,
+
+      work:
+        data.work,
+
+      photo:
+        data.photo || "",
+
+      status:
+        data.status ||
+        "aberta",
+
+      createdAt:
+        serverTimestamp(),
+
+      createdBy:
+        currentAdmin.name
+
+    });
+
+
+    await registerAccessLog(
+      "create_vacancy",
+      {
+        vacancyId:
+          ref.id,
+
+        character:
+          data.character,
+
+        work:
+          data.work
+      }
+    );
+
+
+    await loadVacancies();
+
+
+    showMessage(
+      "Vaga criada!",
+      "success"
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      error.message ||
+      "Erro ao criar vaga.",
+      "error"
+    );
+
+  } finally {
+
+    hideLoading();
+  }
+}
+
+
+/* =========================================================
+   MEMBROS
+========================================================= */
+
+async function loadMembers() {
 
   const container =
-    $("adminMembersList");
+    $("membersList");
 
-  if (!container) return;
+  if (!container) {
+    return;
+  }
+
+
+  container.innerHTML =
+    "<p>Carregando membros...</p>";
 
 
   try {
@@ -2527,99 +2166,139 @@ async function loadAdminMembers() {
         .get();
 
 
-    const members =
-      snapshot.docs.map(
-        doc => ({
-          id: doc.id,
-          ...doc.data()
-        })
-      );
+    membersCache = [];
 
 
-    $("statMembers").textContent =
-      members.length;
+    snapshot.forEach(doc => {
+
+      membersCache.push({
+        id: doc.id,
+        ref: doc.ref,
+        ...doc.data()
+      });
+
+    });
 
 
-    if (!members.length) {
-
-      container.innerHTML =
-        `<div class="empty-card">
-          Nenhum membro aprovado.
-        </div>`;
-
-      return;
-
-    }
+    setText(
+      "membersCount",
+      membersCache.length
+    );
 
 
-    container.innerHTML =
-      members
-        .map(member => {
-
-          const photo =
-            member.foto ||
-            "https://placehold.co/300x300/130b10/ffffff?text=LTD";
-
-
-          return `
-
-            <article class="admin-card">
-
-              <img
-                src="${escapeHTML(photo)}"
-                alt=""
-              >
-
-              <div class="admin-card-info">
-
-                <strong>
-                  ${escapeHTML(
-                    member.nome ||
-                    "Membro"
-                  )}
-                </strong>
-
-                <span>
-                  ${escapeHTML(
-                    member.personagem
-                  )}
-                </span>
-
-                <span>
-                  ${escapeHTML(
-                    member.obra
-                  )}
-                </span>
-
-              </div>
-
-            </article>
-
-          `;
-
-        })
-        .join("");
-
+    renderMembers();
 
   } catch (error) {
 
     console.error(error);
 
+    container.innerHTML =
+      "<p>Não foi possível carregar os membros.</p>";
   }
-
 }
 
 
 /* =========================================================
-   PERFIS DOS ADMS
-   ========================================================= */
+   RENDER MEMBROS
+========================================================= */
 
-async function loadAdminProfiles() {
+function renderMembers() {
 
   const container =
-    $("adminProfilesList");
+    $("membersList");
 
-  if (!container) return;
+  if (!container) {
+    return;
+  }
+
+
+  if (!membersCache.length) {
+
+    container.innerHTML =
+      "<p>Nenhum membro cadastrado.</p>";
+
+    return;
+  }
+
+
+  container.innerHTML = "";
+
+
+  membersCache.forEach(member => {
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "member-card";
+
+
+    card.innerHTML = `
+
+      ${
+        member.photo
+          ? `
+            <img
+              src="${escapeHTML(member.photo)}"
+              alt=""
+            >
+          `
+          : ""
+      }
+
+      <div>
+
+        <h3>
+          ${escapeHTML(
+            member.name ||
+            member.nickname ||
+            "Membro"
+          )}
+        </h3>
+
+        <p>
+          <strong>Personagem:</strong>
+          ${escapeHTML(
+            member.character ||
+            "Não informado"
+          )}
+        </p>
+
+        <p>
+          <strong>Obra:</strong>
+          ${escapeHTML(
+            member.work ||
+            "Não informado"
+          )}
+        </p>
+
+      </div>
+
+    `;
+
+
+    container.appendChild(card);
+
+  });
+}
+
+
+/* =========================================================
+   ADMINISTRADORES
+========================================================= */
+
+async function loadAdmins() {
+
+  const container =
+    $("adminsList");
+
+  if (!container) {
+    return;
+  }
+
+
+  container.innerHTML =
+    "<p>Carregando administradores...</p>";
 
 
   try {
@@ -2630,105 +2309,349 @@ async function loadAdminProfiles() {
         .get();
 
 
-    const profiles =
-      snapshot.docs.map(
-        doc => ({
-          id: doc.id,
-          ...doc.data()
-        })
-      );
+    adminsCache = [];
 
 
-    if (!profiles.length) {
+    snapshot.forEach(doc => {
 
-      container.innerHTML =
-        `<div class="empty-card">
-          Nenhum perfil administrativo cadastrado no Firestore.
-        </div>`;
+      adminsCache.push({
+        id: doc.id,
+        ...doc.data()
+      });
 
-      return;
+    });
 
-    }
 
+    renderAdmins();
+
+  } catch (error) {
+
+    console.error(error);
 
     container.innerHTML =
-      profiles
-        .map(profile => {
-
-          const photo =
-            profile.foto ||
-            profile.photo ||
-            "https://placehold.co/300x300/130b10/ffffff?text=ADM";
+      "<p>Não foi possível carregar os administradores.</p>";
+  }
+}
 
 
-          const online =
-            profile.online === true;
+/* =========================================================
+   RENDER ADMS
+========================================================= */
+
+function renderAdmins() {
+
+  const container =
+    $("adminsList");
+
+  if (!container) {
+    return;
+  }
 
 
-          return `
+  if (!adminsCache.length) {
 
-            <article class="admin-card">
+    container.innerHTML =
+      "<p>Nenhum administrador cadastrado.</p>";
 
+    return;
+  }
+
+
+  container.innerHTML = "";
+
+
+  adminsCache.forEach(admin => {
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "admin-card";
+
+
+    card.innerHTML = `
+
+      ${
+        admin.cover
+          ? `
+            <img
+              class="admin-cover"
+              src="${escapeHTML(admin.cover)}"
+              alt=""
+            >
+          `
+          : ""
+      }
+
+
+      <div class="admin-card-body">
+
+        ${
+          admin.photo
+            ? `
               <img
-                src="${escapeHTML(photo)}"
-                alt=""
+                class="admin-photo"
+                src="${escapeHTML(admin.photo)}"
+                alt="${escapeHTML(admin.name)}"
               >
+            `
+            : ""
+        }
 
 
-              <div class="admin-card-info">
-
-                <strong>
-                  ${escapeHTML(
-                    profile.nome ||
-                    "Administrador"
-                  )}
-                </strong>
-
-                <span>
-                  ${escapeHTML(
-                    profile.cargo ||
-                    "ADM"
-                  )}
-                </span>
-
-              </div>
+        <h3>
+          ${escapeHTML(
+            admin.name ||
+            "Administrador"
+          )}
+        </h3>
 
 
-              <span
-                class="${
-                  online
-                    ? "online"
-                    : "offline"
-                }"
-              ></span>
+        <p>
+          ${escapeHTML(
+            admin.role ||
+            "ADM"
+          )}
+        </p>
 
-            </article>
 
-          `;
+        <span class="admin-status">
 
-        })
-        .join("");
+          ${
+            admin.status === false
+              ? "Desativado"
+              : "Ativo"
+          }
+
+        </span>
+
+      </div>
+    `;
+
+
+    container.appendChild(card);
+
+  });
+}
+
+
+/* =========================================================
+   CHAT DA ADMINISTRAÇÃO
+========================================================= */
+
+async function loadChat() {
+
+  const container =
+    $("adminChatMessages");
+
+  if (!container) {
+    return;
+  }
+
+
+  try {
+
+    const snapshot =
+      await db
+        .collection("adminChat")
+        .orderBy(
+          "timestamp",
+          "asc"
+        )
+        .limit(100)
+        .get();
+
+
+    container.innerHTML = "";
+
+
+    snapshot.forEach(doc => {
+
+      const data =
+        doc.data();
+
+
+      const message =
+        document.createElement("div");
+
+
+      message.className =
+        "admin-chat-message";
+
+
+      message.innerHTML = `
+
+        <strong>
+          ${escapeHTML(
+            data.adminName ||
+            "ADM"
+          )}
+        </strong>
+
+        <small>
+          ${escapeHTML(
+            data.role ||
+            ""
+          )}
+        </small>
+
+        <p>
+          ${escapeHTML(
+            data.message ||
+            ""
+          )}
+        </p>
+
+      `;
+
+
+      container.appendChild(message);
+
+    });
+
+
+    container.scrollTop =
+      container.scrollHeight;
 
 
   } catch (error) {
 
     console.error(error);
 
+    container.innerHTML =
+      "<p>Não foi possível carregar o chat.</p>";
   }
-
 }
 
 
 /* =========================================================
-   LOGS
-   ========================================================= */
+   ENVIAR CHAT
+========================================================= */
 
-async function loadAdminLogs() {
+async function sendAdminChatMessage(message) {
+
+  if (!currentAdmin) {
+    return;
+  }
+
+
+  message =
+    String(message || "").trim();
+
+
+  if (!message) {
+    return;
+  }
+
+
+  await db
+    .collection("adminChat")
+    .add({
+
+      adminId:
+        currentAdmin.uid,
+
+      adminName:
+        currentAdmin.name,
+
+      role:
+        currentAdmin.role,
+
+      message,
+
+      timestamp:
+        serverTimestamp()
+
+    });
+
+
+  await registerAccessLog(
+    "send_admin_message"
+  );
+
+
+  await loadChat();
+}
+
+
+/* =========================================================
+   FORM DO CHAT
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const chatForm =
+    $("chatForm");
+
+
+  if (!chatForm) {
+    return;
+  }
+
+
+  chatForm.addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      const input =
+        $("chatMessage");
+
+
+      if (!input) {
+        return;
+      }
+
+
+      const message =
+        input.value.trim();
+
+
+      if (!message) {
+        return;
+      }
+
+
+      try {
+
+        await sendAdminChatMessage(
+          message
+        );
+
+
+        input.value = "";
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+          "Não foi possível enviar a mensagem.",
+          "error"
+        );
+      }
+
+    }
+  );
+
+});
+
+
+/* =========================================================
+   LOGS — CARREGAR
+========================================================= */
+
+async function loadLogs() {
 
   const container =
-    $("logsAdminList");
+    $("logsList");
 
-  if (!container) return;
+  if (!container) {
+    return;
+  }
 
 
   try {
@@ -2736,291 +2659,915 @@ async function loadAdminLogs() {
     const snapshot =
       await db
         .collection("accessLogs")
-        .limit(50)
+        .orderBy(
+          "timestamp",
+          "desc"
+        )
+        .limit(100)
         .get();
 
 
-    const logs =
-      snapshot.docs.map(
-        doc => ({
-          id: doc.id,
-          ...doc.data()
-        })
+    container.innerHTML = "";
+
+
+    snapshot.forEach(doc => {
+
+      const data =
+        doc.data();
+
+
+      const item =
+        document.createElement("div");
+
+
+      item.className =
+        "log-item";
+
+
+      item.innerHTML = `
+
+        <strong>
+          ${escapeHTML(
+            data.adminName ||
+            "ADM"
+          )}
+        </strong>
+
+        <span>
+          ${escapeHTML(
+            data.action ||
+            "ação"
+          )}
+        </span>
+
+      `;
+
+
+      container.appendChild(item);
+
+    });
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML =
+      "<p>Não foi possível carregar os logs.</p>";
+  }
+}
+
+
+/* =========================================================
+   NAVEGAÇÃO DO PAINEL
+========================================================= */
+
+function setupNavigation() {
+
+  const buttons =
+    document.querySelectorAll(
+      "[data-section]"
+    );
+
+
+  buttons.forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const section =
+          button.dataset.section;
+
+
+        document
+          .querySelectorAll(
+            ".admin-section"
+          )
+          .forEach(element => {
+
+            element.style.display =
+              "none";
+
+          });
+
+
+        const target =
+          $(`${section}Section`);
+
+
+        if (target) {
+
+          target.style.display =
+            "block";
+
+        }
+
+      }
+    );
+
+  });
+}
+
+
+/* =========================================================
+   FICHA DE RECEPÇÃO
+========================================================= */
+
+function setupPublicForms() {
+
+  const form =
+    $("receptionForm");
+
+
+  if (!form) {
+    return;
+  }
+
+
+  form.addEventListener(
+    "submit",
+    handleReceptionSubmit
+  );
+}
+
+
+/* =========================================================
+   ENVIAR FICHA
+========================================================= */
+
+async function handleReceptionSubmit(event) {
+
+  event.preventDefault();
+
+
+  const form =
+    event.currentTarget;
+
+
+  try {
+
+    showLoading(
+      "Enviando sua ficha..."
+    );
+
+
+    const name =
+      form.querySelector(
+        '[name="name"]'
+      )?.value.trim() || "";
+
+
+    const nickname =
+      form.querySelector(
+        '[name="nickname"]'
+      )?.value.trim() || "";
+
+
+    const age =
+      form.querySelector(
+        '[name="age"]'
+      )?.value.trim() || "";
+
+
+    const last4 =
+      form.querySelector(
+        '[name="last4"]'
+      )?.value.trim() || "";
+
+
+    const character =
+      form.querySelector(
+        '[name="character"]'
+      )?.value.trim() || "";
+
+
+    const work =
+      form.querySelector(
+        '[name="work"]'
+      )?.value.trim() || "";
+
+
+    const photoInput =
+      form.querySelector(
+        '[name="photo"]'
       );
 
 
-    if (!logs.length) {
+    if (!age) {
+      throw new Error(
+        "A idade é obrigatória."
+      );
+    }
 
-      container.innerHTML =
-        `<div class="empty-card">
-          Nenhum log registrado.
-        </div>`;
 
-      return;
+    if (!last4) {
+      throw new Error(
+        "Os últimos 4 números são obrigatórios."
+      );
+    }
+
+
+    if (!character) {
+      throw new Error(
+        "Digite o personagem."
+      );
+    }
+
+
+    if (!work) {
+      throw new Error(
+        "Digite a obra."
+      );
+    }
+
+
+    if (
+      !photoInput ||
+      !photoInput.files ||
+      !photoInput.files[0]
+    ) {
+
+      throw new Error(
+        "A foto do personagem é obrigatória."
+      );
+    }
+
+
+    /*
+     * Verificar se personagem já está ocupado.
+     */
+
+    const vacancy =
+      await findVacancy(
+        character,
+        work
+      );
+
+
+    if (
+      vacancy &&
+      (
+        vacancy.status === "fechada" ||
+        vacancy.status === "ocupada"
+      )
+    ) {
+
+      throw new Error(
+        "Esse personagem já está ocupado."
+      );
+    }
+
+
+    /*
+     * Upload Cloudinary.
+     */
+
+    const photo =
+      await uploadToCloudinary(
+        photoInput.files[0]
+      );
+
+
+    /*
+     * Criar solicitação.
+     */
+
+    await db
+      .collection("characterRequests")
+      .add({
+
+        name,
+
+        nickname,
+
+        age,
+
+        last4,
+
+        character,
+
+        work,
+
+        photo,
+
+        status:
+          "pendente",
+
+        createdAt:
+          serverTimestamp()
+
+      });
+
+
+    showMessage(
+      "Ficha enviada com sucesso!",
+      "success"
+    );
+
+
+    form.reset();
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      error.message ||
+      "Não foi possível enviar a ficha.",
+      "error"
+    );
+
+  } finally {
+
+    hideLoading();
+  }
+}
+
+
+/* =========================================================
+   TROCA DE PERSONAGEM
+========================================================= */
+
+async function submitCharacterExchange(data) {
+
+  if (!data) {
+    return;
+  }
+
+
+  const oldCharacter =
+    String(
+      data.oldCharacter || ""
+    ).trim();
+
+
+  const oldWork =
+    String(
+      data.oldWork || ""
+    ).trim();
+
+
+  const newCharacter =
+    String(
+      data.newCharacter || ""
+    ).trim();
+
+
+  const newWork =
+    String(
+      data.newWork || ""
+    ).trim();
+
+
+  if (
+    !oldCharacter ||
+    !oldWork ||
+    !newCharacter ||
+    !newWork
+  ) {
+
+    throw new Error(
+      "Preencha todos os campos da troca."
+    );
+  }
+
+
+  /*
+   * O novo personagem precisa estar livre.
+   */
+
+  const newVacancy =
+    await findVacancy(
+      newCharacter,
+      newWork
+    );
+
+
+  if (
+    newVacancy &&
+    (
+      newVacancy.status === "fechada" ||
+      newVacancy.status === "ocupada"
+    )
+  ) {
+
+    throw new Error(
+      "O novo personagem já está ocupado."
+    );
+  }
+
+
+  /*
+   * Encontrar o personagem antigo.
+   */
+
+  const oldVacancy =
+    await findVacancy(
+      oldCharacter,
+      oldWork
+    );
+
+
+  if (!oldVacancy) {
+
+    throw new Error(
+      "O personagem atual não foi encontrado."
+    );
+  }
+
+
+  /*
+   * Upload da nova foto.
+   */
+
+  let newPhoto =
+    data.newPhoto || "";
+
+
+  if (
+    data.photoFile
+  ) {
+
+    newPhoto =
+      await uploadToCloudinary(
+        data.photoFile
+      );
+  }
+
+
+  /*
+   * Registrar troca como solicitação.
+   */
+
+  await db
+    .collection("requests")
+    .add({
+
+      type:
+        "troca",
+
+      oldCharacter,
+
+      oldWork,
+
+      newCharacter,
+
+      newWork,
+
+      newPhoto,
+
+      status:
+        "pendente",
+
+      createdAt:
+        serverTimestamp()
+
+    });
+
+
+  showMessage(
+    "Solicitação de troca enviada!",
+    "success"
+  );
+}
+
+
+/* =========================================================
+   ACEITAR TROCA
+========================================================= */
+
+async function approveExchange(
+  requestId
+) {
+
+  if (!currentAdmin) {
+    return;
+  }
+
+
+  const ref =
+    db
+      .collection("requests")
+      .doc(requestId);
+
+
+  const doc =
+    await ref.get();
+
+
+  if (!doc.exists) {
+    return;
+  }
+
+
+  const data =
+    doc.data();
+
+
+  if (data.type !== "troca") {
+    return;
+  }
+
+
+  try {
+
+    showLoading(
+      "Processando troca..."
+    );
+
+
+    const oldVacancy =
+      await findVacancy(
+        data.oldCharacter,
+        data.oldWork
+      );
+
+
+    const newVacancy =
+      await findVacancy(
+        data.newCharacter,
+        data.newWork
+      );
+
+
+    if (
+      newVacancy &&
+      (
+        newVacancy.status === "fechada" ||
+        newVacancy.status === "ocupada"
+      )
+    ) {
+
+      throw new Error(
+        "O novo personagem já está ocupado."
+      );
+    }
+
+
+    const batch =
+      db.batch();
+
+
+    /*
+     * Abrir personagem antigo.
+     */
+
+    if (oldVacancy) {
+
+      batch.update(
+        oldVacancy.ref,
+        {
+          status:
+            "aberta",
+
+          occupiedBy:
+            firebase.firestore.FieldValue.delete(),
+
+          occupiedCharacter:
+            firebase.firestore.FieldValue.delete(),
+
+          occupiedWork:
+            firebase.firestore.FieldValue.delete(),
+
+          closedAt:
+            firebase.firestore.FieldValue.delete(),
+
+          updatedAt:
+            serverTimestamp()
+        }
+      );
 
     }
 
 
-    container.innerHTML =
-      logs
-        .map(log => `
+    /*
+     * Fechar personagem novo.
+     */
 
-          <article class="log-card">
+    if (newVacancy) {
 
-            <strong>
-              ${escapeHTML(
-                log.action ||
-                "Ação"
-              )}
-            </strong>
+      batch.update(
+        newVacancy.ref,
+        {
+          status:
+            "fechada",
 
-            <p>
-              ${escapeHTML(
-                log.details ||
-                ""
-              )}
-            </p>
+          occupiedCharacter:
+            data.newCharacter,
 
-            <p>
-              ${escapeHTML(
-                log.admin ||
-                ""
-              )}
-              •
-              ${formatDate(
-                log.createdAt
-              )}
-            </p>
+          occupiedWork:
+            data.newWork,
 
-          </article>
+          occupiedPhoto:
+            data.newPhoto || "",
 
-        `)
-        .join("");
+          closedAt:
+            serverTimestamp(),
 
+          updatedAt:
+            serverTimestamp()
+        }
+      );
+
+    } else {
+
+      const refNew =
+        db
+          .collection("vagas")
+          .doc();
+
+
+      batch.set(
+        refNew,
+        {
+          character:
+            data.newCharacter,
+
+          work:
+            data.newWork,
+
+          photo:
+            data.newPhoto || "",
+
+          status:
+            "fechada",
+
+          closedAt:
+            serverTimestamp(),
+
+          createdAt:
+            serverTimestamp()
+        }
+      );
+    }
+
+
+    /*
+     * Finalizar solicitação.
+     */
+
+    batch.update(
+      ref,
+      {
+        status:
+          "aprovado",
+
+        approvedBy:
+          currentAdmin.name,
+
+        approvedAt:
+          serverTimestamp()
+      }
+    );
+
+
+    await batch.commit();
+
+
+    await registerAccessLog(
+      "approve_exchange",
+      {
+        requestId
+      }
+    );
+
+
+    showMessage(
+      "Troca aprovada!",
+      "success"
+    );
+
+
+    await loadDashboard();
 
   } catch (error) {
 
     console.error(error);
 
-  }
+    showMessage(
+      error.message ||
+      "Erro ao processar troca.",
+      "error"
+    );
 
+  } finally {
+
+    hideLoading();
+  }
 }
 
 
 /* =========================================================
-   ESCREVER LOG
-   ========================================================= */
+   VERIFICAÇÃO DE PERMISSÃO
+========================================================= */
 
-async function writeLog(
-  action,
-  details
-) {
+function hasRole(...roles) {
 
-  if (!currentAdmin) return;
+  if (!currentAdmin) {
+    return false;
+  }
 
+
+  const currentRole =
+    normalizeText(
+      currentAdmin.role
+    );
+
+
+  return roles.some(
+    role =>
+      normalizeText(role) ===
+      currentRole
+  );
+}
+
+
+/* =========================================================
+   PERMISSÃO DE DONO
+========================================================= */
+
+function isOwner() {
+
+  if (!currentAdmin) {
+    return false;
+  }
+
+
+  return (
+    normalizeText(
+      currentAdmin.role
+    ) === "dono"
+  );
+}
+
+
+/* =========================================================
+   PERMISSÃO DE LIDERANÇA
+========================================================= */
+
+function isLeadership() {
+
+  if (!currentAdmin) {
+    return false;
+  }
+
+
+  const role =
+    normalizeText(
+      currentAdmin.role
+    );
+
+
+  return (
+    role === "dono" ||
+    role === "sub-dono" ||
+    role === "líder de adm"
+  );
+}
+
+
+/* =========================================================
+   BUSCAR ADMINISTRADORES ONLINE
+========================================================= */
+
+async function loadOnlineAdmins() {
 
   try {
 
-    await db
-      .collection("accessLogs")
-      .add({
-
-        action,
-
-        details,
-
-        admin:
-          currentAdmin.nome ||
-          "",
-
-        adminId:
-          currentAdmin.uid,
-
-        createdAt:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
-
-      });
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao criar log:",
-      error
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   STATUS ONLINE
-   ========================================================= */
-
-async function setAdminOnline(
-  online
-) {
-
-  if (
-    !currentAdmin ||
-    !db
-  ) return;
-
-
-  try {
-
-    await db
-      .collection("adminProfiles")
-      .doc(currentAdmin.uid)
-      .update({
-
-        online,
-
-        lastOnline:
-          firebase.firestore
-            .FieldValue
-            .serverTimestamp()
-
-      });
-
-  } catch (error) {
-
-    console.error(error);
-
-  }
-
-}
-
-
-/* =========================================================
-   LOGOUT
-   ========================================================= */
-
-async function logoutAdmin() {
-
-  await setAdminOnline(false);
-
-  await auth.signOut();
-
-}
-
-
-/* =========================================================
-   INICIALIZAÇÃO PÚBLICA
-   ========================================================= */
-
-async function initializePublic() {
-
-  setupPreview(
-    "requestPhoto",
-    "requestPhotoPreview",
-    "requestPhotoPlaceholder"
-  );
-
-
-  setupPreview(
-    "exchangePhoto",
-    "exchangePhotoPreview",
-    "exchangePhotoPlaceholder"
-  );
-
-
-  $("requestForm")
-    ?.addEventListener(
-      "submit",
-      submitRequest
-    );
-
-
-  $("exchangeForm")
-    ?.addEventListener(
-      "submit",
-      submitExchange
-    );
-
-
-  $("memberSearch")
-    ?.addEventListener(
-      "input",
-      event =>
-        renderMembers(
-          event.target.value
+    const snapshot =
+      await db
+        .collection("adminsOnline")
+        .where(
+          "online",
+          "==",
+          true
         )
+        .get();
+
+
+    return snapshot.docs.map(
+      doc => ({
+        id: doc.id,
+        ...doc.data()
+      })
     );
 
+  } catch (error) {
 
-  await loadPublicVacancies();
+    console.error(error);
 
-  await loadMembers();
-
-
-  setTimeout(
-    () => {
-
-      $("loadingScreen")
-        ?.classList
-        .add("hide");
-
-    },
-    500
-  );
-
+    return [];
+  }
 }
 
 
 /* =========================================================
-   INICIALIZAÇÃO ADMIN
-   ========================================================= */
+   ATUALIZAR STATUS PERIODICAMENTE
+========================================================= */
 
-function initializeAdmin() {
+let onlineInterval = null;
 
-  $("adminLoginForm")
-    ?.addEventListener(
-      "submit",
-      adminLogin
+
+function startOnlineHeartbeat() {
+
+  if (onlineInterval) {
+    clearInterval(
+      onlineInterval
     );
+  }
 
 
-  $("vacancyForm")
-    ?.addEventListener(
-      "submit",
-      saveVacancy
+  onlineInterval =
+    setInterval(
+      async () => {
+
+        if (!currentAdmin) {
+          return;
+        }
+
+
+        try {
+
+          await db
+            .collection("adminsOnline")
+            .doc(currentAdmin.uid)
+            .update({
+              online: true,
+              lastSeen:
+                serverTimestamp()
+            });
+
+        } catch (error) {
+
+          console.error(
+            "Heartbeat:",
+            error
+          );
+        }
+
+      },
+      60000
     );
-
-
-  $("cancelVacancyEdit")
-    ?.addEventListener(
-      "click",
-      clearVacancyForm
-    );
-
-
-  $("refreshAdmin")
-    ?.addEventListener(
-      "click",
-      loadAdminData
-    );
-
-
-  $("logoutButton")
-    ?.addEventListener(
-      "click",
-      logoutAdmin
-    );
-
-
-  auth.onAuthStateChanged(
-    loadCurrentAdmin
-  );
-
 }
 
 
 /* =========================================================
-   GLOBAL
-   ========================================================= */
+   INICIAR HEARTBEAT QUANDO LOGAR
+========================================================= */
+
+auth.onAuthStateChanged(
+  user => {
+
+    if (user) {
+      startOnlineHeartbeat();
+    } else {
+
+      if (onlineInterval) {
+
+        clearInterval(
+          onlineInterval
+        );
+
+        onlineInterval =
+          null;
+      }
+    }
+  }
+);
+
+
+/* =========================================================
+   ANTES DE SAIR DA PÁGINA
+========================================================= */
+
+window.addEventListener(
+  "beforeunload",
+  () => {
+
+    /*
+     * Não usar await aqui.
+     * Apenas sinalização básica.
+     */
+
+    if (
+      currentAdmin &&
+      navigator.sendBeacon
+    ) {
+
+      /*
+       * O Firebase normalmente cuidará
+       * do estado da sessão.
+       */
+    }
+  }
+);
+
+
+/* =========================================================
+   EXPOR FUNÇÕES NECESSÁRIAS AO HTML
+========================================================= */
 
 window.approveRequest =
   approveRequest;
@@ -3028,40 +3575,41 @@ window.approveRequest =
 window.rejectRequest =
   rejectRequest;
 
-window.editVacancy =
-  editVacancy;
-
 window.toggleVacancy =
   toggleVacancy;
+
+window.editVacancy =
+  editVacancy;
 
 window.deleteVacancy =
   deleteVacancy;
 
+window.createVacancy =
+  createVacancy;
+
+window.updateVacancy =
+  updateVacancy;
+
+window.saveEditedVacancy =
+  saveEditedVacancy;
+
+window.closeEditVacancyModal =
+  closeEditVacancyModal;
+
+window.approveExchange =
+  approveExchange;
+
+window.uploadToCloudinary =
+  uploadToCloudinary;
+
+window.loadDashboard =
+  loadDashboard;
+
 
 /* =========================================================
-   START
-   ========================================================= */
+   FINAL
+========================================================= */
 
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-
-    const page =
-      document.body.dataset.page;
-
-
-    if (page === "public") {
-
-      initializePublic();
-
-    }
-
-
-    if (page === "admin") {
-
-      initializeAdmin();
-
-    }
-
-  }
+console.log(
+  "House LTD — sistema carregado."
 );
