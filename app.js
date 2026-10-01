@@ -1,11 +1,12 @@
 /* =========================================================
-   HOUSE LTD — APP.JS
-   PUBLIC INDEX + ADMIN PANEL
-   Firebase + Cloudinary
+   HOUSE LTD
+   APP.JS — ADMINISTRAÇÃO
+   VERSÃO CORRIGIDA — APROVAÇÃO / VAGAS / MEMBROS
    ========================================================= */
 
+
 /* =========================================================
-   1. CONFIGURAÇÕES
+   FIREBASE CONFIG
    ========================================================= */
 
 const firebaseConfig = {
@@ -18,121 +19,132 @@ const firebaseConfig = {
   measurementId: "G-P28WHBV9VB"
 };
 
-const CLOUDINARY_CLOUD_NAME = "gsqmelxb";
-const CLOUDINARY_UPLOAD_PRESET = "House LTD";
+
+/* =========================================================
+   CLOUDINARY
+   ========================================================= */
 
 const CLOUDINARY_UPLOAD_URL =
-  `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+  "https://api.cloudinary.com/v1_1/gsqmelxb/image/upload";
+
+const CLOUDINARY_UPLOAD_PRESET =
+  "House LTD";
 
 
 /* =========================================================
-   2. CONTAS ADM
+   ADMINS
    ========================================================= */
 
 const ADMIN_ACCOUNTS = {
+
   YM7JQ7: {
     name: "Aiko",
-    role: "Dono",
-    level: 100
+    role: "Dono"
   },
 
   YQ7NM4: {
     name: "Noah",
-    role: "Sub-dono",
-    level: 90
+    role: "Sub-dono"
   },
 
   JM7XQ8: {
     name: "Shime",
-    role: "Líder de Adm",
-    level: 80
+    role: "Líder de ADM"
   },
 
   Y7KQ2M: {
     name: "Shiro",
-    role: "ADM",
-    level: 70
+    role: "ADM"
   },
 
   M7IQY5: {
     name: "Isa",
-    role: "Staff",
-    level: 60
+    role: "Staff"
   },
 
   QY7MH3: {
     name: "Mah",
-    role: "ADM",
-    level: 70
+    role: "ADM"
   },
 
   Y4JQ7L: {
     name: "Luan",
-    role: "ADM",
-    level: 70
+    role: "ADM"
   },
 
   K7YQ9M: {
     name: "Ayrken",
-    role: "ADM",
-    level: 70
+    role: "ADM"
   },
 
   YM4QX7: {
     name: "Evan",
-    role: "ADM",
-    level: 70
+    role: "ADM"
   },
 
   Q7YTM5: {
     name: "Tamsy",
-    role: "ADM",
-    level: 70
+    role: "ADM"
   },
 
   JY7QK6: {
     name: "Lucca",
-    role: "ADM",
-    level: 70
+    role: "ADM"
   },
 
   YQ5M7X: {
     name: "Kally",
-    role: "ADM",
-    level: 70
+    role: "ADM"
   },
 
   TH1K0L: {
     name: "Lici",
-    role: "ADM",
-    level: 70
+    role: "ADM"
   },
 
   FB61K5: {
     name: "Belly",
-    role: "ADM",
-    level: 70
+    role: "ADM"
   }
+
 };
 
 
 /* =========================================================
-   3. FIREBASE
+   FIREBASE
    ========================================================= */
-
-let firebaseReady = false;
-let firebaseError = null;
 
 let db = null;
 let auth = null;
+let firebaseReady = false;
+let firebaseError = null;
 
 try {
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+
+  if (typeof firebase === "undefined") {
+
+    throw new Error(
+      "Firebase não foi carregado pelo navegador."
+    );
+
   }
 
-  db = firebase.firestore();
-  auth = firebase.auth();
+  if (
+    !firebase.apps ||
+    !firebase.apps.length
+  ) {
+
+    firebase.initializeApp(
+      firebaseConfig
+    );
+
+  }
+
+  db =
+    firebase.firestore();
+
+  auth =
+    firebase.auth();
 
   firebaseReady = true;
 
@@ -141,282 +153,184 @@ try {
   firebaseError = error;
 
   console.error(
-    "Erro ao iniciar Firebase:",
+    "Erro ao inicializar Firebase:",
     error
   );
+
 }
 
 
 /* =========================================================
-   4. ESTADO
+   ESTADO
    ========================================================= */
 
 const state = {
+
   admin: null,
 
+  editVacancyId: null,
+
+  editVacancyCollection: null,
+
   requests: [],
+
   vacancies: [],
+
   members: [],
+
   admins: [],
-  logs: [],
+
   chat: [],
 
-  currentView: "home",
+  logs: []
 
-  publicVacancies: [],
-  publicMembers: []
 };
 
 
 /* =========================================================
-   5. HELPERS
+   HELPERS
    ========================================================= */
 
 function $(id) {
+
   return document.getElementById(id);
+
 }
 
 
-function normalizeCode(code) {
-  return String(code || "")
+function esc(value) {
+
+  return String(
+    value ?? ""
+  ).replace(
+    /[&<>"']/g,
+    char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[char])
+  );
+
+}
+
+
+function normalizeCode(value) {
+
+  return String(
+    value || ""
+  )
     .trim()
     .toUpperCase();
-}
 
-
-function escapeHTML(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 }
 
 
 function normalizeText(value) {
-  return String(value || "")
+
+  return String(
+    value || ""
+  )
     .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+    .toLowerCase();
+
 }
 
 
-function getTimestamp() {
-  if (
-    typeof firebase !== "undefined" &&
-    firebase.firestore &&
-    firebase.firestore.FieldValue
-  ) {
-    return firebase.firestore.FieldValue.serverTimestamp();
-  }
+function toast(message) {
 
-  return new Date();
-}
+  const element =
+    $("toast");
 
+  if (!element) {
 
-function formatDateTime(value) {
-
-  if (!value) {
-    return "—";
-  }
-
-  try {
-
-    if (value.toDate) {
-      value = value.toDate();
-    }
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-      return "—";
-    }
-
-    return date.toLocaleString("pt-BR");
-
-  } catch {
-
-    return "—";
-  }
-}
-
-
-function isOpenVacancy(vacancy) {
-
-  if (!vacancy) {
-    return false;
-  }
-
-  if (typeof vacancy.open === "boolean") {
-    return vacancy.open;
-  }
-
-  if (typeof vacancy.aberta === "boolean") {
-    return vacancy.aberta;
-  }
-
-  if (typeof vacancy.status === "string") {
-
-    const status =
-      normalizeText(vacancy.status);
-
-    return (
-      status === "aberta" ||
-      status === "open" ||
-      status === "disponivel"
+    console.log(
+      "[LTD]",
+      message
     );
-  }
 
-  return true;
-}
-
-
-function vacancyCharacter(vacancy) {
-
-  return (
-    vacancy.character ||
-    vacancy.personagem ||
-    vacancy.name ||
-    vacancy.nome ||
-    ""
-  );
-}
-
-
-function vacancyWork(vacancy) {
-
-  return (
-    vacancy.work ||
-    vacancy.obra ||
-    vacancy.anime ||
-    ""
-  );
-}
-
-
-function vacancyPhoto(vacancy) {
-
-  return (
-    vacancy.photo ||
-    vacancy.image ||
-    vacancy.imagem ||
-    vacancy.imageUrl ||
-    ""
-  );
-}
-
-
-function memberName(member) {
-
-  return (
-    member.name ||
-    member.nome ||
-    member.nickname ||
-    member.apelido ||
-    "Membro"
-  );
-}
-
-
-function memberCharacter(member) {
-
-  return (
-    member.character ||
-    member.personagem ||
-    ""
-  );
-}
-
-
-function memberWork(member) {
-
-  return (
-    member.work ||
-    member.obra ||
-    ""
-  );
-}
-
-
-function memberPhoto(member) {
-
-  return (
-    member.photo ||
-    member.image ||
-    member.imageUrl ||
-    ""
-  );
-}
-
-
-/* =========================================================
-   6. LOADING — CORREÇÃO PRINCIPAL
-   ========================================================= */
-
-function finishPublicLoading() {
-
-  const loading =
-    $("loadingScreen");
-
-  if (!loading) {
     return;
+
   }
 
-  loading.classList.add("hide");
-  loading.classList.add("hidden");
+  element.textContent =
+    message;
 
-  loading.style.opacity = "0";
-  loading.style.visibility = "hidden";
-  loading.style.pointerEvents = "none";
+  element.classList.remove(
+    "hidden"
+  );
 
-  setTimeout(() => {
+  clearTimeout(
+    window.__ltdToastTimer
+  );
 
-    if (loading) {
-      loading.style.display = "none";
-    }
+  window.__ltdToastTimer =
+    setTimeout(
+      () => {
 
-  }, 600);
+        element.classList.add(
+          "hidden"
+        );
+
+      },
+      3500
+    );
+
 }
 
 
-/*
-  IMPORTANTE:
+function setLoginMessage(
+  message,
+  success = false
+) {
 
-  O loading da página pública NÃO pode depender de:
-  - Firebase
-  - Auth
-  - Firestore
-  - Cloudinary
-  - carregamento das vagas
+  const element =
+    $("loginMsg");
 
-  A página precisa abrir mesmo que algum desses serviços falhe.
-*/
+  if (!element) {
 
-function publicLoadingFailsafe() {
+    alert(message);
 
-  finishPublicLoading();
+    return;
 
-  setTimeout(
-    finishPublicLoading,
-    500
-  );
+  }
 
-  setTimeout(
-    finishPublicLoading,
-    1500
-  );
+  element.textContent =
+    message;
 
-  setTimeout(
-    finishPublicLoading,
-    3000
-  );
+  element.style.color =
+    success
+      ? "#67e6a7"
+      : "#ff9aac";
+
+}
+
+
+function setVacancyMessage(
+  message,
+  success = false
+) {
+
+  const element =
+    $("vacMsg");
+
+  if (!element)
+    return;
+
+  element.textContent =
+    message;
+
+  element.style.color =
+    success
+      ? "#67e6a7"
+      : "#ff9aac";
+
 }
 
 
 /* =========================================================
-   7. SESSION ADM
+   SESSÃO
    ========================================================= */
 
 function getStoredAdmin() {
@@ -425,72 +339,247 @@ function getStoredAdmin() {
 
     const raw =
       sessionStorage.getItem(
-        "house_ltd_admin"
+        "houseLTDAdmin"
       );
 
-    if (!raw) {
+    if (!raw)
       return null;
-    }
 
-    return JSON.parse(raw);
+    return JSON.parse(
+      raw
+    );
 
-  } catch {
+  } catch (error) {
+
+    console.warn(
+      "Sessão inválida:",
+      error
+    );
 
     return null;
+
   }
+
 }
 
 
-function storeAdmin(admin) {
+function saveStoredAdmin(admin) {
 
-  try {
+  sessionStorage.setItem(
+    "houseLTDAdmin",
+    JSON.stringify(admin)
+  );
 
-    sessionStorage.setItem(
-      "house_ltd_admin",
-      JSON.stringify(admin)
-    );
-
-  } catch {}
 }
 
 
 function clearStoredAdmin() {
 
-  try {
+  sessionStorage.removeItem(
+    "houseLTDAdmin"
+  );
 
-    sessionStorage.removeItem(
-      "house_ltd_admin"
-    );
-
-  } catch {}
 }
 
 
 /* =========================================================
-   8. LOGIN
+   LOGIN
    ========================================================= */
 
-function showLogin() {
+async function login() {
 
-  const loginView =
-    $("loginView");
+  const input =
+    $("adminCode");
 
-  const appView =
-    $("appView");
+  const button =
+    $("loginBtn");
 
-  if (loginView) {
-    loginView.classList.remove(
-      "hidden"
+  if (!input) {
+
+    console.error(
+      "Campo #adminCode não encontrado."
     );
+
+    return;
+
   }
 
-  if (appView) {
-    appView.classList.add(
-      "hidden"
+  const code =
+    normalizeCode(
+      input.value
     );
+
+  if (!code) {
+
+    setLoginMessage(
+      "Digite seu código de acesso."
+    );
+
+    input.focus();
+
+    return;
+
   }
+
+  const account =
+    ADMIN_ACCOUNTS[code];
+
+  if (!account) {
+
+    setLoginMessage(
+      "Código de acesso inválido."
+    );
+
+    input.focus();
+
+    input.select();
+
+    return;
+
+  }
+
+  if (button) {
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "Entrando...";
+
+  }
+
+  setLoginMessage(
+    "Código correto. Entrando...",
+    true
+  );
+
+  state.admin = {
+
+    ...account,
+
+    code
+
+  };
+
+  saveStoredAdmin(
+    state.admin
+  );
+
+  showApp();
+
+  if (
+    firebaseReady &&
+    auth
+  ) {
+
+    try {
+
+      if (!auth.currentUser) {
+
+        await auth.signInAnonymously();
+
+      }
+
+    } catch (error) {
+
+      console.warn(
+        "Autenticação anônima:",
+        error
+      );
+
+      toast(
+        "Painel aberto. A autenticação do Firebase precisa estar disponível para carregar os dados."
+      );
+
+    }
+
+  }
+
+  if (button) {
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "Entrar";
+
+  }
+
+  try {
+
+    await refreshAll();
+
+  } catch (error) {
+
+    console.error(
+      "Erro ao carregar painel:",
+      error
+    );
+
+    toast(
+      "Painel aberto, mas houve um erro ao carregar os dados."
+    );
+
+  }
+
+  try {
+
+    await logAction(
+      "login",
+      "Entrada no painel"
+    );
+
+  } catch (error) {
+
+    console.warn(
+      "Não foi possível registrar o login:",
+      error
+    );
+
+  }
+
 }
 
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+function logout() {
+
+  clearStoredAdmin();
+
+  state.admin =
+    null;
+
+  try {
+
+    if (
+      auth &&
+      auth.currentUser
+    ) {
+
+      auth.signOut()
+        .catch(
+          error =>
+            console.warn(
+              "Logout Firebase:",
+              error
+            )
+        );
+
+    }
+
+  } catch {}
+
+  location.reload();
+
+}
+
+
+/* =========================================================
+   MOSTRAR PAINEL
+   ========================================================= */
 
 function showApp() {
 
@@ -501,1669 +590,845 @@ function showApp() {
     $("appView");
 
   if (loginView) {
+
     loginView.classList.add(
       "hidden"
     );
+
   }
 
   if (appView) {
+
     appView.classList.remove(
       "hidden"
     );
-  }
-}
 
-
-function loginAdmin() {
-
-  const input =
-    $("adminCode");
-
-  const message =
-    $("loginMsg");
-
-  if (!input) {
-    return;
   }
 
-  const code =
-    normalizeCode(
-      input.value
-    );
+  if ($("meName")) {
 
-  const account =
-    ADMIN_ACCOUNTS[code];
+    $("meName").textContent =
+      state.admin?.name ||
+      "ADM";
 
-  if (!account) {
-
-    if (message) {
-
-      message.textContent =
-        "Código inválido.";
-
-      message.classList.add(
-        "error"
-      );
-    }
-
-    input.value = "";
-
-    return;
   }
 
-  state.admin = {
-    ...account,
-    code
-  };
+  if ($("meRole")) {
 
-  storeAdmin(
-    state.admin
-  );
-
-  if (message) {
-
-    message.textContent =
+    $("meRole").textContent =
+      state.admin?.role ||
       "";
 
-    message.classList.remove(
-      "error"
-    );
   }
 
-  showApp();
+  showView("home");
 
-  startAdminSession();
-}
-
-
-async function logoutAdmin() {
-
-  clearStoredAdmin();
-
-  state.admin = null;
-
-  try {
-
-    if (
-      auth &&
-      auth.currentUser
-    ) {
-      await auth.signOut();
-    }
-
-  } catch {}
-
-  location.reload();
 }
 
 
 /* =========================================================
-   9. AUTH ANÔNIMO
+   DATAS
    ========================================================= */
 
-async function ensureAnonymousAuth() {
+function dateValue(data) {
+
+  const raw =
+    data?.createdAt ||
+    data?.date ||
+    data?.updatedAt ||
+    data?.approvedAt;
+
+  if (!raw)
+    return 0;
 
   if (
-    !firebaseReady ||
-    !auth
+    typeof raw.toMillis ===
+    "function"
   ) {
-    return false;
+
+    return raw.toMillis();
+
   }
 
-  try {
+  if (
+    raw instanceof Date
+  ) {
 
-    if (!auth.currentUser) {
+    return raw.getTime();
 
-      await auth.signInAnonymously();
-    }
-
-    return true;
-
-  } catch (error) {
-
-    console.warn(
-      "Firebase Auth:",
-      error
-    );
-
-    return false;
   }
+
+  const date =
+    new Date(raw);
+
+  const value =
+    date.getTime();
+
+  return Number.isNaN(value)
+    ? 0
+    : value;
+
+}
+
+
+function formatDate(data) {
+
+  const value =
+    dateValue(data);
+
+  if (!value)
+    return "—";
+
+  return new Date(
+    value
+  ).toLocaleString(
+    "pt-BR"
+  );
+
 }
 
 
 /* =========================================================
-   10. CLOUDINARY
+   STATUS
    ========================================================= */
 
-async function uploadToCloudinary(file) {
+function statusIsOpen(vacancy) {
 
-  if (!file) {
-    throw new Error(
-      "Nenhuma imagem selecionada."
-    );
-  }
-
-  if (
-    !file.type.startsWith(
-      "image/"
+  const status =
+    String(
+      vacancy?.status ||
+      vacancy?.estado ||
+      ""
     )
-  ) {
-    throw new Error(
-      "O arquivo precisa ser uma imagem."
-    );
-  }
+      .trim()
+      .toLowerCase();
 
-  const formData =
-    new FormData();
+  return (
 
-  formData.append(
-    "file",
-    file
+    status === "aberta" ||
+
+    status === "aberto" ||
+
+    status === "open" ||
+
+    status === "livre"
+
   );
 
-  formData.append(
-    "upload_preset",
-    CLOUDINARY_UPLOAD_PRESET
+}
+
+
+function statusIsPending(request) {
+
+  const status =
+    String(
+      request?.status ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+  return (
+
+    !status ||
+
+    status === "pendente" ||
+
+    status === "pending"
+
   );
 
-  const response =
-    await fetch(
-      CLOUDINARY_UPLOAD_URL,
-      {
-        method: "POST",
-        body: formData
-      }
-    );
-
-  if (!response.ok) {
-
-    throw new Error(
-      `Erro no Cloudinary: ${response.status}`
-    );
-  }
-
-  const data =
-    await response.json();
-
-  if (!data.secure_url) {
-
-    throw new Error(
-      "O Cloudinary não retornou a imagem."
-    );
-  }
-
-  return data.secure_url;
 }
 
 
 /* =========================================================
-   11. PREVIEW DE IMAGEM
+   FIRESTORE DISPONÍVEL?
    ========================================================= */
 
-function setupImagePreview(
-  inputId,
-  previewId,
-  placeholderId
-) {
+function firestoreAvailable() {
 
-  const input =
-    $(inputId);
+  if (!firebaseReady || !db) {
 
-  const preview =
-    $(previewId);
+    toast(
+      "Firebase não está disponível."
+    );
 
-  const placeholder =
-    $(placeholderId);
+    return false;
 
-  if (!input) {
-    return;
   }
 
-  input.addEventListener(
-    "change",
-    () => {
+  return true;
 
-      const file =
-        input.files?.[0];
-
-      if (!file) {
-
-        if (preview) {
-
-          preview.style.display =
-            "none";
-
-          preview.removeAttribute(
-            "src"
-          );
-        }
-
-        if (placeholder) {
-
-          placeholder.style.display =
-            "";
-        }
-
-        return;
-      }
-
-      if (
-        !file.type.startsWith(
-          "image/"
-        )
-      ) {
-
-        input.value = "";
-
-        if (preview) {
-          preview.style.display =
-            "none";
-        }
-
-        if (placeholder) {
-          placeholder.style.display =
-            "";
-        }
-
-        alert(
-          "Selecione uma imagem válida."
-        );
-
-        return;
-      }
-
-      const url =
-        URL.createObjectURL(
-          file
-        );
-
-      if (preview) {
-
-        preview.src =
-          url;
-
-        preview.style.display =
-          "block";
-      }
-
-      if (placeholder) {
-
-        placeholder.style.display =
-          "none";
-      }
-    }
-  );
 }
 
 
 /* =========================================================
-   12. COLEÇÃO FIREBASE
+   LER COLEÇÃO
    ========================================================= */
 
-async function getCollection(
-  collectionName
+async function getCollectionSafe(
+  collectionName,
+  orderField = null
 ) {
 
-  if (!db) {
+  if (!db)
     return [];
-  }
 
   try {
+
+    let reference =
+      db.collection(
+        collectionName
+      );
+
+    if (orderField) {
+
+      try {
+
+        reference =
+          reference.orderBy(
+            orderField,
+            "desc"
+          );
+
+      } catch {}
+
+    }
 
     const snapshot =
-      await db
-        .collection(
-          collectionName
-        )
-        .get();
+      await reference.get();
 
     return snapshot.docs.map(
-      doc => ({
-        id: doc.id,
-        ...doc.data()
+      document => ({
+
+        id:
+          document.id,
+
+        ref:
+          document.ref,
+
+        collection:
+          collectionName,
+
+        ...document.data()
+
       })
     );
 
   } catch (error) {
 
     console.warn(
-      `Erro ao carregar ${collectionName}:`,
+      `Coleção ${collectionName}:`,
       error
     );
 
     return [];
+
   }
+
 }
 
 
 /* =========================================================
-   13. VAGAS PÚBLICAS
+   SOLICITAÇÕES
    ========================================================= */
 
-async function getPublicVacancies() {
+async function loadRequests() {
 
-  if (!db) {
-    return [];
-  }
+  let rows =
+    await getCollectionSafe(
+      "characterRequests",
+      "createdAt"
+    );
 
-  const result = [];
+  if (!rows.length) {
 
-  const collections = [
-    "vagas",
-    "occupiedCharacters"
-  ];
-
-  for (
-    const collectionName
-    of collections
-  ) {
-
-    try {
-
-      const snapshot =
-        await db
-          .collection(
-            collectionName
-          )
-          .get();
-
-      snapshot.forEach(
-        doc => {
-
-          const data = {
-            id: doc.id,
-            ...doc.data()
-          };
-
-          const alreadyExists =
-            result.some(item => {
-
-              const characterA =
-                normalizeText(
-                  vacancyCharacter(
-                    item
-                  )
-                );
-
-              const characterB =
-                normalizeText(
-                  vacancyCharacter(
-                    data
-                  )
-                );
-
-              const workA =
-                normalizeText(
-                  vacancyWork(
-                    item
-                  )
-                );
-
-              const workB =
-                normalizeText(
-                  vacancyWork(
-                    data
-                  )
-                );
-
-              return (
-                characterA ===
-                  characterB &&
-                workA ===
-                  workB
-              );
-            });
-
-          if (!alreadyExists) {
-            result.push(data);
-          }
-        }
+    rows =
+      await getCollectionSafe(
+        "requests",
+        "createdAt"
       );
 
-      if (result.length) {
-        break;
-      }
-
-    } catch (error) {
-
-      console.warn(
-        `Erro em ${collectionName}:`,
-        error
-      );
-    }
   }
 
-  return result;
-}
-
-
-function createVacancyCard(
-  vacancy,
-  closed
-) {
-
-  const character =
-    vacancyCharacter(
-      vacancy
+  state.requests =
+    rows.filter(
+      statusIsPending
     );
 
-  const work =
-    vacancyWork(
-      vacancy
-    );
-
-  const photo =
-    vacancyPhoto(
-      vacancy
-    );
-
-  const image =
-    photo
-      ? `
-        <img
-          src="${escapeHTML(photo)}"
-          alt="${escapeHTML(character)}"
-          loading="lazy"
-        >
-      `
-      : `
-        <div class="vacancy-placeholder">
-          LTD
-        </div>
-      `;
-
-  return `
-    <article
-      class="vacancy-card ${
-        closed
-          ? "closed"
-          : "open"
-      }"
-    >
-
-      <div class="vacancy-image">
-        ${image}
-      </div>
-
-      <div class="vacancy-info">
-
-        <h3>
-          ${escapeHTML(
-            character ||
-            "Personagem"
-          )}
-        </h3>
-
-        ${
-          work
-            ? `
-              <p>
-                ${escapeHTML(work)}
-              </p>
-            `
-            : ""
-        }
-
-        <span class="vacancy-status">
-          ${
-            closed
-              ? "Vaga fechada"
-              : "Vaga aberta"
-          }
-        </span>
-
-      </div>
-
-    </article>
-  `;
-}
-
-
-function renderPublicVacancies(
-  vacancies
-) {
-
-  state.publicVacancies =
-    vacancies || [];
-
-  const openContainer =
-    $("openVacancies");
-
-  const closedContainer =
-    $("closedVacancies");
-
-  const open =
-    state.publicVacancies.filter(
-      vacancy =>
-        isOpenVacancy(
-          vacancy
-        )
-    );
-
-  const closed =
-    state.publicVacancies.filter(
-      vacancy =>
-        !isOpenVacancy(
-          vacancy
-        )
-    );
-
-  if (openContainer) {
-
-    openContainer.innerHTML =
-      open.length
-
-        ? open
-            .map(
-              vacancy =>
-                createVacancyCard(
-                  vacancy,
-                  false
-                )
-            )
-            .join("")
-
-        : `
-          <div class="empty-card">
-            Nenhuma vaga aberta no momento.
-          </div>
-        `;
-  }
-
-  if (closedContainer) {
-
-    closedContainer.innerHTML =
-      closed.length
-
-        ? closed
-            .map(
-              vacancy =>
-                createVacancyCard(
-                  vacancy,
-                  true
-                )
-            )
-            .join("")
-
-        : `
-          <div class="empty-card">
-            Nenhuma vaga fechada no momento.
-          </div>
-        `;
-  }
 }
 
 
 /* =========================================================
-   14. MEMBROS PÚBLICOS
+   VAGAS
    ========================================================= */
 
-async function getPublicMembers() {
+async function loadVacancies() {
 
-  if (!db) {
-    return [];
+  let rows =
+    await getCollectionSafe(
+      "vagas",
+      "createdAt"
+    );
+
+  /*
+   * Mantém a coleção principal como prioridade.
+   */
+
+  if (!rows.length) {
+
+    rows =
+      await getCollectionSafe(
+        "occupiedCharacters",
+        "createdAt"
+      );
+
   }
 
-  return getCollection(
-    "members"
-  );
+  state.vacancies =
+    rows;
+
 }
 
 
-function createPublicMemberCard(
-  member
-) {
+/* =========================================================
+   MEMBROS
+   ========================================================= */
 
-  const name =
-    memberName(
-      member
+async function loadMembers() {
+
+  state.members =
+    await getCollectionSafe(
+      "members",
+      "createdAt"
     );
 
-  const character =
-    memberCharacter(
-      member
-    );
-
-  const work =
-    memberWork(
-      member
-    );
-
-  const photo =
-    memberPhoto(
-      member
-    );
-
-  return `
-    <article
-      class="member-card"
-      data-member-search="${escapeHTML(
-        `${name} ${character} ${work}`
-      )}"
-    >
-
-      <div class="member-photo">
-
-        ${
-          photo
-
-            ? `
-              <img
-                src="${escapeHTML(photo)}"
-                alt="${escapeHTML(name)}"
-                loading="lazy"
-              >
-            `
-
-            : `
-              <div class="member-placeholder">
-                ${escapeHTML(
-                  name
-                    .charAt(0)
-                    .toUpperCase()
-                )}
-              </div>
-            `
-        }
-
-      </div>
-
-      <div class="member-info">
-
-        <h3>
-          ${escapeHTML(name)}
-        </h3>
-
-        ${
-          character
-            ? `
-              <p>
-                ${escapeHTML(character)}
-              </p>
-            `
-            : ""
-        }
-
-        ${
-          work
-            ? `
-              <small>
-                ${escapeHTML(work)}
-              </small>
-            `
-            : ""
-        }
-
-      </div>
-
-    </article>
-  `;
 }
 
 
-function renderPublicMembers(
-  members
-) {
+/* =========================================================
+   ADMINS
+   ========================================================= */
 
-  state.publicMembers =
-    members || [];
+async function loadAdmins() {
 
-  const container =
-    $("membersList");
-
-  if (!container) {
-    return;
-  }
-
-  if (
-    !state.publicMembers.length
-  ) {
-
-    container.innerHTML = `
-      <div class="empty-card">
-        Nenhum membro cadastrado ainda.
-      </div>
-    `;
-
-    return;
-  }
-
-  container.innerHTML =
-    state.publicMembers
-      .map(
-        createPublicMemberCard
-      )
-      .join("");
-}
-
-
-function filterPublicMembers() {
-
-  const input =
-    $("memberSearch");
-
-  const container =
-    $("membersList");
-
-  if (
-    !input ||
-    !container
-  ) {
-    return;
-  }
-
-  const query =
-    normalizeText(
-      input.value
+  const rows =
+    await getCollectionSafe(
+      "adminProfiles",
+      "createdAt"
     );
 
-  container
-    .querySelectorAll(
-      ".member-card"
-    )
-    .forEach(card => {
+  const byName =
+    new Map();
 
-      const text =
-        normalizeText(
-          card.dataset
-            .memberSearch ||
-            ""
+  rows.forEach(
+    item => {
+
+      const name =
+        String(
+          item.name || ""
+        )
+          .trim()
+          .toLowerCase();
+
+      if (name) {
+
+        byName.set(
+          name,
+          item
         );
 
-      card.style.display =
-        !query ||
-        text.includes(query)
-          ? ""
-          : "none";
-    });
+      }
+
+    }
+  );
+
+  state.admins =
+    Object.entries(
+      ADMIN_ACCOUNTS
+    ).map(
+      ([code, base]) => {
+
+        const saved =
+          byName.get(
+            base.name.toLowerCase()
+          ) || {};
+
+        return {
+
+          ...base,
+
+          ...saved,
+
+          code
+
+        };
+
+      }
+    );
+
 }
 
 
 /* =========================================================
-   15. FORMULÁRIO DE FICHA
+   CHAT
    ========================================================= */
 
-async function submitRequestForm(
-  event
-) {
+async function loadChat() {
 
-  event.preventDefault();
-
-  const form =
-    event.currentTarget;
-
-  const status =
-    $("requestStatus");
-
-  const file =
-    $("requestPhoto")
-      ?.files?.[0];
-
-  const name =
-    $("requestName")
-      ?.value
-      .trim() || "";
-
-  const age =
-    $("requestAge")
-      ?.value
-      .trim() || "";
-
-  const phone =
-    $("requestPhone")
-      ?.value
-      .trim() || "";
-
-  const character =
-    $("requestCharacter")
-      ?.value
-      .trim() || "";
-
-  const work =
-    $("requestWork")
-      ?.value
-      .trim() || "";
-
-  const message =
-    $("requestMessage")
-      ?.value
-      .trim() || "";
-
-  if (
-    !age ||
-    phone.length !== 4 ||
-    !character ||
-    !work
-  ) {
-
-    if (status) {
-
-      status.textContent =
-        "Preencha corretamente todos os campos obrigatórios.";
-    }
-
-    return;
-  }
-
-  if (!file) {
-
-    if (status) {
-
-      status.textContent =
-        "Envie a foto do personagem.";
-    }
-
-    return;
-  }
-
-  if (!db) {
-
-    if (status) {
-
-      status.textContent =
-        "O banco de dados não está disponível.";
-    }
-
-    return;
-  }
-
-  const button =
-    form.querySelector(
-      'button[type="submit"]'
+  state.chat =
+    await getCollectionSafe(
+      "adminChat",
+      "createdAt"
     );
 
-  const originalText =
-    button?.textContent ||
-    "";
-
-  try {
-
-    if (button) {
-
-      button.disabled =
-        true;
-
-      button.textContent =
-        "Enviando...";
-    }
-
-    if (status) {
-
-      status.textContent =
-        "Enviando imagem...";
-    }
-
-    const photo =
-      await uploadToCloudinary(
-        file
-      );
-
-    await db
-      .collection(
-        "characterRequests"
-      )
-      .add({
-
-        name,
-        age,
-
-        phone:
-          phone.slice(-4),
-
-        character,
-        work,
-        photo,
-        message,
-
-        type:
-          "request",
-
-        status:
-          "pending",
-
-        createdAt:
-          getTimestamp(),
-
-        updatedAt:
-          getTimestamp()
-      });
-
-    form.reset();
-
-    const preview =
-      $("requestPhotoPreview");
-
-    const placeholder =
-      $("requestPhotoPlaceholder");
-
-    if (preview) {
-
-      preview.removeAttribute(
-        "src"
-      );
-
-      preview.style.display =
-        "none";
-    }
-
-    if (placeholder) {
-
-      placeholder.style.display =
-        "";
-    }
-
-    if (status) {
-
-      status.textContent =
-        "Ficha enviada com sucesso! Aguarde a aprovação.";
-    }
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao enviar ficha:",
-      error
-    );
-
-    if (status) {
-
-      status.textContent =
-        "Não foi possível enviar a ficha. Tente novamente.";
-    }
-
-  } finally {
-
-    if (button) {
-
-      button.disabled =
-        false;
-
-      button.textContent =
-        originalText;
-    }
-  }
 }
 
 
 /* =========================================================
-   16. TROCA
+   LOGS
    ========================================================= */
 
-async function submitExchangeForm(
-  event
-) {
+async function loadLogs() {
 
-  event.preventDefault();
-
-  const form =
-    event.currentTarget;
-
-  const status =
-    $("exchangeStatus");
-
-  const phone =
-    $("exchangePhone")
-      ?.value
-      .trim() || "";
-
-  const oldCharacter =
-    $("exchangeOldCharacter")
-      ?.value
-      .trim() || "";
-
-  const oldWork =
-    $("exchangeOldWork")
-      ?.value
-      .trim() || "";
-
-  const newCharacter =
-    $("exchangeNewCharacter")
-      ?.value
-      .trim() || "";
-
-  const newWork =
-    $("exchangeNewWork")
-      ?.value
-      .trim() || "";
-
-  const file =
-    $("exchangePhoto")
-      ?.files?.[0];
-
-  if (
-    phone.length !== 4 ||
-    !oldCharacter ||
-    !oldWork ||
-    !newCharacter ||
-    !newWork
-  ) {
-
-    if (status) {
-
-      status.textContent =
-        "Preencha corretamente todos os campos obrigatórios.";
-    }
-
-    return;
-  }
-
-  if (!file) {
-
-    if (status) {
-
-      status.textContent =
-        "Envie a foto do novo personagem.";
-    }
-
-    return;
-  }
-
-  if (!db) {
-
-    if (status) {
-
-      status.textContent =
-        "O banco de dados não está disponível.";
-    }
-
-    return;
-  }
-
-  const button =
-    form.querySelector(
-      'button[type="submit"]'
+  state.logs =
+    await getCollectionSafe(
+      "accessLogs",
+      "createdAt"
     );
 
-  const originalText =
-    button?.textContent ||
-    "";
-
-  try {
-
-    if (button) {
-
-      button.disabled =
-        true;
-
-      button.textContent =
-        "Enviando...";
-    }
-
-    if (status) {
-
-      status.textContent =
-        "Enviando imagem...";
-    }
-
-    const photo =
-      await uploadToCloudinary(
-        file
-      );
-
-    await db
-      .collection(
-        "characterRequests"
-      )
-      .add({
-
-        type:
-          "exchange",
-
-        status:
-          "pending",
-
-        phone:
-          phone.slice(-4),
-
-        oldCharacter,
-        oldWork,
-
-        character:
-          newCharacter,
-
-        work:
-          newWork,
-
-        photo,
-
-        createdAt:
-          getTimestamp(),
-
-        updatedAt:
-          getTimestamp()
-      });
-
-    form.reset();
-
-    const preview =
-      $("exchangePhotoPreview");
-
-    const placeholder =
-      $("exchangePhotoPlaceholder");
-
-    if (preview) {
-
-      preview.removeAttribute(
-        "src"
-      );
-
-      preview.style.display =
-        "none";
-    }
-
-    if (placeholder) {
-
-      placeholder.style.display =
-        "";
-    }
-
-    if (status) {
-
-      status.textContent =
-        "Solicitação de troca enviada com sucesso!";
-    }
-
-  } catch (error) {
-
-    console.error(
-      "Erro na troca:",
-      error
-    );
-
-    if (status) {
-
-      status.textContent =
-        "Não foi possível enviar a troca.";
-    }
-
-  } finally {
-
-    if (button) {
-
-      button.disabled =
-        false;
-
-      button.textContent =
-        originalText;
-    }
-  }
 }
 
 
 /* =========================================================
-   17. DADOS PÚBLICOS
+   ATUALIZAR TUDO
    ========================================================= */
 
-async function loadPublicData() {
+async function refreshAll() {
 
-  try {
+  if (!firebaseReady) {
 
-    const vacancies =
-      await getPublicVacancies();
+    renderAll();
 
-    renderPublicVacancies(
-      vacancies
-    );
+    return;
 
-  } catch (error) {
-
-    console.warn(
-      "Vagas públicas:",
-      error
-    );
-
-    renderPublicVacancies([]);
   }
 
+  await Promise.allSettled([
 
-  try {
+    loadRequests(),
 
-    const members =
-      await getPublicMembers();
+    loadVacancies(),
 
-    renderPublicMembers(
-      members
-    );
+    loadMembers(),
 
-  } catch (error) {
+    loadAdmins(),
 
-    console.warn(
-      "Membros públicos:",
-      error
-    );
+    loadChat(),
 
-    renderPublicMembers([]);
-  }
+    loadLogs()
+
+  ]);
+
+  renderAll();
+
 }
 
 
 /* =========================================================
-   18. ADMIN — STATS
+   RENDER GERAL
+   ========================================================= */
+
+function renderAll() {
+
+  renderStats();
+
+  renderHome();
+
+  renderRequests();
+
+  renderVacancies();
+
+  renderMembers();
+
+  renderAdmins();
+
+  renderChat();
+
+  renderLogs();
+
+}
+
+
+/* =========================================================
+   ESTATÍSTICAS
    ========================================================= */
 
 function renderStats() {
 
-  const pending =
-    state.requests.filter(
-      request =>
-        !request.status ||
-        normalizeText(
-          request.status
-        ) === "pending"
-    ).length;
-
   const open =
-    state.vacancies.filter(
-      isOpenVacancy
-    ).length;
+    state.vacancies
+      .filter(
+        statusIsOpen
+      )
+      .length;
 
   const closed =
-    state.vacancies.filter(
-      vacancy =>
-        !isOpenVacancy(vacancy)
-    ).length;
+    Math.max(
+      0,
+      state.vacancies.length -
+      open
+    );
 
-  const members =
-    state.members.length;
+  if ($("statRequests")) {
 
-  const values = {
-    pending,
-    open,
-    closed,
-    members
-  };
+    $("statRequests")
+      .textContent =
+      state.requests.length;
 
-  Object.entries(
-    values
-  ).forEach(
-    ([key, value]) => {
+  }
 
-      document
-        .querySelectorAll(
-          `[data-stat="${key}"]`
-        )
-        .forEach(
-          element => {
-            element.textContent =
-              value;
-          }
-        );
-    }
-  );
+  if ($("statOpen")) {
 
+    $("statOpen")
+      .textContent =
+      open;
 
-  const ids = {
+  }
 
-    pending: [
-      "statRequests",
-      "statPending",
-      "pendingCount"
-    ],
+  if ($("statClosed")) {
 
-    open: [
-      "statOpen",
-      "openCount"
-    ],
+    $("statClosed")
+      .textContent =
+      closed;
 
-    closed: [
-      "statClosed",
-      "closedCount"
-    ],
+  }
 
-    members: [
-      "statMembers",
-      "membersCount"
-    ]
-  };
+  if ($("statMembers")) {
 
+    $("statMembers")
+      .textContent =
+      state.members.length;
 
-  Object.entries(
-    ids
-  ).forEach(
-    ([key, list]) => {
+  }
 
-      list.forEach(
-        id => {
-
-          const element =
-            $(id);
-
-          if (element) {
-
-            element.textContent =
-              values[key];
-          }
-        }
-      );
-    }
-  );
 }
 
 
 /* =========================================================
-   19. ADMIN — SOLICITAÇÕES
+   HOME
+   ========================================================= */
+
+function renderHome() {
+
+  const element =
+    $("homeSummary");
+
+  if (!element)
+    return;
+
+  element.innerHTML = `
+
+    <div class="card">
+
+      <span class="pill">
+        Solicitações
+      </span>
+
+      <h3>
+        ${state.requests.length}
+      </h3>
+
+      <span class="muted">
+        aguardando análise
+      </span>
+
+    </div>
+
+    <div class="card">
+
+      <span class="pill">
+        Vagas
+      </span>
+
+      <h3>
+        ${
+          state.vacancies
+            .filter(statusIsOpen)
+            .length
+        }
+      </h3>
+
+      <span class="muted">
+        disponíveis agora
+      </span>
+
+    </div>
+
+    <div class="card">
+
+      <span class="pill">
+        Equipe
+      </span>
+
+      <h3>
+        ${state.admins.length}
+      </h3>
+
+      <span class="muted">
+        administradores cadastrados
+      </span>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   SOLICITAÇÕES
    ========================================================= */
 
 function renderRequests() {
 
-  const container =
+  const element =
     $("requestsList");
 
-  if (!container) {
+  if (!element)
     return;
-  }
 
-  const pending =
-    state.requests.filter(
-      request =>
-        !request.status ||
-        normalizeText(
-          request.status
-        ) === "pending"
-    );
+  if (!state.requests.length) {
 
+    element.innerHTML = `
 
-  if (!pending.length) {
-
-    container.innerHTML = `
-      <div class="empty-state">
+      <div class="empty">
         Nenhuma solicitação pendente.
       </div>
+
     `;
 
     return;
+
   }
 
-
-  container.innerHTML =
-    pending
+  element.innerHTML =
+    state.requests
       .map(
-        request => {
+        request => `
 
-          const character =
-            request.character ||
-            request.personagem ||
-            "";
+        <div
+          class="card"
+          style="margin-bottom:10px"
+        >
 
-          const work =
-            request.work ||
-            request.obra ||
-            "";
+          <div class="row">
 
-          const image =
-            request.photo ||
-            request.image ||
-            "";
+            <div>
 
-          return `
-            <article
-              class="request-card"
-              data-request-id="${escapeHTML(
-                request.id
-              )}"
+              <h3>
+                ${esc(
+                  request.name ||
+                  request.nickname ||
+                  "Sem nome"
+                )}
+              </h3>
+
+              <span class="muted">
+
+                ${esc(
+                  request.character ||
+                  request.personagem ||
+                  "—"
+                )}
+
+                •
+
+                ${esc(
+                  request.work ||
+                  request.obra ||
+                  "—"
+                )}
+
+              </span>
+
+            </div>
+
+            ${
+              request.photo
+                ? `
+
+                  <img
+                    class="avatar"
+                    src="${esc(request.photo)}"
+                    alt=""
+                  >
+
+                `
+                : ""
+            }
+
+          </div>
+
+          <p class="muted">
+
+            Idade:
+            ${esc(
+              request.age ||
+              request.idade ||
+              "—"
+            )}
+
+            •
+
+            Últimos 4 dígitos:
+            ${esc(
+              request.phoneLast4 ||
+              request.last4 ||
+              request.ultimos4 ||
+              "—"
+            )}
+
+          </p>
+
+          <p class="muted">
+
+            Enviado:
+            ${formatDate(request)}
+
+          </p>
+
+          <div class="actions">
+
+            <button
+              class="btn"
+              data-approve="${esc(request.id)}"
             >
+              Aceitar
+            </button>
 
-              <div class="request-photo">
+            <button
+              class="btn danger"
+              data-reject="${esc(request.id)}"
+            >
+              Recusar
+            </button>
 
-                ${
-                  image
+          </div>
 
-                    ? `
-                      <img
-                        src="${escapeHTML(image)}"
-                        alt="${escapeHTML(character)}"
-                      >
-                    `
+        </div>
 
-                    : `
-                      <div class="member-placeholder">
-                        LTD
-                      </div>
-                    `
-                }
-
-              </div>
-
-
-              <div class="request-info">
-
-                <h3>
-                  ${escapeHTML(
-                    character ||
-                    "Sem personagem"
-                  )}
-                </h3>
-
-                <p>
-                  ${escapeHTML(
-                    work
-                  )}
-                </p>
-
-                ${
-                  request.name
-                    ? `
-                      <p>
-                        <strong>Nome:</strong>
-                        ${escapeHTML(
-                          request.name
-                        )}
-                      </p>
-                    `
-                    : ""
-                }
-
-                ${
-                  request.age
-                    ? `
-                      <p>
-                        <strong>Idade:</strong>
-                        ${escapeHTML(
-                          request.age
-                        )}
-                      </p>
-                    `
-                    : ""
-                }
-
-                ${
-                  request.phone
-                    ? `
-                      <p>
-                        <strong>Final:</strong>
-                        ${escapeHTML(
-                          request.phone
-                        )}
-                      </p>
-                    `
-                    : ""
-                }
-
-                ${
-                  request.type ===
-                  "exchange"
-
-                    ? `
-                      <p>
-                        <strong>Troca:</strong>
-                        ${escapeHTML(
-                          request.oldCharacter ||
-                          ""
-                        )}
-                        —
-                        ${escapeHTML(
-                          request.oldWork ||
-                          ""
-                        )}
-                      </p>
-                    `
-
-                    : ""
-                }
-
-                <small>
-                  ${formatDateTime(
-                    request.createdAt
-                  )}
-                </small>
-
-              </div>
-
-
-              <div class="request-actions">
-
-                <button
-                  type="button"
-                  data-approve="${escapeHTML(
-                    request.id
-                  )}"
-                >
-                  Aprovar
-                </button>
-
-                <button
-                  type="button"
-                  data-reject="${escapeHTML(
-                    request.id
-                  )}"
-                >
-                  Recusar
-                </button>
-
-              </div>
-
-            </article>
-          `;
-        }
+      `
       )
       .join("");
+
 }
 
 
 /* =========================================================
-   20. ADMIN — VAGAS
+   VAGAS
    ========================================================= */
 
 function renderVacancies() {
 
-  const container =
+  const element =
     $("vacanciesList");
 
-  if (!container) {
+  if (!element)
     return;
-  }
-
 
   if (!state.vacancies.length) {
 
-    container.innerHTML = `
-      <div class="empty-state">
+    element.innerHTML = `
+
+      <div class="empty">
         Nenhuma vaga cadastrada.
       </div>
+
     `;
 
     return;
+
   }
 
-
-  container.innerHTML =
+  element.innerHTML =
     state.vacancies
       .map(
         vacancy => {
 
-          const character =
-            vacancyCharacter(
+          const open =
+            statusIsOpen(
               vacancy
             );
+
+          const character =
+            vacancy.character ||
+            vacancy.personagem ||
+            vacancy.name ||
+            "Sem personagem";
 
           const work =
-            vacancyWork(
-              vacancy
-            );
+            vacancy.work ||
+            vacancy.obra ||
+            "Sem obra";
 
           const image =
-            vacancyPhoto(
-              vacancy
-            );
-
-          const open =
-            isOpenVacancy(
-              vacancy
-            );
-
+            vacancy.image ||
+            vacancy.photo ||
+            vacancy.characterPhoto ||
+            vacancy.foto ||
+            "";
 
           return `
-            <article
-              class="admin-vacancy-card"
-              data-vacancy-id="${escapeHTML(
-                vacancy.id
-              )}"
-            >
 
-              <div class="vacancy-image">
+            <div class="card">
 
-                ${
-                  image
+              ${
+                image
+                  ? `
 
-                    ? `
-                      <img
-                        src="${escapeHTML(image)}"
-                        alt="${escapeHTML(character)}"
-                      >
-                    `
+                    <img
+                      class="cover"
+                      src="${esc(image)}"
+                      alt=""
+                    >
 
-                    : `
-                      <div class="vacancy-placeholder">
-                        LTD
-                      </div>
-                    `
-                }
+                  `
+                  : ""
+              }
 
-              </div>
-
-
-              <div class="vacancy-info">
+              <div class="row">
 
                 <h3>
-                  ${escapeHTML(
-                    character ||
-                    "Sem nome"
-                  )}
+                  ${esc(character)}
                 </h3>
 
-                <p>
-                  ${escapeHTML(
-                    work
-                  )}
-                </p>
-
-                <span>
+                <span class="pill">
                   ${
                     open
-                      ? "Vaga aberta"
-                      : "Vaga fechada"
+                      ? "Aberta"
+                      : "Fechada"
                   }
                 </span>
 
               </div>
 
+              <div class="muted">
+                ${esc(work)}
+              </div>
 
-              <div class="vacancy-actions">
+              <div class="actions">
 
                 <button
-                  type="button"
-                  data-edit-vacancy="${escapeHTML(
-                    vacancy.id
-                  )}"
+                  class="btn ghost"
+                  data-edit-vac="${esc(vacancy.id)}"
                 >
                   Editar
                 </button>
 
                 <button
-                  type="button"
-                  data-toggle-vacancy="${escapeHTML(
-                    vacancy.id
-                  )}"
+                  class="btn ghost"
+                  data-toggle-vac="${esc(vacancy.id)}"
                 >
                   ${
                     open
@@ -2173,421 +1438,482 @@ function renderVacancies() {
                 </button>
 
                 <button
-                  type="button"
-                  data-delete-vacancy="${escapeHTML(
-                    vacancy.id
-                  )}"
+                  class="btn danger"
+                  data-delete-vac="${esc(vacancy.id)}"
                 >
                   Excluir
                 </button>
 
               </div>
 
-            </article>
+            </div>
+
           `;
+
         }
       )
       .join("");
+
 }
 
 
 /* =========================================================
-   21. ADMIN — MEMBROS
+   MEMBROS
    ========================================================= */
 
 function renderMembers() {
 
-  if (
-    document.body.dataset.page !==
-    "admin"
-  ) {
-    return;
-  }
-
-  const container =
-    $("adminMembersList") ||
-    $("membersAdminList") ||
-    $("membersListAdmin") ||
+  const element =
     $("membersList");
 
-  if (!container) {
+  if (!element)
     return;
-  }
-
 
   if (!state.members.length) {
 
-    container.innerHTML = `
-      <div class="empty-state">
-        Nenhum membro cadastrado.
-      </div>
+    element.innerHTML = `
+
+      <tr>
+
+        <td
+          colspan="5"
+          class="empty"
+        >
+          Nenhum membro aprovado.
+        </td>
+
+      </tr>
+
     `;
 
     return;
+
   }
 
-
-  container.innerHTML =
+  element.innerHTML =
     state.members
       .map(
-        member => {
+        member => `
 
-          const name =
-            memberName(
-              member
-            );
+        <tr>
 
-          const character =
-            memberCharacter(
-              member
-            );
+          <td>
+            ${esc(
+              member.name ||
+              member.nome ||
+              member.nickname ||
+              "—"
+            )}
+          </td>
 
-          const work =
-            memberWork(
-              member
-            );
+          <td>
+            ${esc(
+              member.age ||
+              member.idade ||
+              "—"
+            )}
+          </td>
 
-          const image =
-            memberPhoto(
-              member
-            );
+          <td>
+            ${esc(
+              member.character ||
+              member.personagem ||
+              "—"
+            )}
+          </td>
 
+          <td>
+            ${esc(
+              member.work ||
+              member.obra ||
+              "—"
+            )}
+          </td>
 
-          return `
-            <article class="member-card">
+          <td>
+            ${formatDate(member)}
+          </td>
 
-              <div class="member-photo">
+        </tr>
 
-                ${
-                  image
-
-                    ? `
-                      <img
-                        src="${escapeHTML(image)}"
-                        alt="${escapeHTML(name)}"
-                      >
-                    `
-
-                    : `
-                      <div class="member-placeholder">
-                        ${escapeHTML(
-                          name
-                            .charAt(0)
-                            .toUpperCase()
-                        )}
-                      </div>
-                    `
-                }
-
-              </div>
-
-
-              <div class="member-info">
-
-                <h3>
-                  ${escapeHTML(name)}
-                </h3>
-
-                <p>
-                  ${escapeHTML(
-                    character
-                  )}
-                </p>
-
-                <small>
-                  ${escapeHTML(
-                    work
-                  )}
-                </small>
-
-              </div>
-
-            </article>
-          `;
-        }
+      `
       )
       .join("");
+
 }
 
 
 /* =========================================================
-   22. ADMIN — ADMS
+   ADMINS
    ========================================================= */
 
 function renderAdmins() {
 
-  const container =
-    $("adminsList") ||
-    $("adminList");
+  const element =
+    $("adminsList");
 
-  if (!container) {
+  if (!element)
     return;
-  }
 
-
-  container.innerHTML =
-    Object.values(
-      ADMIN_ACCOUNTS
-    )
+  element.innerHTML =
+    state.admins
       .map(
-        account => `
-          <article class="admin-card">
+        admin => `
 
-            <div class="admin-photo">
+        <div class="card">
 
-              <div class="member-placeholder">
-                ${escapeHTML(
-                  account.name
-                    .charAt(0)
-                    .toUpperCase()
-                )}
-              </div>
+          ${
+            admin.cover
+              ? `
 
-            </div>
+                <img
+                  class="cover"
+                  src="${esc(admin.cover)}"
+                  alt=""
+                >
 
-            <div>
+              `
+              : ""
+          }
+
+          <div class="row">
+
+            ${
+              admin.photo
+                ? `
+
+                  <img
+                    class="avatar"
+                    src="${esc(admin.photo)}"
+                    alt=""
+                  >
+
+                `
+                : `
+
+                  <div class="avatar"></div>
+
+                `
+            }
+
+            <div style="flex:1">
 
               <h3>
-                ${escapeHTML(
-                  account.name
-                )}
+                ${esc(admin.name)}
               </h3>
 
-              <p>
-                ${escapeHTML(
-                  account.role
-                )}
-              </p>
+              <span class="muted">
+                ${esc(admin.role)}
+              </span>
 
             </div>
 
-          </article>
-        `
+          </div>
+
+          <div
+            style="margin-top:12px"
+            class="${
+              admin.online
+                ? "online"
+                : "offline"
+            }"
+          >
+
+            ${
+              admin.online
+                ? "● Online"
+                : "● Offline"
+            }
+
+          </div>
+
+        </div>
+
+      `
       )
       .join("");
+
 }
 
 
 /* =========================================================
-   23. ADMIN — CHAT
+   CHAT
    ========================================================= */
 
 function renderChat() {
 
-  const container =
-    $("chatList") ||
-    $("chatMessages") ||
-    $("adminChatMessages");
+  const element =
+    $("chatList");
 
-  if (!container) {
+  if (!element)
     return;
-  }
-
 
   if (!state.chat.length) {
 
-    container.innerHTML = `
-      <div class="empty-state">
+    element.innerHTML = `
+
+      <div class="empty">
         Nenhuma mensagem ainda.
       </div>
+
     `;
 
     return;
+
   }
 
-
-  const sorted =
-    [...state.chat].sort(
-      (a, b) => {
-
-        const ad =
-          a.createdAt?.toDate?.() ||
-          new Date(
-            a.createdAt || 0
-          );
-
-        const bd =
-          b.createdAt?.toDate?.() ||
-          new Date(
-            b.createdAt || 0
-          );
-
-        return ad - bd;
-      }
-    );
-
-
-  container.innerHTML =
-    sorted
+  element.innerHTML =
+    state.chat
       .map(
         message => `
-          <div class="chat-message">
+
+        <div
+          class="card"
+          style="margin-bottom:8px"
+        >
+
+          <div class="row">
 
             <strong>
-              ${escapeHTML(
+              ${esc(
                 message.adminName ||
-                message.name ||
+                message.admin ||
                 "ADM"
               )}
             </strong>
 
-            <p>
-              ${escapeHTML(
-                message.message ||
-                message.text ||
-                ""
-              )}
-            </p>
-
-            <small>
-              ${formatDateTime(
-                message.createdAt
-              )}
-            </small>
+            <span class="muted">
+              ${formatDate(message)}
+            </span>
 
           </div>
-        `
+
+          <div style="margin-top:7px">
+
+            ${esc(
+              message.message ||
+              ""
+            )}
+
+          </div>
+
+        </div>
+
+      `
       )
       .join("");
+
+  element.scrollTop =
+    element.scrollHeight;
+
 }
 
 
 /* =========================================================
-   24. ADMIN — LOGS
+   LOGS
    ========================================================= */
 
 function renderLogs() {
 
-  const container =
-    $("logsList") ||
-    $("accessLogsList");
+  const element =
+    $("logsList");
 
-  if (!container) {
+  if (!element)
     return;
-  }
-
 
   if (!state.logs.length) {
 
-    container.innerHTML = `
-      <div class="empty-state">
-        Nenhum registro.
-      </div>
+    element.innerHTML = `
+
+      <tr>
+
+        <td
+          colspan="4"
+          class="empty"
+        >
+          Nenhum log.
+        </td>
+
+      </tr>
+
     `;
 
     return;
+
   }
 
+  element.innerHTML =
+    state.logs
+      .slice(0, 100)
+      .map(
+        log => `
 
-  const sorted =
-    [...state.logs].sort(
-      (a, b) => {
+        <tr>
 
-        const ad =
-          b.createdAt?.toDate?.() ||
-          new Date(
-            b.createdAt || 0
-          );
+          <td>
+            ${formatDate(log)}
+          </td>
 
-        const bd =
-          a.createdAt?.toDate?.() ||
-          new Date(
-            a.createdAt || 0
-          );
+          <td>
+            ${esc(
+              log.admin ||
+              "—"
+            )}
+          </td>
 
-        return ad - bd;
+          <td>
+            ${esc(
+              log.action ||
+              "—"
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              log.details ||
+              "—"
+            )}
+          </td>
+
+        </tr>
+
+      `
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   NAVEGAÇÃO
+   ========================================================= */
+
+function showView(name) {
+
+  document
+    .querySelectorAll(".view")
+    .forEach(
+      view => {
+
+        view.classList.remove(
+          "active"
+        );
+
       }
     );
 
+  document
+    .querySelectorAll(".nav button")
+    .forEach(
+      button => {
 
-  container.innerHTML =
-    sorted
-      .map(
-        log => `
-          <div class="log-item">
+        button.classList.remove(
+          "active"
+        );
 
-            <strong>
-              ${escapeHTML(
-                log.action ||
-                log.type ||
-                "Ação"
-              )}
-            </strong>
+      }
+    );
 
-            <p>
-              ${escapeHTML(
-                log.description ||
-                log.message ||
-                ""
-              )}
-            </p>
+  const view =
+    $("view-" + name);
 
-            <small>
-              ${escapeHTML(
-                log.adminName ||
-                "Sistema"
-              )}
-              —
-              ${formatDateTime(
-                log.createdAt
-              )}
-            </small>
+  if (view) {
 
-          </div>
-        `
-      )
-      .join("");
+    view.classList.add(
+      "active"
+    );
+
+  }
+
+  const navButton =
+    document.querySelector(
+      `.nav button[data-view="${name}"]`
+    );
+
+  if (navButton) {
+
+    navButton.classList.add(
+      "active"
+    );
+
+  }
+
+  const titles = {
+
+    home: [
+      "Início",
+      "Visão geral da House LTD"
+    ],
+
+    requests: [
+      "Solicitações",
+      "Analise as fichas recebidas"
+    ],
+
+    vacancies: [
+      "Vagas",
+      "Controle de vagas abertas e fechadas"
+    ],
+
+    members: [
+      "Membros",
+      "Membros aprovados"
+    ],
+
+    admins: [
+      "Administradores",
+      "Equipe da House LTD"
+    ],
+
+    chat: [
+      "Chat ADM",
+      "Comunicação interna"
+    ],
+
+    logs: [
+      "Logs",
+      "Histórico de ações"
+    ]
+
+  };
+
+  const title =
+    titles[name] ||
+    titles.home;
+
+  if ($("pageTitle")) {
+
+    $("pageTitle").textContent =
+      title[0];
+
+  }
+
+  if ($("pageSubtitle")) {
+
+    $("pageSubtitle").textContent =
+      title[1];
+
+  }
+
 }
 
 
 /* =========================================================
-   25. LOG
+   LOCALIZAR VAGA
    ========================================================= */
 
-async function createLog(
-  action,
-  description
-) {
+function findVacancy(id) {
 
-  if (!db) {
-    return;
-  }
+  return state.vacancies.find(
+    item =>
+      item.id === id
+  ) || null;
 
-  try {
-
-    await db
-      .collection(
-        "accessLogs"
-      )
-      .add({
-
-        action,
-        description,
-
-        adminName:
-          state.admin?.name ||
-          "Sistema",
-
-        adminCode:
-          state.admin?.code ||
-          null,
-
-        createdAt:
-          getTimestamp()
-      });
-
-  } catch (error) {
-
-    console.warn(
-      "Erro ao criar log:",
-      error
-    );
-  }
 }
 
 
 /* =========================================================
-   26. VAGA — ENCONTRAR
+   LOCALIZAR VAGA POR PERSONAGEM + OBRA
    ========================================================= */
 
 function findMatchingVacancy(
@@ -2595,752 +1921,994 @@ function findMatchingVacancy(
   work
 ) {
 
-  const c =
-    normalizeText(
-      character
-    );
+  const normalizedCharacter =
+    normalizeText(character);
 
-  const w =
-    normalizeText(
-      work
-    );
+  const normalizedWork =
+    normalizeText(work);
 
   return state.vacancies.find(
-    vacancy =>
+    vacancy => {
 
-      normalizeText(
-        vacancyCharacter(
-          vacancy
-        )
-      ) === c &&
+      const vacancyCharacter =
+        normalizeText(
+          vacancy.character ||
+          vacancy.personagem ||
+          vacancy.name
+        );
 
-      normalizeText(
-        vacancyWork(
-          vacancy
-        )
-      ) === w
-  );
+      const vacancyWork =
+        normalizeText(
+          vacancy.work ||
+          vacancy.obra
+        );
+
+      return (
+
+        vacancyCharacter ===
+        normalizedCharacter
+
+        &&
+
+        vacancyWork ===
+        normalizedWork
+
+      );
+
+    }
+  ) || null;
+
 }
 
+
+/* =========================================================
+   LOCALIZAR VAGA DIRETAMENTE NO FIRESTORE
+   ========================================================= */
 
 async function findVacancyInFirestore(
   character,
   work
 ) {
 
-  const local =
+  if (!db)
+    return null;
+
+  const normalizedCharacter =
+    normalizeText(character);
+
+  const normalizedWork =
+    normalizeText(work);
+
+
+  const collections = [
+    "vagas",
+    "occupiedCharacters"
+  ];
+
+
+  for (const collectionName of collections) {
+
+    try {
+
+      const snapshot =
+        await db
+          .collection(collectionName)
+          .get();
+
+
+      for (const document of snapshot.docs) {
+
+        const data =
+          document.data() || {};
+
+
+        const documentCharacter =
+          normalizeText(
+            data.character ||
+            data.personagem ||
+            data.name
+          );
+
+
+        const documentWork =
+          normalizeText(
+            data.work ||
+            data.obra
+          );
+
+
+        if (
+
+          documentCharacter ===
+          normalizedCharacter
+
+          &&
+
+          documentWork ===
+          normalizedWork
+
+        ) {
+
+          return {
+
+            id:
+              document.id,
+
+            ref:
+              document.ref,
+
+            collection:
+              collectionName,
+
+            ...data
+
+          };
+
+        }
+
+      }
+
+    } catch (error) {
+
+      console.warn(
+        `Não foi possível procurar em ${collectionName}:`,
+        error
+      );
+
+    }
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   CRIAR VAGA FECHADA
+   ========================================================= */
+
+async function createClosedVacancyFromRequest(
+  request,
+  character,
+  work
+) {
+
+  const image =
+    request.photo ||
+    request.foto ||
+    request.characterPhoto ||
+    "";
+
+
+  const memberName =
+    request.name ||
+    request.nome ||
+    request.nickname ||
+    "";
+
+
+  const data = {
+
+    character,
+
+    personagem:
+      character,
+
+    work,
+
+    obra:
+      work,
+
+    image,
+
+    photo:
+      image,
+
+    characterPhoto:
+      image,
+
+    foto:
+      image,
+
+    status:
+      "fechada",
+
+    estado:
+      "fechada",
+
+    occupied:
+      true,
+
+    occupiedBy:
+      memberName,
+
+    occupiedCharacter:
+      character,
+
+    occupiedAt:
+      firebase.firestore
+        .FieldValue
+        .serverTimestamp(),
+
+    createdAt:
+      firebase.firestore
+        .FieldValue
+        .serverTimestamp(),
+
+    updatedAt:
+      firebase.firestore
+        .FieldValue
+        .serverTimestamp()
+
+  };
+
+
+  const result =
+    await db
+      .collection("vagas")
+      .add(data);
+
+
+  return result;
+
+}
+
+
+/* =========================================================
+   FECHAR VAGA
+   ========================================================= */
+
+async function closeVacancyFromApproval(
+  request,
+  character,
+  work
+) {
+
+  /*
+   * Primeiro tenta usar o que já foi carregado.
+   */
+
+  let vacancy =
     findMatchingVacancy(
       character,
       work
     );
 
-  if (local) {
-    return local;
+
+  /*
+   * Se não encontrou, procura diretamente
+   * no Firestore.
+   */
+
+  if (!vacancy) {
+
+    vacancy =
+      await findVacancyInFirestore(
+        character,
+        work
+      );
+
   }
 
-  if (!db) {
-    return null;
+
+  /*
+   * Se encontrou uma vaga em qualquer coleção,
+   * atualiza essa vaga.
+   */
+
+  if (vacancy?.ref) {
+
+    const image =
+      request.photo ||
+      request.foto ||
+      request.characterPhoto ||
+      vacancy.image ||
+      vacancy.photo ||
+      vacancy.characterPhoto ||
+      "";
+
+
+    await vacancy.ref.update({
+
+      character,
+
+      personagem:
+        character,
+
+      work,
+
+      obra:
+        work,
+
+      image,
+
+      photo:
+        image,
+
+      characterPhoto:
+        image,
+
+      foto:
+        image,
+
+      status:
+        "fechada",
+
+      estado:
+        "fechada",
+
+      occupied:
+        true,
+
+      occupiedBy:
+        request.name ||
+        request.nome ||
+        request.nickname ||
+        "",
+
+      occupiedCharacter:
+        character,
+
+      occupiedAt:
+        firebase.firestore
+          .FieldValue
+          .serverTimestamp(),
+
+      updatedAt:
+        firebase.firestore
+          .FieldValue
+          .serverTimestamp()
+
+    });
+
+
+    /*
+     * IMPORTANTE:
+     *
+     * O site público usa "vagas" como coleção principal.
+     *
+     * Se a vaga antiga estava em
+     * "occupiedCharacters", cria também uma cópia
+     * fechada em "vagas".
+     */
+
+    if (
+      vacancy.collection !== "vagas"
+    ) {
+
+      try {
+
+        await createClosedVacancyFromRequest(
+          request,
+          character,
+          work
+        );
+
+      } catch (error) {
+
+        console.warn(
+          "Não foi possível criar a vaga espelho em vagas:",
+          error
+        );
+
+      }
+
+    }
+
+    return;
+
   }
+
+
+  /*
+   * NÃO ENCONTROU VAGA.
+   *
+   * Mesmo assim, a aprovação precisa gerar
+   * uma vaga fechada.
+   */
+
+  await createClosedVacancyFromRequest(
+    request,
+    character,
+    work
+  );
+
+}
+
+
+/* =========================================================
+   PROCURAR MEMBRO JÁ EXISTENTE
+   ========================================================= */
+
+async function findExistingMember(
+  request,
+  character,
+  work
+) {
+
+  if (!db)
+    return null;
 
   try {
 
-    const vacancies =
-      await getCollection(
-        "vagas"
+    const snapshot =
+      await db
+        .collection("members")
+        .get();
+
+
+    const requestName =
+      normalizeText(
+        request.name ||
+        request.nome ||
+        request.nickname
       );
 
-    return (
-      vacancies.find(
-        vacancy =>
 
-          normalizeText(
-            vacancyCharacter(
-              vacancy
-            )
-          ) ===
-          normalizeText(
-            character
-          ) &&
+    const requestPhone =
+      String(
+        request.phoneLast4 ||
+        request.last4 ||
+        request.ultimos4 ||
+        ""
+      ).trim();
 
-          normalizeText(
-            vacancyWork(
-              vacancy
-            )
-          ) ===
-          normalizeText(
-            work
-          )
-      ) || null
+
+    for (const document of snapshot.docs) {
+
+      const member =
+        document.data() || {};
+
+
+      const memberCharacter =
+        normalizeText(
+          member.character ||
+          member.personagem
+        );
+
+
+      const memberWork =
+        normalizeText(
+          member.work ||
+          member.obra
+        );
+
+
+      const memberName =
+        normalizeText(
+          member.name ||
+          member.nome ||
+          member.nickname
+        );
+
+
+      const memberPhone =
+        String(
+          member.phoneLast4 ||
+          member.last4 ||
+          member.ultimos4 ||
+          ""
+        ).trim();
+
+
+      const sameCharacter =
+        memberCharacter ===
+        normalizeText(character);
+
+
+      const sameWork =
+        memberWork ===
+        normalizeText(work);
+
+
+      const sameName =
+        requestName &&
+        memberName &&
+        requestName ===
+        memberName;
+
+
+      const samePhone =
+        requestPhone &&
+        memberPhone &&
+        requestPhone ===
+        memberPhone;
+
+
+      if (
+        sameCharacter &&
+        sameWork &&
+        (sameName || samePhone)
+      ) {
+
+        return {
+
+          id:
+            document.id,
+
+          ref:
+            document.ref,
+
+          ...member
+
+        };
+
+      }
+
+    }
+
+  } catch (error) {
+
+    console.warn(
+      "Não foi possível verificar membro existente:",
+      error
     );
 
-  } catch {
-
-    return null;
   }
+
+
+  return null;
+
 }
 
 
 /* =========================================================
-   27. APROVAÇÃO — CRIAR MEMBRO
+   CRIAR MEMBRO
    ========================================================= */
 
 async function createMemberFromRequest(
-  request
+  request,
+  character,
+  work
 ) {
-
-  if (!db) {
-    throw new Error(
-      "Firebase não disponível."
-    );
-  }
-
-
-  const phone =
-    String(
-      request.phone ||
-      ""
-    ).slice(-4);
-
 
   const existing =
-    state.members.find(
-      member => {
-
-        const memberPhone =
-          String(
-            member.phone ||
-            member.phoneLast4 ||
-            ""
-          ).slice(-4);
-
-        return (
-          normalizeText(
-            memberCharacter(
-              member
-            )
-          ) ===
-          normalizeText(
-            request.character ||
-            request.personagem
-          ) &&
-
-          memberPhone ===
-          phone
-        );
-      }
-    );
-
-
-  if (existing) {
-    return existing.id;
-  }
-
-
-  const data = {
-
-    name:
-      request.name ||
-      request.nome ||
-      request.nickname ||
-      request.apelido ||
-      "",
-
-    age:
-      request.age ||
-      request.idade ||
-      "",
-
-    phone,
-
-    character:
-      request.character ||
-      request.personagem ||
-      "",
-
-    work:
-      request.work ||
-      request.obra ||
-      "",
-
-    photo:
-      request.photo ||
-      request.image ||
-      "",
-
-    createdAt:
-      getTimestamp(),
-
-    updatedAt:
-      getTimestamp()
-  };
-
-
-  const ref =
-    await db
-      .collection(
-        "members"
-      )
-      .add(data);
-
-
-  return ref.id;
-}
-
-
-/* =========================================================
-   28. APROVAÇÃO — FECHAR VAGA
-   ========================================================= */
-
-async function closeVacancyFromApproval(
-  request
-) {
-
-  const character =
-    request.character ||
-    request.personagem ||
-    "";
-
-  const work =
-    request.work ||
-    request.obra ||
-    "";
-
-
-  let vacancy =
-    await findVacancyInFirestore(
+    await findExistingMember(
+      request,
       character,
       work
     );
 
 
-  if (vacancy) {
+  /*
+   * Evita cadastrar o mesmo membro duas vezes
+   * caso o botão seja pressionado novamente.
+   */
 
-    await db
-      .collection(
-        "vagas"
-      )
-      .doc(
-        vacancy.id
-      )
-      .set(
-        {
+  if (existing) {
 
-          character:
-            character ||
-            vacancyCharacter(
-              vacancy
-            ),
+    return {
 
-          work:
-            work ||
-            vacancyWork(
-              vacancy
-            ),
+      existing: true,
 
-          photo:
-            request.photo ||
-            vacancyPhoto(
-              vacancy
-            ) ||
-            "",
+      id:
+        existing.id,
 
-          open:
-            false,
+      ref:
+        existing.ref
 
-          status:
-            "closed",
+    };
 
-          updatedAt:
-            getTimestamp()
-
-        },
-        {
-          merge: true
-        }
-      );
-
-    return;
   }
 
 
-  await db
-    .collection(
-      "vagas"
-    )
-    .add({
+  const name =
+    request.name ||
+    request.nome ||
+    request.nickname ||
+    "";
 
+
+  const age =
+    request.age ||
+    request.idade ||
+    "";
+
+
+  const phoneLast4 =
+    request.phoneLast4 ||
+    request.last4 ||
+    request.ultimos4 ||
+    "";
+
+
+  const photo =
+    request.photo ||
+    request.foto ||
+    request.characterPhoto ||
+    "";
+
+
+  const data = {
+
+    name,
+
+    nome:
+      name,
+
+    nickname:
+      request.nickname ||
+      "",
+
+    age,
+
+    idade:
+      age,
+
+    phoneLast4,
+
+    last4:
+      phoneLast4,
+
+    ultimos4:
+      phoneLast4,
+
+    character,
+
+    personagem:
       character,
+
+    work,
+
+    obra:
       work,
 
-      photo:
-        request.photo ||
-        "",
+    photo,
 
-      open:
-        false,
+    foto:
+      photo,
 
-      status:
-        "closed",
+    characterPhoto:
+      photo,
 
-      createdAt:
-        getTimestamp(),
+    approvedBy:
+      state.admin?.name ||
+      "",
 
-      updatedAt:
-        getTimestamp()
-    });
+    approvedByCode:
+      state.admin?.code ||
+      "",
+
+    approvedAt:
+      firebase.firestore
+        .FieldValue
+        .serverTimestamp(),
+
+    createdAt:
+      firebase.firestore
+        .FieldValue
+        .serverTimestamp()
+
+  };
+
+
+  const result =
+    await db
+      .collection("members")
+      .add(data);
+
+
+  return {
+
+    existing: false,
+
+    id:
+      result.id,
+
+    ref:
+      result
+
+  };
+
 }
 
 
 /* =========================================================
-   29. SOLICITAÇÃO
+   APROVAR SOLICITAÇÃO
    ========================================================= */
 
-async function findRequestCollection(
-  requestId
-) {
+async function approveRequest(id) {
 
-  if (!db) {
-    return null;
-  }
-
-
-  for (
-    const collectionName
-    of [
-      "characterRequests",
-      "requests"
-    ]
-  ) {
-
-    try {
-
-      const doc =
-        await db
-          .collection(
-            collectionName
-          )
-          .doc(
-            requestId
-          )
-          .get();
-
-      if (doc.exists) {
-
-        return {
-
-          collection:
-            collectionName,
-
-          id:
-            requestId,
-
-          data:
-            doc.data()
-        };
-      }
-
-    } catch {}
-  }
-
-
-  return null;
-}
-
-
-/* =========================================================
-   30. APROVAR
-   ========================================================= */
-
-async function approveRequest(
-  requestId
-) {
-
-  if (!db) {
-
-    alert(
-      "O Firebase não está disponível."
-    );
-
-    return;
-  }
-
-
-  const requestInfo =
-    await findRequestCollection(
-      requestId
+  const request =
+    state.requests.find(
+      item =>
+        item.id === id
     );
 
 
-  if (!requestInfo) {
+  if (!request) {
 
-    alert(
+    toast(
       "Solicitação não encontrada."
     );
 
     return;
+
   }
 
 
-  const request =
-    requestInfo.data;
+  const character =
+    request.character ||
+    request.personagem;
+
+
+  const work =
+    request.work ||
+    request.obra;
+
+
+  if (!character || !work) {
+
+    toast(
+      "A solicitação não possui personagem ou obra."
+    );
+
+    return;
+
+  }
+
+
+  if (!firestoreAvailable())
+    return;
+
+
+  /*
+   * Evita clique duplo enquanto aprova.
+   */
+
+  const approveButton =
+    document.querySelector(
+      `[data-approve="${CSS.escape(id)}"]`
+    );
+
+
+  if (approveButton) {
+
+    approveButton.disabled =
+      true;
+
+    approveButton.textContent =
+      "Aprovando...";
+
+  }
 
 
   try {
 
     /*
-      FICHA NORMAL
-    */
+     * =====================================================
+     * 1. CADASTRA O MEMBRO
+     * =====================================================
+     */
 
-    if (
-      request.type !==
-      "exchange"
-    ) {
-
+    const memberResult =
       await createMemberFromRequest(
-        request
+        request,
+        character,
+        work
       );
 
-      await closeVacancyFromApproval(
-        request
+
+    /*
+     * =====================================================
+     * 2. FECHA A VAGA
+     *
+     * Mesmo que não exista uma vaga aberta,
+     * cria uma nova vaga fechada.
+     * =====================================================
+     */
+
+    await closeVacancyFromApproval(
+      request,
+      character,
+      work
+    );
+
+
+    /*
+     * =====================================================
+     * 3. ATUALIZA A SOLICITAÇÃO
+     * =====================================================
+     */
+
+    const collection =
+      request.collection ||
+      await findRequestCollection(
+        id
+      );
+
+
+    if (!collection) {
+
+      throw new Error(
+        "Solicitação não encontrada no Firestore."
       );
 
     }
 
-    /*
-      TROCA
-    */
-
-    else {
-
-      const oldCharacter =
-        request.oldCharacter ||
-        "";
-
-      const oldWork =
-        request.oldWork ||
-        "";
-
-      const newCharacter =
-        request.character ||
-        "";
-
-      const newWork =
-        request.work ||
-        "";
-
-
-      const members =
-        await getCollection(
-          "members"
-        );
-
-
-      const member =
-        members.find(
-          item =>
-
-            String(
-              item.phone ||
-              item.phoneLast4 ||
-              ""
-            ).slice(-4) ===
-            String(
-              request.phone ||
-              ""
-            ).slice(-4) &&
-
-            normalizeText(
-              memberCharacter(
-                item
-              )
-            ) ===
-            normalizeText(
-              oldCharacter
-            )
-        );
-
-
-      if (!member) {
-
-        throw new Error(
-          "Membro da troca não foi encontrado."
-        );
-      }
-
-
-      const oldVacancy =
-        await findVacancyInFirestore(
-          oldCharacter,
-          oldWork
-        );
-
-
-      if (oldVacancy) {
-
-        await db
-          .collection(
-            "vagas"
-          )
-          .doc(
-            oldVacancy.id
-          )
-          .set(
-            {
-
-              open:
-                true,
-
-              status:
-                "open",
-
-              updatedAt:
-                getTimestamp()
-
-            },
-            {
-              merge: true
-            }
-          );
-      }
-
-
-      const newVacancy =
-        await findVacancyInFirestore(
-          newCharacter,
-          newWork
-        );
-
-
-      if (newVacancy) {
-
-        await db
-          .collection(
-            "vagas"
-          )
-          .doc(
-            newVacancy.id
-          )
-          .set(
-            {
-
-              open:
-                false,
-
-              status:
-                "closed",
-
-              photo:
-                request.photo ||
-                vacancyPhoto(
-                  newVacancy
-                ),
-
-              updatedAt:
-                getTimestamp()
-
-            },
-            {
-              merge: true
-            }
-          );
-
-      } else {
-
-        await db
-          .collection(
-            "vagas"
-          )
-          .add({
-
-            character:
-              newCharacter,
-
-            work:
-              newWork,
-
-            photo:
-              request.photo ||
-              "",
-
-            open:
-              false,
-
-            status:
-              "closed",
-
-            createdAt:
-              getTimestamp(),
-
-            updatedAt:
-              getTimestamp()
-          });
-      }
-
-
-      await db
-        .collection(
-          "members"
-        )
-        .doc(
-          member.id
-        )
-        .set(
-          {
-
-            character:
-              newCharacter,
-
-            work:
-              newWork,
-
-            photo:
-              request.photo ||
-              memberPhoto(
-                member
-              ),
-
-            updatedAt:
-              getTimestamp()
-
-          },
-          {
-            merge: true
-          }
-        );
-    }
-
-
-    /*
-      MARCA SOLICITAÇÃO COMO APROVADA
-    */
 
     await db
-      .collection(
-        requestInfo.collection
-      )
-      .doc(
-        requestInfo.id
-      )
-      .set(
-        {
+      .collection(collection)
+      .doc(id)
+      .update({
 
-          status:
-            "approved",
+        status:
+          "aprovado",
 
-          approvedAt:
-            getTimestamp(),
+        aprovado:
+          true,
 
-          approvedBy:
-            state.admin?.name ||
-            "ADM",
+        approvedBy:
+          state.admin?.name ||
+          "",
 
-          updatedAt:
-            getTimestamp()
+        approvedAt:
+          firebase.firestore
+            .FieldValue
+            .serverTimestamp(),
 
-        },
-        {
-          merge: true
-        }
-      );
+        memberCreated:
+          !memberResult.existing,
+
+        vacancyClosed:
+          true
+
+      });
 
 
-    await createLog(
-      "Aprovação de solicitação",
-      `Solicitação de ${
-        request.character ||
-        request.personagem ||
-        "personagem"
-      } aprovada.`
+    /*
+     * =====================================================
+     * 4. LOG
+     * =====================================================
+     */
+
+    await logAction(
+      "aprovar_solicitacao",
+      `${character} • ${work}`
+    );
+
+
+    /*
+     * =====================================================
+     * 5. ATUALIZA A INTERFACE
+     * =====================================================
+     */
+
+    toast(
+      memberResult.existing
+        ? "Solicitação aprovada e vaga fechada."
+        : "Solicitação aprovada! Membro cadastrado e vaga fechada."
     );
 
 
     await refreshAll();
 
 
-    alert(
-      "Solicitação aprovada!"
-    );
-
   } catch (error) {
 
     console.error(
-      "Erro ao aprovar:",
+      "Erro completo ao aprovar solicitação:",
       error
     );
 
-    alert(
-      "Não foi possível aprovar a solicitação.\n\n" +
-      (
-        error.message ||
-        error
+
+    let message =
+      "Não foi possível concluir a aprovação.";
+
+
+    if (
+      error?.code ===
+      "permission-denied"
+    ) {
+
+      message =
+        "O Firebase bloqueou uma das operações. Verifique as regras do Firestore.";
+
+    }
+
+
+    if (
+      error?.message &&
+      error.message.includes(
+        "Solicitação não encontrada"
       )
+    ) {
+
+      message =
+        "A solicitação não foi encontrada no Firebase.";
+
+    }
+
+
+    toast(
+      message
     );
+
+
+  } finally {
+
+    if (approveButton) {
+
+      approveButton.disabled =
+        false;
+
+      approveButton.textContent =
+        "Aceitar";
+
+    }
+
   }
+
 }
 
 
 /* =========================================================
-   31. RECUSAR
+   RECUSAR SOLICITAÇÃO
    ========================================================= */
 
-async function rejectRequest(
-  requestId
-) {
-
-  if (!db) {
-    return;
-  }
-
-
-  const requestInfo =
-    await findRequestCollection(
-      requestId
-    );
-
-
-  if (!requestInfo) {
-    return;
-  }
-
+async function rejectRequest(id) {
 
   try {
 
-    await db
-      .collection(
-        requestInfo.collection
-      )
-      .doc(
-        requestInfo.id
-      )
-      .set(
-        {
+    if (!firestoreAvailable())
+      return;
 
-          status:
-            "rejected",
 
-          rejectedAt:
-            getTimestamp(),
-
-          rejectedBy:
-            state.admin?.name ||
-            "ADM",
-
-          updatedAt:
-            getTimestamp()
-
-        },
-        {
-          merge: true
-        }
+    const request =
+      state.requests.find(
+        item =>
+          item.id === id
       );
 
 
-    await createLog(
-      "Recusa de solicitação",
-      `Solicitação de ${
-        requestInfo.data.character ||
-        "personagem"
-      } recusada.`
+    const collection =
+      request?.collection ||
+      await findRequestCollection(
+        id
+      );
+
+
+    if (!collection) {
+
+      toast(
+        "Solicitação não encontrada."
+      );
+
+      return;
+
+    }
+
+
+    await db
+      .collection(collection)
+      .doc(id)
+      .update({
+
+        status:
+          "recusado",
+
+        rejectedBy:
+          state.admin?.name ||
+          "",
+
+        rejectedAt:
+          firebase.firestore
+            .FieldValue
+            .serverTimestamp()
+
+      });
+
+
+    await logAction(
+      "recusar_solicitacao",
+      id
+    );
+
+
+    toast(
+      "Solicitação recusada."
     );
 
 
@@ -3353,149 +2921,309 @@ async function rejectRequest(
       error
     );
 
-    alert(
+    toast(
       "Não foi possível recusar a solicitação."
     );
+
   }
+
 }
 
 
 /* =========================================================
-   32. SALVAR VAGA
+   ENCONTRAR SOLICITAÇÃO
    ========================================================= */
 
-async function saveVacancy(
-  vacancyId = null
-) {
+async function findRequestCollection(id) {
 
-  if (!db) {
-    return;
-  }
-
-
-  const characterInput =
-    $("vacCharacter") ||
-    $("vacancyCharacter");
-
-  const workInput =
-    $("vacWork") ||
-    $("vacancyWork");
-
-  const imageInput =
-    $("vacImage") ||
-    $("vacancyPhoto");
-
-
-  const character =
-    characterInput
-      ?.value
-      .trim() || "";
-
-  const work =
-    workInput
-      ?.value
-      .trim() || "";
-
-  const file =
-    imageInput
-      ?.files?.[0];
-
-
-  if (
-    !character ||
-    !work
-  ) {
-
-    alert(
-      "Preencha personagem e obra."
-    );
-
-    return;
-  }
+  if (!db)
+    return null;
 
 
   try {
 
-    let image = "";
+    const first =
+      await db
+        .collection(
+          "characterRequests"
+        )
+        .doc(id)
+        .get();
 
 
-    if (file) {
+    if (first.exists)
+      return "characterRequests";
 
-      image =
-        await uploadToCloudinary(
-          file
-        );
-    }
+  } catch {}
 
+
+  try {
+
+    const second =
+      await db
+        .collection(
+          "requests"
+        )
+        .doc(id)
+        .get();
+
+
+    if (second.exists)
+      return "requests";
+
+  } catch {}
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   MODAL DE VAGA
+   ========================================================= */
+
+function openVacancyModal(id = null) {
+
+  state.editVacancyId =
+    id;
+
+
+  const vacancy =
+    id
+      ? findVacancy(id)
+      : null;
+
+
+  state.editVacancyCollection =
+    vacancy?.collection ||
+    "vagas";
+
+
+  if ($("modalTitle")) {
+
+    $("modalTitle")
+      .textContent =
+      vacancy
+        ? "Editar vaga"
+        : "Nova vaga";
+
+  }
+
+
+  if ($("vacCharacter")) {
+
+    $("vacCharacter").value =
+      vacancy?.character ||
+      vacancy?.personagem ||
+      vacancy?.name ||
+      "";
+
+  }
+
+
+  if ($("vacWork")) {
+
+    $("vacWork").value =
+      vacancy?.work ||
+      vacancy?.obra ||
+      "";
+
+  }
+
+
+  if ($("vacImage")) {
+
+    $("vacImage").value =
+      vacancy?.image ||
+      vacancy?.photo ||
+      vacancy?.characterPhoto ||
+      vacancy?.foto ||
+      "";
+
+  }
+
+
+  if ($("vacStatus")) {
+
+    $("vacStatus").value =
+      statusIsOpen(vacancy)
+        ? "aberta"
+        : "fechada";
+
+  }
+
+
+  setVacancyMessage("");
+
+  $("modal")
+    ?.classList
+    .add("open");
+
+}
+
+
+/* =========================================================
+   FECHAR MODAL
+   ========================================================= */
+
+function closeVacancyModal() {
+
+  $("modal")
+    ?.classList
+    .remove("open");
+
+
+  state.editVacancyId =
+    null;
+
+
+  state.editVacancyCollection =
+    null;
+
+}
+
+
+/* =========================================================
+   SALVAR VAGA
+   ========================================================= */
+
+async function saveVacancy() {
+
+  const character =
+    $("vacCharacter")
+      ?.value
+      .trim() || "";
+
+
+  const work =
+    $("vacWork")
+      ?.value
+      .trim() || "";
+
+
+  const image =
+    $("vacImage")
+      ?.value
+      .trim() || "";
+
+
+  const status =
+    $("vacStatus")
+      ?.value ||
+      "aberta";
+
+
+  if (!character || !work) {
+
+    setVacancyMessage(
+      "Personagem e obra são obrigatórios."
+    );
+
+    return;
+
+  }
+
+
+  if (!firestoreAvailable())
+    return;
+
+
+  try {
 
     const data = {
 
       character,
+
+      personagem:
+        character,
+
       work,
 
+      obra:
+        work,
+
+      image,
+
+      photo:
+        image,
+
+      characterPhoto:
+        image,
+
+      foto:
+        image,
+
+      status,
+
+      estado:
+        status,
+
       updatedAt:
-        getTimestamp()
+        firebase.firestore
+          .FieldValue
+          .serverTimestamp()
+
     };
 
 
-    if (image) {
+    if (state.editVacancyId) {
 
-      data.photo =
-        image;
-    }
+      const collection =
+        state.editVacancyCollection ||
+        "vagas";
 
-
-    if (vacancyId) {
 
       await db
-        .collection(
-          "vagas"
-        )
+        .collection(collection)
         .doc(
-          vacancyId
+          state.editVacancyId
         )
-        .set(
-          data,
-          {
-            merge: true
-          }
-        );
+        .update(data);
 
-      await createLog(
-        "Edição de vaga",
-        `${character} — ${work}`
+
+      await logAction(
+        "editar_vaga",
+        `${character} • ${work}`
+      );
+
+
+      toast(
+        "Vaga atualizada."
       );
 
     } else {
 
       await db
-        .collection(
-          "vagas"
-        )
+        .collection("vagas")
         .add({
 
           ...data,
 
-          open:
-            true,
-
-          status:
-            "open",
-
           createdAt:
-            getTimestamp()
+            firebase.firestore
+              .FieldValue
+              .serverTimestamp()
+
         });
 
-      await createLog(
-        "Criação de vaga",
-        `${character} — ${work}`
+
+      await logAction(
+        "criar_vaga",
+        `${character} • ${work}`
       );
+
+
+      toast(
+        "Vaga criada."
+      );
+
     }
 
 
-    await refreshAll();
-
     closeVacancyModal();
+
+    await refreshAll();
 
   } catch (error) {
 
@@ -3504,152 +3232,99 @@ async function saveVacancy(
       error
     );
 
-    alert(
+
+    setVacancyMessage(
       "Não foi possível salvar a vaga."
     );
+
   }
+
 }
 
 
 /* =========================================================
-   33. EDITAR VAGA
+   ABRIR / FECHAR VAGA
    ========================================================= */
 
-function editVacancy(
-  vacancyId
-) {
+async function toggleVacancy(id) {
 
   const vacancy =
-    state.vacancies.find(
-      item =>
-        item.id ===
-        vacancyId
-    );
+    findVacancy(id);
 
 
   if (!vacancy) {
-    return;
-  }
 
-
-  const modal =
-    $("modal") ||
-    $("vacancyModal");
-
-
-  if (!modal) {
-    return;
-  }
-
-
-  const characterInput =
-    $("vacCharacter") ||
-    $("vacancyCharacter");
-
-  const workInput =
-    $("vacWork") ||
-    $("vacancyWork");
-
-
-  if (characterInput) {
-
-    characterInput.value =
-      vacancyCharacter(
-        vacancy
-      );
-  }
-
-
-  if (workInput) {
-
-    workInput.value =
-      vacancyWork(
-        vacancy
-      );
-  }
-
-
-  modal.dataset.editing =
-    vacancyId;
-
-  modal.classList.remove(
-    "hidden"
-  );
-}
-
-
-/* =========================================================
-   34. ABRIR / FECHAR VAGA
-   ========================================================= */
-
-async function toggleVacancy(
-  vacancyId
-) {
-
-  if (!db) {
-    return;
-  }
-
-
-  const vacancy =
-    state.vacancies.find(
-      item =>
-        item.id ===
-        vacancyId
+    toast(
+      "Vaga não encontrada."
     );
 
-
-  if (!vacancy) {
     return;
+
   }
 
 
-  const next =
-    !isOpenVacancy(
-      vacancy
-    );
+  if (!firestoreAvailable())
+    return;
+
+
+  const nextStatus =
+    statusIsOpen(vacancy)
+      ? "fechada"
+      : "aberta";
 
 
   try {
 
+    const collection =
+      vacancy.collection ||
+      "vagas";
+
+
     await db
-      .collection(
-        "vagas"
-      )
-      .doc(
-        vacancyId
-      )
-      .set(
-        {
+      .collection(collection)
+      .doc(id)
+      .update({
 
-          open:
-            next,
+        status:
+          nextStatus,
 
-          status:
-            next
-              ? "open"
-              : "closed",
+        estado:
+          nextStatus,
 
-          updatedAt:
-            getTimestamp()
+        updatedAt:
+          firebase.firestore
+            .FieldValue
+            .serverTimestamp()
 
-        },
-        {
-          merge: true
-        }
-      );
+      });
 
 
-    await createLog(
-      next
-        ? "Abertura de vaga"
-        : "Fechamento de vaga",
+    await logAction(
 
-      `${vacancyCharacter(
-        vacancy
-      )} — ${vacancyWork(
-        vacancy
-      )}`
+      nextStatus === "aberta"
+        ? "abrir_vaga"
+        : "fechar_vaga",
+
+      `${
+        vacancy.character ||
+        vacancy.personagem ||
+        vacancy.name ||
+        "Sem personagem"
+      } • ${
+        vacancy.work ||
+        vacancy.obra ||
+        "Sem obra"
+      }`
+
+    );
+
+
+    toast(
+
+      nextStatus === "aberta"
+        ? "Vaga aberta."
+        : "Vaga fechada."
+
     );
 
 
@@ -3658,75 +3333,84 @@ async function toggleVacancy(
   } catch (error) {
 
     console.error(
-      "Erro alterando vaga:",
+      "Erro ao alterar vaga:",
       error
     );
 
-    alert(
+
+    toast(
       "Não foi possível alterar a vaga."
     );
+
   }
+
 }
 
 
 /* =========================================================
-   35. EXCLUIR VAGA
+   EXCLUIR VAGA
    ========================================================= */
 
-async function deleteVacancy(
-  vacancyId
-) {
-
-  if (!db) {
-    return;
-  }
-
+async function deleteVacancy(id) {
 
   const vacancy =
-    state.vacancies.find(
-      item =>
-        item.id ===
-        vacancyId
-    );
+    findVacancy(id);
 
 
   if (!vacancy) {
-    return;
-  }
 
-
-  const confirmed =
-    confirm(
-      `Excluir a vaga "${vacancyCharacter(
-        vacancy
-      )}"?`
+    toast(
+      "Vaga não encontrada."
     );
 
-
-  if (!confirmed) {
     return;
+
   }
+
+
+  const name =
+    vacancy.character ||
+    vacancy.personagem ||
+    vacancy.name ||
+    "esta vaga";
+
+
+  if (
+    !confirm(
+      `Excluir a vaga "${name}"?`
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  if (!firestoreAvailable())
+    return;
 
 
   try {
 
+    const collection =
+      vacancy.collection ||
+      "vagas";
+
+
     await db
-      .collection(
-        "vagas"
-      )
-      .doc(
-        vacancyId
-      )
+      .collection(collection)
+      .doc(id)
       .delete();
 
 
-    await createLog(
-      "Exclusão de vaga",
-      `${vacancyCharacter(
-        vacancy
-      )} — ${vacancyWork(
-        vacancy
-      )}`
+    await logAction(
+      "excluir_vaga",
+      name
+    );
+
+
+    toast(
+      "Vaga excluída."
     );
 
 
@@ -3735,136 +3419,67 @@ async function deleteVacancy(
   } catch (error) {
 
     console.error(
-      "Erro excluindo vaga:",
+      "Erro ao excluir vaga:",
       error
     );
 
-    alert(
+
+    toast(
       "Não foi possível excluir a vaga."
     );
+
   }
+
 }
 
 
 /* =========================================================
-   36. MODAL
+   CHAT
    ========================================================= */
 
-function closeVacancyModal() {
-
-  const modal =
-    $("modal") ||
-    $("vacancyModal");
-
-
-  if (!modal) {
-    return;
-  }
-
-
-  modal.classList.add(
-    "hidden"
-  );
-
-  modal.removeAttribute(
-    "data-editing"
-  );
-}
-
-
-function openNewVacancyModal() {
-
-  const modal =
-    $("modal") ||
-    $("vacancyModal");
-
-
-  if (!modal) {
-    return;
-  }
-
-
-  modal.removeAttribute(
-    "data-editing"
-  );
-
-
-  const characterInput =
-    $("vacCharacter") ||
-    $("vacancyCharacter");
-
-  const workInput =
-    $("vacWork") ||
-    $("vacancyWork");
-
-
-  if (characterInput) {
-    characterInput.value =
-      "";
-  }
-
-  if (workInput) {
-    workInput.value =
-      "";
-  }
-
-
-  modal.classList.remove(
-    "hidden"
-  );
-}
-
-
-/* =========================================================
-   37. CHAT
-   ========================================================= */
-
-async function sendAdminChat() {
-
-  if (!db) {
-    return;
-  }
-
+async function sendChat() {
 
   const input =
-    $("chatInput") ||
-    $("adminChatInput");
+    $("chatInput");
 
 
-  if (!input) {
+  if (!input)
     return;
-  }
 
 
   const message =
     input.value.trim();
 
 
-  if (!message) {
+  if (!message)
     return;
-  }
+
+
+  if (!firestoreAvailable())
+    return;
 
 
   try {
 
     await db
-      .collection(
-        "adminChat"
-      )
+      .collection("adminChat")
       .add({
-
-        message,
 
         adminName:
           state.admin?.name ||
           "ADM",
 
-        adminCode:
-          state.admin?.code ||
-          null,
+        adminRole:
+          state.admin?.role ||
+          "",
+
+        message,
 
         createdAt:
-          getTimestamp()
+          firebase.firestore
+            .FieldValue
+            .serverTimestamp()
+
       });
 
 
@@ -3872,11 +3487,7 @@ async function sendAdminChat() {
       "";
 
 
-    state.chat =
-      await getCollection(
-        "adminChat"
-      );
-
+    await loadChat();
 
     renderChat();
 
@@ -3887,603 +3498,428 @@ async function sendAdminChat() {
       error
     );
 
-    alert(
+
+    toast(
       "Não foi possível enviar a mensagem."
     );
+
   }
+
 }
 
 
 /* =========================================================
-   38. NAVEGAÇÃO ADMIN
+   LOG ACTION
    ========================================================= */
 
-function showView(
-  view
+async function logAction(
+  action,
+  details
 ) {
 
-  state.currentView =
-    view ||
-    "home";
+  if (!db)
+    return;
 
 
-  document
-    .querySelectorAll(
-      "[data-view]"
-    )
-    .forEach(
-      element => {
+  try {
 
-        const active =
-          element.dataset.view ===
-          state.currentView;
+    await db
+      .collection("accessLogs")
+      .add({
 
+        admin:
+          state.admin?.name ||
+          "Desconhecido",
 
-        element.classList.toggle(
-          "active",
-          active
-        );
+        role:
+          state.admin?.role ||
+          "",
 
+        action,
 
-        element.classList.toggle(
-          "hidden",
-          !active
-        );
-      }
+        details,
+
+        createdAt:
+          firebase.firestore
+            .FieldValue
+            .serverTimestamp()
+
+      });
+
+  } catch (error) {
+
+    console.warn(
+      "Não foi possível registrar log:",
+      error
     );
 
+  }
 
-  document
-    .querySelectorAll(
-      "[data-nav]"
-    )
-    .forEach(
-      item => {
-
-        item.classList.toggle(
-          "active",
-          item.dataset.nav ===
-          state.currentView
-        );
-      }
-    );
 }
 
 
 /* =========================================================
-   39. ADMIN — ATUALIZAR
+   CLOUDINARY
    ========================================================= */
 
-async function refreshAll() {
+async function uploadToCloudinary(file) {
 
-  if (!db) {
-    return;
+  if (!file)
+    return "";
+
+
+  const form =
+    new FormData();
+
+
+  form.append(
+    "file",
+    file
+  );
+
+
+  form.append(
+    "upload_preset",
+    CLOUDINARY_UPLOAD_PRESET
+  );
+
+
+  const response =
+    await fetch(
+      CLOUDINARY_UPLOAD_URL,
+      {
+        method: "POST",
+        body: form
+      }
+    );
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      "Falha no upload para o Cloudinary."
+    );
+
   }
 
 
-  const [
-    requests,
-    vacancies,
-    members,
-    admins,
-    logs,
-    chat
-  ] =
-    await Promise.all([
-
-      getCollection(
-        "characterRequests"
-      ),
-
-      getCollection(
-        "vagas"
-      ),
-
-      getCollection(
-        "members"
-      ),
-
-      getCollection(
-        "adminProfiles"
-      ),
-
-      getCollection(
-        "accessLogs"
-      ),
-
-      getCollection(
-        "adminChat"
-      )
-    ]);
+  const data =
+    await response.json();
 
 
-  state.requests =
-    requests;
+  return (
+    data.secure_url ||
+    data.url ||
+    ""
+  );
 
-  state.vacancies =
-    vacancies;
-
-  state.members =
-    members;
-
-  state.admins =
-    admins;
-
-  state.logs =
-    logs;
-
-  state.chat =
-    chat;
-
-
-  renderStats();
-  renderRequests();
-  renderVacancies();
-  renderMembers();
-  renderAdmins();
-  renderChat();
-  renderLogs();
 }
 
 
 /* =========================================================
-   40. EVENTOS
+   EVENTOS DE NAVEGAÇÃO E CARDS
+   ========================================================= */
+
+document.addEventListener(
+  "click",
+  async event => {
+
+    const navigation =
+      event.target.closest(
+        "[data-view]"
+      );
+
+
+    if (navigation) {
+
+      showView(
+        navigation.dataset.view
+      );
+
+      return;
+
+    }
+
+
+    const approve =
+      event.target.closest(
+        "[data-approve]"
+      );
+
+
+    if (approve) {
+
+      await approveRequest(
+        approve.dataset.approve
+      );
+
+      return;
+
+    }
+
+
+    const reject =
+      event.target.closest(
+        "[data-reject]"
+      );
+
+
+    if (reject) {
+
+      await rejectRequest(
+        reject.dataset.reject
+      );
+
+      return;
+
+    }
+
+
+    const edit =
+      event.target.closest(
+        "[data-edit-vac]"
+      );
+
+
+    if (edit) {
+
+      openVacancyModal(
+        edit.dataset.editVac
+      );
+
+      return;
+
+    }
+
+
+    const toggle =
+      event.target.closest(
+        "[data-toggle-vac]"
+      );
+
+
+    if (toggle) {
+
+      await toggleVacancy(
+        toggle.dataset.toggleVac
+      );
+
+      return;
+
+    }
+
+
+    const deleteButton =
+      event.target.closest(
+        "[data-delete-vac]"
+      );
+
+
+    if (deleteButton) {
+
+      await deleteVacancy(
+        deleteButton.dataset.deleteVac
+      );
+
+      return;
+
+    }
+
+
+    const refresh =
+      event.target.closest(
+        "[data-refresh-section]"
+      );
+
+
+    if (refresh) {
+
+      await refreshAll();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   BOTÕES
    ========================================================= */
 
 function bindEvents() {
 
-  /*
-    LOGIN
-  */
-
   const loginButton =
     $("loginBtn");
+
 
   if (loginButton) {
 
     loginButton.addEventListener(
       "click",
-      loginAdmin
+      event => {
+
+        event.preventDefault();
+
+        login();
+
+      }
     );
+
   }
 
 
-  const adminCode =
+  const codeInput =
     $("adminCode");
 
-  if (adminCode) {
 
-    adminCode.addEventListener(
+  if (codeInput) {
+
+    codeInput.addEventListener(
       "keydown",
       event => {
 
         if (
-          event.key ===
-          "Enter"
-        ) {
-
-          loginAdmin();
-        }
-      }
-    );
-  }
-
-
-  /*
-    LOGOUT
-  */
-
-  const logout =
-    $("logoutBtn") ||
-    $("logoutButton");
-
-  if (logout) {
-
-    logout.addEventListener(
-      "click",
-      logoutAdmin
-    );
-  }
-
-
-  /*
-    FICHA
-  */
-
-  const requestForm =
-    $("requestForm");
-
-  if (requestForm) {
-
-    requestForm.addEventListener(
-      "submit",
-      submitRequestForm
-    );
-  }
-
-
-  /*
-    TROCA
-  */
-
-  const exchangeForm =
-    $("exchangeForm");
-
-  if (exchangeForm) {
-
-    exchangeForm.addEventListener(
-      "submit",
-      submitExchangeForm
-    );
-  }
-
-
-  /*
-    PREVIEWS
-  */
-
-  setupImagePreview(
-    "requestPhoto",
-    "requestPhotoPreview",
-    "requestPhotoPlaceholder"
-  );
-
-  setupImagePreview(
-    "exchangePhoto",
-    "exchangePhotoPreview",
-    "exchangePhotoPlaceholder"
-  );
-
-  setupImagePreview(
-    "vacancyPhoto",
-    "vacancyPhotoPreview",
-    "vacancyPhotoPlaceholder"
-  );
-
-  setupImagePreview(
-    "vacImage",
-    "vacImagePreview",
-    "vacImagePlaceholder"
-  );
-
-
-  /*
-    BUSCA
-  */
-
-  const memberSearch =
-    $("memberSearch");
-
-  if (memberSearch) {
-
-    memberSearch.addEventListener(
-      "input",
-      filterPublicMembers
-    );
-  }
-
-
-  /*
-    NAVEGAÇÃO
-  */
-
-  document
-    .querySelectorAll(
-      "[data-nav]"
-    )
-    .forEach(
-      item => {
-
-        item.addEventListener(
-          "click",
-          event => {
-
-            event.preventDefault();
-
-            showView(
-              item.dataset.nav
-            );
-          }
-        );
-      }
-    );
-
-
-  /*
-    NOVA VAGA
-  */
-
-  const newVacancy =
-    $("newVacancyBtn") ||
-    $("addVacancyBtn") ||
-    $("openVacancyModal");
-
-  if (newVacancy) {
-
-    newVacancy.addEventListener(
-      "click",
-      openNewVacancyModal
-    );
-  }
-
-
-  /*
-    SALVAR VAGA
-  */
-
-  const saveButton =
-    $("saveVacancyBtn") ||
-    $("saveVacancy");
-
-  if (saveButton) {
-
-    saveButton.addEventListener(
-      "click",
-      () => {
-
-        const modal =
-          $("modal") ||
-          $("vacancyModal");
-
-        const editing =
-          modal?.dataset.editing ||
-          null;
-
-        saveVacancy(
-          editing
-        );
-      }
-    );
-  }
-
-
-  /*
-    FECHAR MODAL
-  */
-
-  const closeModal =
-    $("closeModal") ||
-    $("closeVacancyModal") ||
-    $("cancelVacancyBtn");
-
-  if (closeModal) {
-
-    closeModal.addEventListener(
-      "click",
-      closeVacancyModal
-    );
-  }
-
-
-  /*
-    CHAT
-  */
-
-  const sendChat =
-    $("sendChatBtn") ||
-    $("sendAdminChat");
-
-  if (sendChat) {
-
-    sendChat.addEventListener(
-      "click",
-      sendAdminChat
-    );
-  }
-
-
-  const chatInput =
-    $("chatInput") ||
-    $("adminChatInput");
-
-  if (chatInput) {
-
-    chatInput.addEventListener(
-      "keydown",
-      event => {
-
-        if (
-          event.key ===
-            "Enter" &&
-          !event.shiftKey
+          event.key === "Enter"
         ) {
 
           event.preventDefault();
 
-          sendAdminChat();
+          login();
+
         }
+
       }
     );
+
   }
 
 
-  /*
-    BOTÕES DINÂMICOS
-  */
+  $("logoutBtn")
+    ?.addEventListener(
+      "click",
+      event => {
 
-  document.addEventListener(
-    "click",
-    event => {
+        event.preventDefault();
 
-      const approve =
-        event.target.closest(
-          "[data-approve]"
-        );
+        logout();
 
-      if (approve) {
-
-        approveRequest(
-          approve.dataset.approve
-        );
-
-        return;
       }
+    );
 
 
-      const reject =
-        event.target.closest(
-          "[data-reject]"
+  $("refreshBtn")
+    ?.addEventListener(
+      "click",
+      async event => {
+
+        event.preventDefault();
+
+        await refreshAll();
+
+        toast(
+          "Painel atualizado."
         );
 
-      if (reject) {
-
-        rejectRequest(
-          reject.dataset.reject
-        );
-
-        return;
       }
+    );
 
 
-      const edit =
-        event.target.closest(
-          "[data-edit-vacancy]"
-        );
+  $("newVacancyBtn")
+    ?.addEventListener(
+      "click",
+      event => {
 
-      if (edit) {
+        event.preventDefault();
 
-        editVacancy(
-          edit.dataset.editVacancy
-        );
+        openVacancyModal();
 
-        return;
       }
+    );
 
 
-      const toggle =
-        event.target.closest(
-          "[data-toggle-vacancy]"
-        );
+  $("closeModal")
+    ?.addEventListener(
+      "click",
+      event => {
 
-      if (toggle) {
+        event.preventDefault();
 
-        toggleVacancy(
-          toggle.dataset.toggleVacancy
-        );
+        closeVacancyModal();
 
-        return;
       }
+    );
 
 
-      const remove =
-        event.target.closest(
-          "[data-delete-vacancy]"
-        );
+  $("saveVacancyBtn")
+    ?.addEventListener(
+      "click",
+      event => {
 
-      if (remove) {
+        event.preventDefault();
 
-        deleteVacancy(
-          remove.dataset.deleteVacancy
-        );
+        saveVacancy();
 
-        return;
       }
-    }
-  );
+    );
+
+
+  $("sendChatBtn")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+        sendChat();
+
+      }
+    );
+
+
+  $("chatInput")
+    ?.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Enter"
+        ) {
+
+          event.preventDefault();
+
+          sendChat();
+
+        }
+
+      }
+    );
+
+
+  $("modal")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        if (
+          event.target ===
+          $("modal")
+        ) {
+
+          closeVacancyModal();
+
+        }
+
+      }
+    );
+
 }
 
 
 /* =========================================================
-   41. SESSÃO ADMIN
+   INICIALIZAÇÃO
    ========================================================= */
 
-async function startAdminSession() {
-
-  if (!state.admin) {
-    return;
-  }
-
-
-  try {
-
-    await ensureAnonymousAuth();
-
-  } catch {}
-
-
-  try {
-
-    await createLog(
-      "Entrada no painel",
-      `${state.admin.name} entrou no painel ADM.`
-    );
-
-  } catch {}
-
-
-  await refreshAll();
-
-  showView(
-    "home"
-  );
-}
-
-
-/* =========================================================
-   42. BOOT PÚBLICO
-   ========================================================= */
-
-async function bootPublic() {
-
-  /*
-    PRIMEIRO:
-    liga os eventos.
-  */
-
-  bindEvents();
-
-
-  /*
-    SEGUNDO:
-    libera o loading IMEDIATAMENTE.
-
-    Não espera Firebase.
-    Não espera Auth.
-    Não espera Firestore.
-  */
-
-  publicLoadingFailsafe();
-
-
-  /*
-    TERCEIRO:
-    tenta Firebase em segundo plano.
-  */
-
-  ensureAnonymousAuth()
-    .catch(
-      error =>
-        console.warn(
-          "Auth público:",
-          error
-        )
-    );
-
-
-  /*
-    QUARTO:
-    carrega vagas e membros.
-
-    Mesmo que isso dê erro,
-    a página continua aberta.
-  */
-
-  loadPublicData()
-    .catch(
-      error =>
-        console.warn(
-          "Dados públicos:",
-          error
-        )
-    );
-}
-
-
-/* =========================================================
-   43. BOOT ADMIN
-   ========================================================= */
-
-async function bootAdmin() {
+async function boot() {
 
   bindEvents();
 
@@ -4496,90 +3932,108 @@ async function bootAdmin() {
     saved &&
     saved.code &&
     ADMIN_ACCOUNTS[
-      saved.code
+      normalizeCode(saved.code)
     ]
   ) {
 
-    state.admin =
-      saved;
+    const realAccount =
+      ADMIN_ACCOUNTS[
+        normalizeCode(saved.code)
+      ];
+
+
+    state.admin = {
+
+      ...realAccount,
+
+      code:
+        normalizeCode(
+          saved.code
+        )
+
+    };
+
 
     showApp();
 
 
+    if (
+      firebaseReady &&
+      auth
+    ) {
+
+      try {
+
+        if (
+          !auth.currentUser
+        ) {
+
+          await auth.signInAnonymously();
+
+        }
+
+      } catch (error) {
+
+        console.warn(
+          "Firebase Auth:",
+          error
+        );
+
+      }
+
+    }
+
+
     try {
 
-      await startAdminSession();
+      await refreshAll();
 
     } catch (error) {
 
       console.error(
-        "Erro no painel:",
+        "Erro no carregamento inicial:",
         error
       );
 
-      showApp();
     }
 
-  } else {
+    return;
 
-    showLogin();
   }
+
+
+  if ($("loginView")) {
+
+    $("loginView")
+      .classList
+      .remove("hidden");
+
+  }
+
+
+  if ($("appView")) {
+
+    $("appView")
+      .classList
+      .add("hidden");
+
+  }
+
+
+  if (firebaseError) {
+
+    console.warn(
+      "Firebase ainda não está disponível:",
+      firebaseError
+    );
+
+  }
+
 }
 
 
 /* =========================================================
-   44. BOOT GERAL
-   ========================================================= */
-
-function boot() {
-
-  const page =
-    document.body?.dataset?.page;
-
-
-  /*
-    INDEX
-  */
-
-  if (
-    page ===
-    "public"
-  ) {
-
-    bootPublic();
-
-    return;
-  }
-
-
-  /*
-    ADMIN
-  */
-
-  if (
-    page ===
-    "admin"
-  ) {
-
-    bootAdmin();
-
-    return;
-  }
-
-
-  /*
-    FALLBACK:
-    se não tiver data-page,
-    ainda garante que o loading
-    não fique preso.
-  */
-
-  publicLoadingFailsafe();
-}
-
-
-/* =========================================================
-   45. INICIALIZAÇÃO
+   INICIAR
    ========================================================= */
 
 if (
@@ -4589,37 +4043,11 @@ if (
 
   document.addEventListener(
     "DOMContentLoaded",
-    boot,
-    {
-      once: true
-    }
+    boot
   );
 
 } else {
 
   boot();
-}
 
-
-/* =========================================================
-   46. ÚLTIMO FALLBACK DO INDEX
-   ========================================================= */
-
-window.addEventListener(
-  "load",
-  () => {
-
-    if (
-      document.body?.dataset?.page ===
-      "public"
-    ) {
-
-      publicLoadingFailsafe();
-    }
-  }
-);
-
-
-/* =========================================================
-   FIM
-   ========================================================= */
+     }
