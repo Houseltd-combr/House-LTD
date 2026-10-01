@@ -3,55 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Vagas — HOUSE LTD</title>
+    <title>Vagas — Painel ADM | HOUSE LTD</title>
     <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/firebase-config.js"></script>
 </head>
 <body>
     <div class="container">
-        <header style="text-align: center;">
-            <h1>GERENCIAR <span>VAGAS</span></h1>
-            <nav style="margin-top: 20px;">
-                <a href="painel.html">Início</a>
-                <a href="solicitacoes.html">Solicitações</a>
-                <a href="vagas-admin.html">Vagas</a>
-                <a href="membros.html">Membros</a>
-                <a href="#" id="btn-sair" style="border-color: #e50914;">Sair</a>
+        <header>
+            <h1>GERENCIAR<span> VAGAS</span></h1>
+            <nav>
+                <a href="painel.html">INÍCIO</a>
+                <a href="solicitacoes.html">SOLICITAÇÕES</a>
+                <a href="vagas.html" style="color: #00a8ff; border-color: #00a8ff;">VAGAS</a>
+                <a href="membros.html">MEMBROS</a>
+                <a href="#" id="btn-sair">SAIR</a>
             </nav>
         </header>
 
         <main>
-            <div class="card">
-                <h2>➕ CRIAR NOVA VAGA</h2>
-                <form id="criar-vaga-form">
-                    <label>NOME DO PERSONAGEM</label>
-                    <input type="text" id="novo-personagem" required>
-                    
-                    <label>OBRA / FANDOM</label>
-                    <input type="text" id="nova-obra" required>
-                    
-                    <label>LINK DA FOTO</label>
-                    <input type="url" id="nova-foto" required>
-                    
-                    <button type="submit" class="btn btn-primary" style="margin-top: 15px;">CRIAR VAGA</button>
-                </form>
+            <!-- CRIAR NOVA VAGA -->
+            <div class="card" style="margin-bottom: 40px;">
+                <h3 style="color: #00a8ff; margin-bottom: 20px;">➕ CRIAR NOVA VAGA</h3>
+                <label>NOME DO PERSONAGEM</label>
+                <input type="text" id="nova-vaga-personagem" placeholder="Ex: Naruto Uzumaki">
+                
+                <label>OBRA / FANDOM</label>
+                <input type="text" id="nova-vaga-obra" placeholder="Ex: Naruto">
+                
+                <label>LINK DA FOTO</label>
+                <input type="text" id="nova-vaga-foto" placeholder="https://...">
+                
+                <button onclick="criarVaga()" class="btn" style="width: 100%; background: #00a8ff; border: none; margin-top: 10px;">CRIAR VAGA</button>
             </div>
 
-            <div class="card">
-                <h2>🟢 VAGAS ABERTAS</h2>
-                <div id="admin-vagas-abertas">
-                    <p style="color: #888;">Nenhuma vaga aberta.</p>
+            <!-- VAGAS ABERTAS -->
+            <div class="card" style="margin-bottom: 30px;">
+                <h3 style="color: #00cc66; margin-bottom: 15px;">🟢 VAGAS ABERTAS</h3>
+                <div id="vagas-abertas">
+                    <p style="color: rgba(255,255,255,0.4);">Carregando...</p>
                 </div>
             </div>
 
+            <!-- VAGAS FECHADAS -->
             <div class="card">
-                <h2>🔴 VAGAS FECHADAS</h2>
-                <div id="admin-vagas-fechadas">
-                    <p style="color: #888;">Nenhuma vaga fechada.</p>
+                <h3 style="color: #ff4444; margin-bottom: 15px;">🔴 VAGAS FECHADAS</h3>
+                <div id="vagas-fechadas">
+                    <p style="color: rgba(255,255,255,0.4);">Carregando...</p>
                 </div>
             </div>
         </main>
     </div>
-    <script src="../js/admin-auth.js"></script>
-    <script src="../js/vagas.js"></script>
+
+    <script type="module" src="../js/admin-vagas.js"></script>
+    <script>
+        document.getElementById('btn-sair').addEventListener('click', () => {
+            localStorage.removeItem('adminLogado');
+            localStorage.removeItem('adminNome');
+            localStorage.removeItem('adminCargo');
+            window.location.href = 'login.html';
+        });
+    </script>
 </body>
 </html>
