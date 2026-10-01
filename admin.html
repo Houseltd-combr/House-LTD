@@ -1,122 +1,51 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
   <meta charset="UTF-8">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Administração • House LTD</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
-    rel="stylesheet"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administração — House LTD</title>
 
   <link rel="stylesheet" href="style.css">
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 
-
-<body data-page="admin">
-
-  <div id="adminLoading" class="loading-screen">
-
-    <div class="loading-logo">
-      LTD
-    </div>
-
-    <div class="loading-bar">
-      <span></span>
-    </div>
-
-    <p>
-      Verificando acesso...
-    </p>
-
-  </div>
-
-
-  <div class="background-effects">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-
+<body>
 
   <!-- LOGIN -->
+  <section id="adminLogin" class="admin-login">
 
-  <section
-    id="adminLogin"
-    class="admin-login"
-  >
+    <div class="login-card">
 
-    <div class="admin-login-card">
-
-      <div class="logo large">
-        HOUSE <span>LTD</span>
+      <div class="login-logo">
+        LTD
       </div>
 
-      <span class="small-label">
-        ÁREA ADMINISTRATIVA
-      </span>
-
-      <h1>
-        Acesso restrito
-      </h1>
+      <h1>Administração</h1>
 
       <p>
-        Digite seu código administrativo.
+        Digite seu código de acesso para entrar no painel.
       </p>
 
+      <form id="loginForm">
 
-      <form id="adminLoginForm">
-
-        <div class="field">
-
-          <label>
-            Código
-          </label>
-
-          <input
-            id="adminCode"
-            type="password"
-            autocomplete="off"
-            required
-            placeholder="Digite seu código"
-          >
-
-        </div>
-
-
-        <button
-          type="submit"
-          class="button primary full"
+        <input
+          type="password"
+          id="adminCode"
+          placeholder="Código de administração"
+          autocomplete="off"
+          required
         >
+
+        <button type="submit">
           Entrar
         </button>
 
-
-        <div
-          id="adminLoginStatus"
-          class="form-status"
-        ></div>
-
       </form>
 
-
-      <a
-        href="index.html"
-        class="back-link"
-      >
-        ← Voltar para o site
-      </a>
+      <p id="loginError" class="login-error"></p>
 
     </div>
 
@@ -124,376 +53,141 @@
 
 
   <!-- PAINEL -->
-
-  <section
-    id="adminPanel"
-    class="admin-panel hidden"
-  >
+  <section id="adminPanel" class="admin-panel" style="display:none;">
 
     <header class="admin-header">
 
       <div>
-
-        <span class="small-label">
-          HOUSE LTD
-        </span>
-
-        <h1>
-          Administração
-        </h1>
-
-        <p id="adminWelcome">
-          Bem-vindo.
-        </p>
-
+        <span id="adminRole"></span>
+        <h1 id="adminName">Administração LTD</h1>
       </div>
 
-
-      <div class="admin-header-actions">
-
-        <a
-          href="index.html"
-          class="button secondary"
-        >
-          Site
-        </a>
-
-        <button
-          id="logoutButton"
-          class="button danger"
-        >
-          Sair
-        </button>
-
-      </div>
+      <button id="logoutButton">
+        Sair
+      </button>
 
     </header>
 
 
-    <!-- STATS -->
+    <main>
 
-    <div class="stats-grid">
-
-      <div class="stat-card">
-
-        <span>
-          Solicitações
-        </span>
-
-        <strong id="statRequests">
-          0
-        </strong>
-
+      <div class="admin-welcome">
+        <h2>Bem-vindo(a), <span id="welcomeName"></span>!</h2>
+        <p>Gerencie a House LTD por aqui.</p>
       </div>
 
 
-      <div class="stat-card">
+      <section class="admin-stats">
 
-        <span>
-          Vagas abertas
-        </span>
-
-        <strong id="statOpen">
-          0
-        </strong>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <span>
-          Vagas fechadas
-        </span>
-
-        <strong id="statClosed">
-          0
-        </strong>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <span>
-          Membros
-        </span>
-
-        <strong id="statMembers">
-          0
-        </strong>
-
-      </div>
-
-    </div>
-
-
-    <!-- SOLICITAÇÕES -->
-
-    <section class="admin-section">
-
-      <div class="admin-section-header">
-
-        <div>
-
-          <span class="small-label">
-            RECEPÇÃO
-          </span>
-
-          <h2>
-            Solicitações
-          </h2>
-
+        <div class="stat-card">
+          <span>Solicitações</span>
+          <strong id="pendingCount">0</strong>
         </div>
 
-        <button
-          id="refreshAdmin"
-          class="button secondary"
-        >
-          Atualizar
+        <div class="stat-card">
+          <span>Vagas abertas</span>
+          <strong id="openVacanciesCount">0</strong>
+        </div>
+
+        <div class="stat-card">
+          <span>Vagas fechadas</span>
+          <strong id="closedVacanciesCount">0</strong>
+        </div>
+
+        <div class="stat-card">
+          <span>Membros</span>
+          <strong id="membersCount">0</strong>
+        </div>
+
+      </section>
+
+
+      <nav class="admin-navigation">
+
+        <button data-section="requests">
+          Solicitações
         </button>
 
-      </div>
+        <button data-section="vacancies">
+          Vagas
+        </button>
+
+        <button data-section="members">
+          Membros
+        </button>
+
+        <button data-section="admins">
+          ADMs
+        </button>
+
+        <button data-section="chat">
+          Chat
+        </button>
+
+        <button data-section="logs">
+          Logs
+        </button>
+
+      </nav>
 
 
-      <div
-        id="requestsAdminList"
-        class="admin-list"
-      ></div>
-
-    </section>
+      <section id="requestsSection" class="admin-section">
+        <h2>Solicitações</h2>
+        <div id="requestsList"></div>
+      </section>
 
 
-    <!-- VAGAS -->
-
-    <section class="admin-section">
-
-      <div class="admin-section-header">
-
-        <div>
-
-          <span class="small-label">
-            PERSONAGENS
-          </span>
-
-          <h2>
-            Gerenciar vagas
-          </h2>
-
-        </div>
-
-      </div>
+      <section id="vacanciesSection" class="admin-section">
+        <h2>Vagas</h2>
+        <div id="vacanciesList"></div>
+      </section>
 
 
-      <form
-        id="vacancyForm"
-        class="glass-form admin-form"
-      >
-
-        <input
-          id="vacancyId"
-          type="hidden"
-        >
+      <section id="membersSection" class="admin-section">
+        <h2>Membros</h2>
+        <div id="membersList"></div>
+      </section>
 
 
-        <div class="form-grid">
-
-          <div class="field">
-
-            <label>
-              Personagem
-            </label>
-
-            <input
-              id="vacancyCharacter"
-              required
-            >
-
-          </div>
+      <section id="adminsSection" class="admin-section">
+        <h2>Administradores</h2>
+        <div id="adminsList"></div>
+      </section>
 
 
-          <div class="field">
+      <section id="chatSection" class="admin-section">
+        <h2>Chat da Administração</h2>
 
-            <label>
-              Obra
-            </label>
+        <div id="adminChatMessages"></div>
 
-            <input
-              id="vacancyWork"
-              required
-            >
+        <form id="chatForm">
 
-          </div>
-
-
-          <div class="field">
-
-            <label>
-              Status
-            </label>
-
-            <select id="vacancyStatus">
-
-              <option value="aberta">
-                Aberta
-              </option>
-
-              <option value="fechada">
-                Fechada
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <div class="field">
-
-            <label>
-              Foto
-            </label>
-
-            <input
-              id="vacancyPhoto"
-              type="file"
-              accept="image/*"
-            >
-
-          </div>
-
-        </div>
-
-
-        <div class="form-actions">
-
-          <button
-            type="submit"
-            class="button primary"
+          <input
+            type="text"
+            id="chatMessage"
+            placeholder="Digite uma mensagem..."
+            required
           >
-            Salvar vaga
+
+          <button type="submit">
+            Enviar
           </button>
 
-          <button
-            type="button"
-            id="cancelVacancyEdit"
-            class="button secondary"
-          >
-            Limpar
-          </button>
-
-        </div>
+        </form>
+      </section>
 
 
-        <div
-          id="vacancyStatusMessage"
-          class="form-status"
-        ></div>
+      <section id="logsSection" class="admin-section">
+        <h2>Logs</h2>
+        <div id="logsList"></div>
+      </section>
 
-      </form>
-
-
-      <div
-        id="adminVacanciesList"
-        class="admin-list"
-      ></div>
-
-    </section>
-
-
-    <!-- MEMBROS -->
-
-    <section class="admin-section">
-
-      <div class="admin-section-header">
-
-        <div>
-
-          <span class="small-label">
-            COMUNIDADE
-          </span>
-
-          <h2>
-            Membros
-          </h2>
-
-        </div>
-
-      </div>
-
-
-      <div
-        id="adminMembersList"
-        class="admin-list"
-      ></div>
-
-    </section>
-
-
-    <!-- ADMS -->
-
-    <section class="admin-section">
-
-      <div class="admin-section-header">
-
-        <div>
-
-          <span class="small-label">
-            EQUIPE
-          </span>
-
-          <h2>
-            ADMs
-          </h2>
-
-        </div>
-
-      </div>
-
-
-      <div
-        id="adminProfilesList"
-        class="admin-list"
-      ></div>
-
-    </section>
-
-
-    <!-- LOGS -->
-
-    <section class="admin-section">
-
-      <div class="admin-section-header">
-
-        <div>
-
-          <span class="small-label">
-            SISTEMA
-          </span>
-
-          <h2>
-            Logs
-          </h2>
-
-        </div>
-
-      </div>
-
-
-      <div
-        id="logsAdminList"
-        class="admin-list"
-      ></div>
-
-    </section>
+    </main>
 
   </section>
 
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
   <script src="app.js"></script>
 
 </body>
-        </html>
+          </html>
