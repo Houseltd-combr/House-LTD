@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troca de Personagem — HOUSE LTD</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header style="text-align: center;">
+            <h1>HOUSE <span>LTD</span></h1>
+            <p style="font-size: 1.2em; color: #999; margin-top: 10px;">SOLICITAR TROCA DE PERSONAGEM</p>
+            <nav>
+                <a href="index.html">Início</a>
+                <a href="historia.html">História</a>
+                <a href="vagas-abertas.html">Abertas</a>
+                <a href="vagas-fechadas.html">Fechadas</a>
+                <a href="solicitar-vaga.html">Solicitar</a>
+                <a href="troca-personagem.html">Troca</a>
+                <a href="admin/login.html" style="border-color: #e50914;">Admin</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="card">
+                <h2>SEU PERSONAGEM ATUAL</h2>
+                
+                <form id="troca-form">
+                    <label for="personagem-atual">PERSONAGEM ATUAL</label>
+                    <input type="text" id="personagem-atual" placeholder="Seu personagem atual" required>
+
+                    <label for="obra-atual">OBRA / FANDOM ATUAL</label>
+                    <input type="text" id="obra-atual" placeholder="De onde é seu personagem atual" required>
+
+                    <h3 style="margin-top: 30px;">NOVO PERSONAGEM</h3>
+
+                    <label for="novo-personagem">NOVO PERSONAGEM</label>
+                    <input type="text" id="novo-personagem" placeholder="Nome do novo personagem" required>
+
+                    <label for="nova-obra">NOVA OBRA / FANDOM</label>
+                    <input type="text" id="nova-obra" placeholder="De onde é o novo personagem" required>
+
+                    <label for="nova-foto">LINK DA NOVA FOTO</label>
+                    <input type="url" id="nova-foto" placeholder="Cole o link da nova imagem" required>
+
+                    <button type="submit" class="btn btn-primary" style="margin-top: 20px; width: 100%;">ENVIAR SOLICITAÇÃO DE TROCA</button>
+                </form>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2025 HOUSE LTD — HOUSE ALL/GERAL | TODOS OS DIREITOS RESERVADOS</p>
+        </footer>
+    </div>
+    <script src="js/troca.js"></script>
+</body>
+</html>
