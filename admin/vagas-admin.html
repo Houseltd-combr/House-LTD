@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Vagas — HOUSE LTD</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header style="text-align: center;">
+            <h1>GERENCIAR <span>VAGAS</span></h1>
+            <nav style="margin-top: 20px;">
+                <a href="painel.html">Início</a>
+                <a href="solicitacoes.html">Solicitações</a>
+                <a href="vagas-admin.html">Vagas</a>
+                <a href="membros.html">Membros</a>
+                <a href="#" id="btn-sair" style="border-color: #e50914;">Sair</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="card">
+                <h2>➕ CRIAR NOVA VAGA</h2>
+                <form id="criar-vaga-form">
+                    <label>NOME DO PERSONAGEM</label>
+                    <input type="text" id="novo-personagem" required>
+                    
+                    <label>OBRA / FANDOM</label>
+                    <input type="text" id="nova-obra" required>
+                    
+                    <label>LINK DA FOTO</label>
+                    <input type="url" id="nova-foto" required>
+                    
+                    <button type="submit" class="btn btn-primary" style="margin-top: 15px;">CRIAR VAGA</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>🟢 VAGAS ABERTAS</h2>
+                <div id="admin-vagas-abertas">
+                    <p style="color: #888;">Nenhuma vaga aberta.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔴 VAGAS FECHADAS</h2>
+                <div id="admin-vagas-fechadas">
+                    <p style="color: #888;">Nenhuma vaga fechada.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/admin-auth.js"></script>
+    <script src="../js/vagas.js"></script>
+</body>
+</html>
