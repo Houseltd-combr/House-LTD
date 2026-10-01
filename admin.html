@@ -1,193 +1,1106 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Administração — House LTD</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>House LTD • Administração</title>
 
-  <link rel="stylesheet" href="style.css">
+  <style>
+    :root{
+      --bg:#12070d;
+      --panel:rgba(34,10,20,.82);
+      --panel2:rgba(62,15,34,.72);
+      --pink:#ff5d9e;
+      --pink2:#ff8fbd;
+      --red:#d52f61;
+      --white:#fff4f8;
+      --muted:#cdaebb;
+      --line:rgba(255,120,170,.20);
+      --ok:#67e6a7;
+      --danger:#ff6b78;
+    }
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      color:var(--white);
+      font-family:Inter,system-ui,sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%,#5d1538 0,transparent 32%),
+        radial-gradient(circle at 90% 80%,#7a173e 0,transparent 30%),
+        var(--bg);
+      min-height:100vh;
+    }
+
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.18;
+      background-image:radial-gradient(#fff 1px,transparent 1px);
+      background-size:32px 32px;
+      animation:drift 16s linear infinite;
+    }
+
+    @keyframes drift{
+      to{background-position:32px 32px}
+    }
+
+    button,input,select,textarea{
+      font:inherit;
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    .hidden{
+      display:none!important;
+    }
+
+    .login{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+
+    .login-card,
+    .panel,
+    .stat{
+      border:1px solid var(--line);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(58,13,31,.92),
+          rgba(20,7,14,.86)
+        );
+      box-shadow:0 20px 60px #0008;
+      backdrop-filter:blur(18px);
+      border-radius:24px;
+    }
+
+    .login-card{
+      width:min(440px,100%);
+      padding:34px;
+      text-align:center;
+    }
+
+    .logo{
+      width:76px;
+      height:76px;
+      border-radius:24px;
+      margin:0 auto 16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,var(--pink),var(--red));
+      font-size:30px;
+      font-weight:900;
+      box-shadow:0 12px 35px #ff4f9580;
+    }
+
+    h1,h2,h3{
+      margin:0 0 8px;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    input,
+    select,
+    textarea{
+      width:100%;
+      border:1px solid var(--line);
+      background:#160810;
+      color:var(--white);
+      border-radius:13px;
+      padding:13px 14px;
+      outline:none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus{
+      border-color:var(--pink);
+      box-shadow:0 0 0 3px #ff5d9e22;
+    }
+
+    .field{
+      margin:18px 0;
+      text-align:left;
+    }
+
+    .field label{
+      display:block;
+      margin:0 0 7px;
+      font-size:13px;
+      color:#f1c9da;
+    }
+
+    .btn{
+      border:0;
+      border-radius:13px;
+      padding:12px 16px;
+      color:#fff;
+      background:linear-gradient(135deg,var(--pink),var(--red));
+      font-weight:800;
+      box-shadow:0 8px 22px #ff477533;
+    }
+
+    .btn.ghost{
+      background:#ffffff0b;
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+
+    .btn.danger{
+      background:linear-gradient(135deg,#ff6878,#b91e45);
+    }
+
+    .msg{
+      min-height:20px;
+      margin-top:12px;
+      color:#ff9aac;
+      font-size:13px;
+    }
+
+    .app{
+      display:grid;
+      grid-template-columns:245px 1fr;
+      min-height:100vh;
+    }
+
+    aside{
+      padding:20px;
+      border-right:1px solid var(--line);
+      background:#10060ccc;
+      backdrop-filter:blur(20px);
+      position:sticky;
+      top:0;
+      height:100vh;
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-bottom:28px;
+    }
+
+    .brand .mini{
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--pink),var(--red));
+      display:grid;
+      place-items:center;
+      font-weight:900;
+    }
+
+    .brand strong{
+      display:block;
+    }
+
+    .nav{
+      display:grid;
+      gap:8px;
+    }
+
+    .nav button{
+      width:100%;
+      text-align:left;
+      background:transparent;
+      border:1px solid transparent;
+      color:#e7cbd7;
+      padding:12px 14px;
+      border-radius:13px;
+    }
+
+    .nav button.active,
+    .nav button:hover{
+      background:#ff5d9e18;
+      border-color:var(--line);
+      color:#fff;
+    }
+
+    .adminbox{
+      position:absolute;
+      left:20px;
+      right:20px;
+      bottom:20px;
+      padding:13px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#ff5d9e0b;
+    }
+
+    main{
+      padding:28px;
+      min-width:0;
+    }
+
+    .top{
+      display:flex;
+      justify-content:space-between;
+      gap:15px;
+      align-items:center;
+      margin-bottom:22px;
+    }
+
+    .top-actions{
+      display:flex;
+      gap:8px;
+    }
+
+    .view{
+      display:none;
+    }
+
+    .view.active{
+      display:block;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .stat{
+      padding:20px;
+    }
+
+    .stat small{
+      color:var(--muted);
+    }
+
+    .stat b{
+      display:block;
+      font-size:30px;
+      margin-top:6px;
+    }
+
+    .panel{
+      padding:20px;
+      margin-bottom:18px;
+    }
+
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      margin-bottom:15px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:13px;
+    }
+
+    .card{
+      padding:15px;
+      border:1px solid var(--line);
+      border-radius:17px;
+      background:#ffffff05;
+    }
+
+    .row{
+      display:flex;
+      gap:9px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .actions{
+      display:flex;
+      gap:7px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .actions .btn{
+      padding:9px 11px;
+      font-size:12px;
+    }
+
+    .pill{
+      display:inline-flex;
+      padding:5px 9px;
+      border-radius:999px;
+      font-size:11px;
+      background:#ff5d9e16;
+      border:1px solid var(--line);
+      color:#ffd6e6;
+    }
+
+    .online{
+      color:var(--ok);
+    }
+
+    .offline{
+      color:var(--muted);
+    }
+
+    .avatar{
+      width:48px;
+      height:48px;
+      border-radius:15px;
+      object-fit:cover;
+      background:#32101f;
+      border:1px solid var(--line);
+    }
+
+    .cover{
+      height:90px;
+      width:100%;
+      object-fit:cover;
+      border-radius:14px;
+      margin-bottom:10px;
+    }
+
+    .tablewrap{
+      overflow:auto;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    th,td{
+      padding:12px 9px;
+      border-bottom:1px solid var(--line);
+      text-align:left;
+      font-size:13px;
+    }
+
+    th{
+      color:#efbfd2;
+    }
+
+    .empty{
+      padding:28px;
+      text-align:center;
+      color:var(--muted);
+    }
+
+    .toast{
+      position:fixed;
+      right:20px;
+      bottom:20px;
+      z-index:20;
+      background:#210b16;
+      border:1px solid var(--line);
+      padding:13px 16px;
+      border-radius:14px;
+      box-shadow:0 12px 40px #0008;
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:#0009;
+      display:none;
+      place-items:center;
+      padding:20px;
+      z-index:10;
+    }
+
+    .modal.open{
+      display:grid;
+    }
+
+    .modal-card{
+      width:min(650px,100%);
+      max-height:90vh;
+      overflow:auto;
+      background:#1a0811;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:22px;
+    }
+
+    @media(max-width:900px){
+      .app{
+        grid-template-columns:1fr;
+      }
+
+      aside{
+        position:relative;
+        height:auto;
+        border-right:0;
+        border-bottom:1px solid var(--line);
+      }
+
+      .adminbox{
+        position:static;
+        margin-top:20px;
+      }
+
+      .stats{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .grid{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+
+    @media(max-width:560px){
+      main{
+        padding:17px;
+      }
+
+      .stats,
+      .grid{
+        grid-template-columns:1fr;
+      }
+
+      .top{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- LOGIN -->
-  <section id="adminLogin" class="admin-login">
+<section id="loginView" class="login">
+  <div class="login-card">
 
-    <div class="login-card">
+    <div class="logo">LTD</div>
 
-      <div class="login-logo">
-        LTD
+    <h1>Administração LTD</h1>
+
+    <p class="muted">
+      Entre com seu código administrativo.
+    </p>
+
+    <div class="field">
+      <label for="adminCode">Código</label>
+
+      <input
+        id="adminCode"
+        type="password"
+        autocomplete="off"
+        placeholder="Digite seu código"
+      >
+    </div>
+
+    <button
+      id="loginBtn"
+      class="btn"
+      style="width:100%"
+    >
+      Entrar
+    </button>
+
+    <div id="loginMsg" class="msg"></div>
+
+  </div>
+</section>
+
+
+<section id="appView" class="app hidden">
+
+  <aside>
+
+    <div class="brand">
+
+      <div class="mini">
+        L
       </div>
 
-      <h1>Administração</h1>
-
-      <p>
-        Digite seu código de acesso para entrar no painel.
-      </p>
-
-      <form id="loginForm">
-
-        <input
-          type="password"
-          id="adminCode"
-          placeholder="Código de administração"
-          autocomplete="off"
-          required
-        >
-
-        <button type="submit">
-          Entrar
-        </button>
-
-      </form>
-
-      <p id="loginError" class="login-error"></p>
+      <div>
+        <strong>House LTD</strong>
+        <span class="muted">
+          Painel administrativo
+        </span>
+      </div>
 
     </div>
 
-  </section>
+
+    <nav class="nav">
+
+      <button
+        data-view="home"
+        class="active"
+      >
+        ⌂ Início
+      </button>
+
+      <button data-view="requests">
+        ▣ Solicitações
+      </button>
+
+      <button data-view="vacancies">
+        ◇ Vagas
+      </button>
+
+      <button data-view="members">
+        ♙ Membros
+      </button>
+
+      <button data-view="admins">
+        ✦ ADMs
+      </button>
+
+      <button data-view="chat">
+        ♡ Chat
+      </button>
+
+      <button data-view="logs">
+        ◷ Logs
+      </button>
+
+    </nav>
 
 
-  <!-- PAINEL -->
-  <section id="adminPanel" class="admin-panel" style="display:none;">
+    <div class="adminbox">
 
-    <header class="admin-header">
-
-      <div>
-        <span id="adminRole"></span>
-        <h1 id="adminName">Administração LTD</h1>
+      <div id="meName">
+        —
       </div>
 
-      <button id="logoutButton">
+      <div id="meRole" class="muted">
+        —
+      </div>
+
+      <button
+        id="logoutBtn"
+        class="btn ghost"
+        style="width:100%;margin-top:10px"
+      >
         Sair
       </button>
 
-    </header>
+    </div>
+
+  </aside>
 
 
-    <main>
+  <main>
 
-      <div class="admin-welcome">
-        <h2>Bem-vindo(a), <span id="welcomeName"></span>!</h2>
-        <p>Gerencie a House LTD por aqui.</p>
+    <div class="top">
+
+      <div>
+
+        <h1 id="pageTitle">
+          Início
+        </h1>
+
+        <span
+          id="pageSubtitle"
+          class="muted"
+        >
+          Visão geral da House LTD
+        </span>
+
+      </div>
+
+      <div class="top-actions">
+
+        <button
+          id="refreshBtn"
+          class="btn ghost"
+        >
+          Atualizar
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- INÍCIO -->
+
+    <section
+      id="view-home"
+      class="view active"
+    >
+
+      <div class="stats">
+
+        <div class="stat">
+          <small>
+            Solicitações pendentes
+          </small>
+
+          <b id="statRequests">
+            0
+          </b>
+        </div>
+
+
+        <div class="stat">
+          <small>
+            Vagas abertas
+          </small>
+
+          <b id="statOpen">
+            0
+          </b>
+        </div>
+
+
+        <div class="stat">
+          <small>
+            Vagas fechadas
+          </small>
+
+          <b id="statClosed">
+            0
+          </b>
+        </div>
+
+
+        <div class="stat">
+          <small>
+            Membros
+          </small>
+
+          <b id="statMembers">
+            0
+          </b>
+        </div>
+
       </div>
 
 
-      <section class="admin-stats">
+      <div class="panel">
 
-        <div class="stat-card">
-          <span>Solicitações</span>
-          <strong id="pendingCount">0</strong>
+        <div class="panel-head">
+
+          <div>
+            <h2>
+              Resumo
+            </h2>
+
+            <span class="muted">
+              Dados carregados do Firebase
+            </span>
+          </div>
+
         </div>
 
-        <div class="stat-card">
-          <span>Vagas abertas</span>
-          <strong id="openVacanciesCount">0</strong>
+        <div
+          id="homeSummary"
+          class="grid"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- SOLICITAÇÕES -->
+
+    <section
+      id="view-requests"
+      class="view"
+    >
+
+      <div class="panel">
+
+        <div class="panel-head">
+
+          <div>
+
+            <h2>
+              Solicitações
+            </h2>
+
+            <span class="muted">
+              Aceite ou recuse fichas pendentes.
+            </span>
+
+          </div>
+
+          <button
+            class="btn ghost"
+            data-refresh-section="requests"
+          >
+            Atualizar
+          </button>
+
         </div>
 
-        <div class="stat-card">
-          <span>Vagas fechadas</span>
-          <strong id="closedVacanciesCount">0</strong>
-        </div>
-
-        <div class="stat-card">
-          <span>Membros</span>
-          <strong id="membersCount">0</strong>
-        </div>
-
-      </section>
-
-
-      <nav class="admin-navigation">
-
-        <button data-section="requests">
-          Solicitações
-        </button>
-
-        <button data-section="vacancies">
-          Vagas
-        </button>
-
-        <button data-section="members">
-          Membros
-        </button>
-
-        <button data-section="admins">
-          ADMs
-        </button>
-
-        <button data-section="chat">
-          Chat
-        </button>
-
-        <button data-section="logs">
-          Logs
-        </button>
-
-      </nav>
-
-
-      <section id="requestsSection" class="admin-section">
-        <h2>Solicitações</h2>
         <div id="requestsList"></div>
-      </section>
+
+      </div>
+
+    </section>
 
 
-      <section id="vacanciesSection" class="admin-section">
-        <h2>Vagas</h2>
-        <div id="vacanciesList"></div>
-      </section>
+    <!-- VAGAS -->
+
+    <section
+      id="view-vacancies"
+      class="view"
+    >
+
+      <div class="panel">
+
+        <div class="panel-head">
+
+          <div>
+
+            <h2>
+              Vagas
+            </h2>
+
+            <span class="muted">
+              Abertas e fechadas ficam visíveis no painel.
+            </span>
+
+          </div>
+
+          <button
+            id="newVacancyBtn"
+            class="btn"
+          >
+            + Nova vaga
+          </button>
+
+        </div>
+
+        <div
+          id="vacanciesList"
+          class="grid"
+        ></div>
+
+      </div>
+
+    </section>
 
 
-      <section id="membersSection" class="admin-section">
-        <h2>Membros</h2>
-        <div id="membersList"></div>
-      </section>
+    <!-- MEMBROS -->
+
+    <section
+      id="view-members"
+      class="view"
+    >
+
+      <div class="panel">
+
+        <div class="panel-head">
+
+          <div>
+
+            <h2>
+              Membros
+            </h2>
+
+            <span class="muted">
+              Membros aprovados.
+            </span>
+
+          </div>
+
+        </div>
 
 
-      <section id="adminsSection" class="admin-section">
-        <h2>Administradores</h2>
-        <div id="adminsList"></div>
-      </section>
+        <div class="tablewrap">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Nome</th>
+                <th>Idade</th>
+                <th>Personagem</th>
+                <th>Obra</th>
+                <th>Data</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="membersList"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
 
 
-      <section id="chatSection" class="admin-section">
-        <h2>Chat da Administração</h2>
+    <!-- ADMS -->
 
-        <div id="adminChatMessages"></div>
+    <section
+      id="view-admins"
+      class="view"
+    >
 
-        <form id="chatForm">
+      <div class="panel">
+
+        <div class="panel-head">
+
+          <div>
+
+            <h2>
+              Administradores
+            </h2>
+
+            <span class="muted">
+              Equipe oficial da LTD.
+            </span>
+
+          </div>
+
+        </div>
+
+        <div
+          id="adminsList"
+          class="grid"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CHAT -->
+
+    <section
+      id="view-chat"
+      class="view"
+    >
+
+      <div class="panel">
+
+        <div class="panel-head">
+
+          <div>
+
+            <h2>
+              Chat ADM
+            </h2>
+
+            <span class="muted">
+              Conversa interna.
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="chatList"
+          style="max-height:420px;overflow:auto"
+        ></div>
+
+
+        <div
+          style="display:flex;gap:8px;margin-top:14px"
+        >
 
           <input
-            type="text"
-            id="chatMessage"
-            placeholder="Digite uma mensagem..."
-            required
+            id="chatInput"
+            placeholder="Escreva uma mensagem..."
           >
 
-          <button type="submit">
+          <button
+            id="sendChatBtn"
+            class="btn"
+          >
             Enviar
           </button>
 
-        </form>
-      </section>
+        </div>
+
+      </div>
+
+    </section>
 
 
-      <section id="logsSection" class="admin-section">
-        <h2>Logs</h2>
-        <div id="logsList"></div>
-      </section>
+    <!-- LOGS -->
 
-    </main>
+    <section
+      id="view-logs"
+      class="view"
+    >
 
-  </section>
+      <div class="panel">
+
+        <div class="panel-head">
+
+          <div>
+
+            <h2>
+              Logs
+            </h2>
+
+            <span class="muted">
+              Ações registradas pelo painel.
+            </span>
+
+          </div>
+
+        </div>
 
 
-  <script src="app.js"></script>
+        <div class="tablewrap">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Data</th>
+                <th>ADM</th>
+                <th>Ação</th>
+                <th>Detalhes</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="logsList"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</section>
+
+
+<!-- MODAL DE VAGA -->
+
+<div
+  id="modal"
+  class="modal"
+>
+
+  <div class="modal-card">
+
+    <div class="panel-head">
+
+      <h2 id="modalTitle">
+        Nova vaga
+      </h2>
+
+      <button
+        id="closeModal"
+        class="btn ghost"
+      >
+        Fechar
+      </button>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Personagem
+      </label>
+
+      <input
+        id="vacCharacter"
+        placeholder="Ex.: Rudo"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Obra
+      </label>
+
+      <input
+        id="vacWork"
+        placeholder="Ex.: Gachiakuta"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        URL da imagem
+      </label>
+
+      <input
+        id="vacImage"
+        placeholder="URL Cloudinary"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Status
+      </label>
+
+      <select id="vacStatus">
+
+        <option value="aberta">
+          Aberta
+        </option>
+
+        <option value="fechada">
+          Fechada
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <button
+      id="saveVacancyBtn"
+      class="btn"
+    >
+      Salvar vaga
+    </button>
+
+
+    <div
+      id="vacMsg"
+      class="msg"
+    ></div>
+
+  </div>
+
+</div>
+
+
+<div
+  id="toast"
+  class="toast hidden"
+></div>
+
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script src="./app.js"></script>
 
 </body>
-          </html>
+  </html>
