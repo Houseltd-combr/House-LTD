@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Personagem | HOUSE LTD</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/firebase-config.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SOI<span>CITAR</span></h1>
+            <p>Preencha os dados abaixo para reservar seu personagem!</p>
+        </header>
+
+        <main>
+            <form id="form-solicitacao">
+                <label>NOME COMPLETO *</label>
+                <input type="text" id="nome" placeholder="Seu nome completo" required>
+
+                <label>ÚLTIMOS 4 DÍGITOS DO TELEFONE *</label>
+                <input type="text" id="telefone" maxlength="4" placeholder="____" required>
+
+                <label>NOME DO PERSONAGEM *</label>
+                <input type="text" id="personagem" placeholder="Ex: Nejire Hadou" required>
+
+                <label>OBRA / FANDOM *</label>
+                <input type="text" id="obra" placeholder="Ex: My Hero Academia" required>
+
+                <label>FOTO DO PERSONAGEM *</label>
+                <input type="file" id="foto" accept="image/*" required style="padding: 10px 0;">
+                <div id="preview-container" style="display: none; margin: 10px 0;">
+                    <p style="font-size: 0.9em; color: #00a8ff; margin-bottom: 5px;">✅ Pré-visualização:</p>
+                    <img id="preview-foto" style="max-width: 150px; max-height: 150px; border-radius: 8px; border: 2px solid #00a8ff;">
+                </div>
+
+                <label>MENSAGEM (opcional)</label>
+                <textarea id="mensagem" rows="4" placeholder="Algo que queira nos dizer..."></textarea>
+
+                <button type="submit" id="btn-enviar">ENVIAR SOLICITAÇÃO</button>
+            </form>
+
+            <div id="mensagem-sucesso" style="display: none; text-align: center; margin-top: 30px; padding: 25px; background: rgba(0,200,100,0.1); border: 1px solid #00c864; border-radius: 8px;">
+                <h3 style="color: #00c864; margin-top: 0; font-size: 1.4em;">✅ ENVIADO COM SUCESSO!</h3>
+                <p style="color: #ddd; margin: 10px 0;">Sua solicitação foi enviada. Aguarde a aprovação!</p>
+                <button type="button" onclick="voltar()" style="background: #00c864; color: white; border: none; padding: 10px 24px; border-radius: 4px; font-size: 1em; cursor: pointer;">ENVIAR OUTRA</button>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="js/formulario.js"></script>
+</body>
+</html>
