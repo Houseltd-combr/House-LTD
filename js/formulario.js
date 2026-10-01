@@ -9,7 +9,7 @@ const inputFoto = document.getElementById('foto');
 const previewContainer = document.getElementById('preview-container');
 const previewFoto = document.getElementById('preview-foto');
 
-// Pré-visualização da foto escolhida
+// Pré-visualização da foto
 if (inputFoto) {
     inputFoto.addEventListener('change', function(e) {
         const arquivo = e.target.files[0];
@@ -26,10 +26,10 @@ if (inputFoto) {
     });
 }
 
-// Função para enviar a foto ao Cloudinary
+// Enviar foto para o Cloudinary
 async function enviarParaCloudinary(arquivo) {
-    const cloudName = "dum5yqzbo"; // ⚠️ Troque pelo SEU nome do Cloudinary!
-    const uploadPreset = "house_ltd"; // Nome do preset que você criou
+    const cloudName = "dum5yqzbo"; // ⚠️ TROQUE PELO SEU CLOUD NAME!
+    const uploadPreset = "house_ltd";
 
     const formData = new FormData();
     formData.append("file", arquivo);
@@ -50,16 +50,17 @@ async function enviarParaCloudinary(arquivo) {
     }
 }
 
+// Envio do formulário
 if (form) {
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        const btnEnviar = document.getElementById('btn-enviar');
-        const textoOriginal = btnEnviar.innerHTML;
-        btnEnviar.innerHTML = 'ENVIANDO...';
-        btnEnviar.disabled = true;
+        const btn = document.getElementById('btn-enviar');
+        const textoOriginal = btn.innerHTML;
+        btn.innerHTML = 'ENVIANDO...';
+        btn.disabled = true;
 
-        // Pegar dados
+        // Pegar valores
         const nome = document.getElementById('nome').value.trim();
         const telefone = document.getElementById('telefone').value.trim();
         const personagem = document.getElementById('personagem').value.trim();
@@ -67,63 +68,55 @@ if (form) {
         const arquivoFoto = inputFoto.files[0];
         const mensagem = document.getElementById('mensagem').value.trim() || '';
 
-        console.log('📤 Dados prontos para envio');
-
-        // Validação
+        // Validar
         if (!nome || !telefone || !personagem || !obra || !arquivoFoto) {
             alert('❌ Preencha TODOS os campos e escolha uma foto!');
-            btnEnviar.innerHTML = textoOriginal;
-            btnEnviar.disabled = false;
+            btn.innerHTML = textoOriginal;
+            btn.disabled = false;
             return;
         }
 
         if (telefone.length !== 4) {
             alert('❌ Digite exatamente os 4 últimos dígitos do telefone!');
-            btnEnviar.innerHTML = textoOriginal;
-            btnEnviar.disabled = false;
+            btn.innerHTML = textoOriginal;
+            btn.disabled = false;
             return;
         }
 
         // Enviar foto primeiro
         alert('📸 Enviando foto, aguarde um instante...');
-        const resultadoUpload = await enviarParaCloudinary(arquivoFoto);
+        const upload = await enviarParaCloudinary(arquivoFoto);
         
-        if (!resultadoUpload.sucesso) {
-            alert('❌ Erro ao enviar foto: ' + resultadoUpload.erro);
-            btnEnviar.innerHTML = textoOriginal;
-            btnEnviar.disabled = false;
+        if (!upload.sucesso) {
+            alert('❌ Erro ao enviar foto: ' + upload.erro);
+            btn.innerHTML = textoOriginal;
+            btn.disabled = false;
             return;
         }
 
-        console.log('✅ Foto enviada:', resultadoUpload.url);
-
-        // Salvar no Firebase com a URL da foto
-        const dados = {
-            nome: nome,
-            telefone: telefone,
-            personagem: personagem,
-            obra: obra,
-            foto: resultadoUpload.url,
-            mensagem: mensagem,
-            status: 'pendente',
-            data: serverTimestamp()
-        };
-
+        // Salvar no Firebase
         try {
-            console.log('📡 Salvando solicitação...');
-            const docRef = await addDoc(collection(db, "characterRequests"), dados);
-            console.log('✅ Solicitação salva! ID:', docRef.id);
-            
+            await addDoc(collection(db, "characterRequests"), {
+                nome: nome,
+                telefone: telefone,
+                personagem: personagem,
+                obra: obra,
+                foto: upload.url,
+                mensagem: mensagem,
+                status: 'pendente',
+                data: serverTimestamp()
+            });
+
             form.style.display = 'none';
             mensagemSucesso.style.display = 'block';
             
         } catch (erro) {
             console.error('❌ Erro ao salvar:', erro);
             alert('❌ Erro: ' + erro.message);
-            
-            btnEnviar.innerHTML = textoOriginal;
-            btnEnviar.disabled = false;
         }
+
+        btn.innerHTML = textoOriginal;
+        btn.disabled = false;
     });
 }
 
