@@ -21,7 +21,6 @@
         </header>
 
         <main>
-            <!-- 🔍 ÁREA DE BUSCA -->
             <div class="card" style="margin-bottom: 30px;">
                 <h3 style="color: #00a8ff; margin-bottom: 15px;">🔍 Buscar Membro</h3>
                 <label for="busca-telefone">ÚLTIMOS 4 DÍGITOS DO TELEFONE *</label>
@@ -29,10 +28,8 @@
                 <button onclick="buscarMembro()" class="btn btn-primary" style="margin-top: 15px;">🔍 BUSCAR</button>
             </div>
 
-            <!-- 📋 RESULTADO DA BUSCA -->
             <div id="resultado-busca" style="display: none;"></div>
 
-            <!-- ⚠️ MENSAGENS -->
             <div id="mensagem" style="text-align: center; padding: 30px; color: rgba(255,255,255,0.5);">
                 Digite os 4 dígitos do telefone para buscar um membro.
             </div>
@@ -41,7 +38,6 @@
 
     <script type="module" src="../js/admin-membros.js"></script>
     <script>
-        // Logout
         document.getElementById('btn-sair').addEventListener('click', () => {
             localStorage.removeItem('adminLogado');
             localStorage.removeItem('adminNome');
