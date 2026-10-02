@@ -16,7 +16,6 @@
 
 </head>
 
-
 <body data-page="admin">
 
 <div class="background-effects">
@@ -24,7 +23,6 @@
   <span></span>
   <span></span>
 </div>
-
 
 <section id="loginView" class="login-page">
 
@@ -63,9 +61,7 @@
 
 </section>
 
-
 <section id="appView" class="admin-layout hidden">
-
 
   <aside class="sidebar">
 
@@ -85,7 +81,6 @@
       </div>
 
     </div>
-
 
     <nav class="side-nav">
 
@@ -127,16 +122,13 @@
 
     </nav>
 
-
     <button id="logoutBtn" class="logout-button">
       Sair
     </button>
 
   </aside>
 
-
   <main class="admin-main">
-
 
     <header class="admin-topbar">
 
@@ -157,7 +149,6 @@
       </button>
 
     </header>
-
 
     <!-- HOME -->
 
@@ -187,7 +178,6 @@
 
       </div>
 
-
       <div class="panel-card">
 
         <div class="panel-heading">
@@ -202,7 +192,6 @@
       </div>
 
     </section>
-
 
     <!-- SOLICITAÇÕES -->
 
@@ -220,7 +209,6 @@
       <div id="requestsList" class="admin-list"></div>
 
     </section>
-
 
     <!-- VAGAS -->
 
@@ -243,7 +231,6 @@
 
     </section>
 
-
     <!-- MEMBROS -->
 
     <section id="view-members" class="admin-view">
@@ -261,7 +248,6 @@
 
     </section>
 
-
     <!-- ADMS -->
 
     <section id="view-admins" class="admin-view">
@@ -278,7 +264,6 @@
       <div id="adminsList" class="admin-profile-grid"></div>
 
     </section>
-
 
     <!-- CHAT -->
 
@@ -315,7 +300,6 @@
 
     </section>
 
-
     <!-- LOGS -->
 
     <section id="view-logs" class="admin-view">
@@ -333,11 +317,9 @@
 
     </section>
 
-
   </main>
 
 </section>
-
 
 <!-- MODAL VAGA -->
 
@@ -357,7 +339,6 @@
       </button>
 
     </div>
-
 
     <div class="form-grid">
 
@@ -388,7 +369,6 @@
 
     </div>
 
-
     <div id="vacMsg" class="form-status"></div>
 
     <button id="saveVacancyBtn" class="button primary full">
@@ -399,14 +379,11 @@
 
 </div>
 
-
 <div id="toast" class="toast hidden"></div>
-
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
 
 <script>
 
@@ -424,7 +401,6 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
 const auth = firebase.auth();
-
 
 const ADMIN_ACCOUNTS = {
 
@@ -445,7 +421,6 @@ const ADMIN_ACCOUNTS = {
 
 };
 
-
 const state = {
 
   admin: null,
@@ -460,21 +435,17 @@ const state = {
 
 };
 
-
 function $(id) {
   return document.getElementById(id);
 }
-
 
 function clean(value) {
   return String(value || "").trim();
 }
 
-
 function normalize(value) {
   return clean(value).toLowerCase();
 }
-
 
 function escapeHTML(value) {
 
@@ -487,14 +458,12 @@ function escapeHTML(value) {
 
 }
 
-
 function character(data) {
   return data.character ||
          data.personagem ||
          data.characterName ||
          "";
 }
-
 
 function work(data) {
   return data.work ||
@@ -503,7 +472,6 @@ function work(data) {
          data.anime ||
          "";
 }
-
 
 function image(data) {
   return data.image ||
@@ -514,7 +482,6 @@ function image(data) {
          "";
 }
 
-
 function personName(data) {
   return data.name ||
          data.nome ||
@@ -523,11 +490,9 @@ function personName(data) {
          "Membro";
 }
 
-
 function age(data) {
   return data.age || data.idade || "";
 }
-
 
 function phone(data) {
   return data.phoneLast4 ||
@@ -537,7 +502,6 @@ function phone(data) {
          data.telefone4 ||
          "";
 }
-
 
 function isOpen(data) {
 
@@ -549,11 +513,9 @@ function isOpen(data) {
 
 }
 
-
 function isPending(data) {
   return normalize(data.status) === "pendente";
 }
-
 
 function formatDate(value) {
 
@@ -576,7 +538,6 @@ function formatDate(value) {
 
 }
 
-
 function toast(message, type = "") {
 
   const box = $("toast");
@@ -590,14 +551,12 @@ function toast(message, type = "") {
 
 }
 
-
 function statusMessage(element, message, type = "") {
 
   element.textContent = message;
   element.className = "form-status " + type;
 
 }
-
 
 async function login() {
 
@@ -619,7 +578,12 @@ async function login() {
 
   try {
 
-    await auth.signInAnonymously();
+    /*
+     * Primeiro autentica a sessão.
+     */
+    if (!auth.currentUser) {
+      await auth.signInAnonymously();
+    }
 
     state.admin = {
       code,
@@ -639,24 +603,44 @@ async function login() {
     $("miniAvatar").textContent =
       account.name.charAt(0).toUpperCase();
 
+    /*
+     * Se o erro acontecer aqui,
+     * agora ele também será mostrado.
+     */
     await loadEverything();
 
     toast("Login realizado.", "success");
 
   } catch(error) {
 
-    console.error(error);
+    console.error(
+      "ERRO COMPLETO DO FIREBASE:",
+      error
+    );
 
     statusMessage(
       $("loginMsg"),
-      "Não foi possível entrar. Verifique o Firebase.",
+      "Erro Firebase: " +
+      (
+        error.code ||
+        error.message ||
+        "erro desconhecido"
+      ),
       "error"
     );
+
+    /*
+     * Se o painel chegou a abrir antes do erro,
+     * volta para a tela de login.
+     */
+    $("loginView").classList.remove("hidden");
+    $("appView").classList.add("hidden");
+
+    sessionStorage.removeItem("ltdAdmin");
 
   }
 
 }
-
 
 $("loginBtn").addEventListener("click", login);
 
@@ -667,7 +651,6 @@ $("adminCode").addEventListener("keydown", e => {
   }
 
 });
-
 
 async function loadCollection(name) {
 
@@ -690,12 +673,11 @@ async function loadCollection(name) {
       error
     );
 
-    return [];
+    throw error;
 
   }
 
 }
-
 
 async function loadRequests() {
 
@@ -730,7 +712,6 @@ async function loadRequests() {
     });
 
 }
-
 
 async function loadVacancies() {
 
@@ -769,14 +750,12 @@ async function loadVacancies() {
 
 }
 
-
 async function loadMembers() {
 
   state.members =
     await loadCollection("members");
 
 }
-
 
 async function loadAdmins() {
 
@@ -786,7 +765,6 @@ async function loadAdmins() {
   state.adminProfiles = profiles;
 
 }
-
 
 async function loadChat() {
 
@@ -812,7 +790,6 @@ async function loadChat() {
 
 }
 
-
 async function loadLogs() {
 
   state.logs =
@@ -832,7 +809,6 @@ async function loadLogs() {
 
 }
 
-
 async function loadEverything() {
 
   await Promise.all([
@@ -850,7 +826,6 @@ async function loadEverything() {
 
 }
 
-
 function renderAll() {
 
   renderStats();
@@ -863,7 +838,6 @@ function renderAll() {
   renderLogs();
 
 }
-
 
 function renderStats() {
 
@@ -890,7 +864,6 @@ function renderStats() {
   );
 
 }
-
 
 function renderHome() {
 
@@ -929,7 +902,6 @@ function renderHome() {
 
 }
 
-
 function renderRequests() {
 
   const container =
@@ -937,7 +909,6 @@ function renderRequests() {
 
   const requests =
     state.requests.filter(isPending);
-
 
   if (!requests.length) {
 
@@ -950,7 +921,6 @@ function renderRequests() {
     return;
 
   }
-
 
   container.innerHTML =
     requests.map(req => {
@@ -985,13 +955,7 @@ function renderRequests() {
               </span>
 
               <h3>
-                ${
-                  escapeHTML(
-                    isExchange
-                    ? character(req)
-                    : character(req)
-                  )
-                }
+                ${escapeHTML(character(req))}
               </h3>
 
             </div>
@@ -1001,7 +965,6 @@ function renderRequests() {
             </span>
 
           </div>
-
 
           <div class="request-data">
 
@@ -1058,7 +1021,6 @@ function renderRequests() {
 
           </div>
 
-
           <div class="request-actions">
 
             <button
@@ -1091,7 +1053,6 @@ function renderRequests() {
 
 }
 
-
 function renderVacancies() {
 
   const container =
@@ -1109,7 +1070,6 @@ function renderVacancies() {
 
   }
 
-
   const sorted =
     [...state.vacancies].sort((a, b) =>
       character(a).localeCompare(
@@ -1117,7 +1077,6 @@ function renderVacancies() {
         "pt-BR"
       )
     );
-
 
   container.innerHTML =
     sorted.map(vacancy => {
@@ -1142,7 +1101,6 @@ function renderVacancies() {
           </span>
 
         </div>
-
 
         <div class="admin-vacancy-body">
 
@@ -1192,7 +1150,6 @@ function renderVacancies() {
 
 }
 
-
 function renderMembers() {
 
   const container =
@@ -1209,7 +1166,6 @@ function renderMembers() {
     return;
 
   }
-
 
   container.innerHTML = `
 
@@ -1269,7 +1225,6 @@ function renderMembers() {
 
 }
 
-
 function renderAdmins() {
 
   const container =
@@ -1277,7 +1232,6 @@ function renderAdmins() {
 
   const entries =
     Object.entries(ADMIN_ACCOUNTS);
-
 
   container.innerHTML =
     entries.map(([code, admin]) => {
@@ -1339,7 +1293,6 @@ function renderAdmins() {
 
 }
 
-
 function renderChat() {
 
   const container =
@@ -1356,7 +1309,6 @@ function renderChat() {
     return;
 
   }
-
 
   container.innerHTML =
     state.chat.map(message => {
@@ -1391,12 +1343,10 @@ function renderChat() {
 
     }).join("");
 
-
   container.scrollTop =
     container.scrollHeight;
 
 }
-
 
 function renderLogs() {
 
@@ -1414,7 +1364,6 @@ function renderLogs() {
     return;
 
   }
-
 
   container.innerHTML = `
 
@@ -1471,7 +1420,6 @@ function renderLogs() {
 
 }
 
-
 async function createLog(action, details) {
 
   if (!state.admin) return;
@@ -1500,7 +1448,6 @@ async function createLog(action, details) {
 
 }
 
-
 async function approveRequest(id, collection) {
 
   const request =
@@ -1515,7 +1462,6 @@ async function approveRequest(id, collection) {
     return;
   }
 
-
   try {
 
     const batch =
@@ -1524,7 +1470,6 @@ async function approveRequest(id, collection) {
     const requestRef =
       db.collection(collection).doc(id);
 
-
     if (request.type === "exchange") {
 
       const memberRef =
@@ -1532,7 +1477,6 @@ async function approveRequest(id, collection) {
 
       const vacancyRef =
         db.collection("vagas").doc(request.vacancyId);
-
 
       batch.update(requestRef, {
 
@@ -1545,7 +1489,6 @@ async function approveRequest(id, collection) {
 
       });
 
-
       batch.update(memberRef, {
 
         character: request.character,
@@ -1557,7 +1500,6 @@ async function approveRequest(id, collection) {
 
       });
 
-
       batch.update(vacancyRef, {
 
         status: "fechada",
@@ -1567,7 +1509,6 @@ async function approveRequest(id, collection) {
           firebase.firestore.FieldValue.serverTimestamp()
 
       });
-
 
       const oldVacancies =
         state.vacancies.filter(v =>
@@ -1579,7 +1520,6 @@ async function approveRequest(id, collection) {
             normalize(request.oldWork)
 
         );
-
 
       if (oldVacancies.length) {
 
@@ -1640,10 +1580,8 @@ async function approveRequest(id, collection) {
 
       });
 
-
       const memberRef =
         db.collection("members").doc();
-
 
       batch.set(memberRef, {
 
@@ -1669,7 +1607,6 @@ async function approveRequest(id, collection) {
 
       });
 
-
       const matching =
         state.vacancies.filter(v =>
 
@@ -1682,7 +1619,6 @@ async function approveRequest(id, collection) {
           isOpen(v)
 
         );
-
 
       if (matching.length) {
 
@@ -1729,21 +1665,17 @@ async function approveRequest(id, collection) {
 
     }
 
-
     await batch.commit();
-
 
     await createLog(
       "aprovar_solicitacao",
       `${request.type === "exchange" ? "Troca" : "Ficha"}: ${character(request)}`
     );
 
-
     toast(
       "Solicitação aprovada.",
       "success"
     );
-
 
     await loadEverything();
 
@@ -1760,7 +1692,6 @@ async function approveRequest(id, collection) {
 
 }
 
-
 async function rejectRequest(id, collection) {
 
   const request =
@@ -1772,14 +1703,12 @@ async function rejectRequest(id, collection) {
 
   if (!request) return;
 
-
   const confirmed =
     confirm(
       "Deseja realmente recusar esta solicitação?"
     );
 
   if (!confirmed) return;
-
 
   try {
 
@@ -1797,25 +1726,25 @@ async function rejectRequest(id, collection) {
 
       });
 
-
     await createLog(
       "recusar_solicitacao",
       `${character(request)} • ${work(request)}`
     );
-
 
     toast(
       "Solicitação recusada.",
       "success"
     );
 
-
     await loadEverything();
 
   } catch(error) {
 
+    console.error(error);
+
     toast(
-      "Erro ao recusar.",
+      "Erro ao recusar: " +
+      (error.code || error.message || ""),
       "error"
     );
 
@@ -1823,36 +1752,30 @@ async function rejectRequest(id, collection) {
 
 }
 
-
 function openVacancyModal(vacancy = null) {
 
   state.editVacancyId =
     vacancy?.id || null;
-
 
   $("modalTitle").textContent =
     vacancy
     ? "Editar vaga"
     : "Nova vaga";
 
-
   $("vacCharacter").value =
     vacancy
     ? character(vacancy)
     : "";
-
 
   $("vacWork").value =
     vacancy
     ? work(vacancy)
     : "";
 
-
   $("vacImage").value =
     vacancy
     ? image(vacancy)
     : "";
-
 
   $("vacStatus").value =
     vacancy
@@ -1861,15 +1784,12 @@ function openVacancyModal(vacancy = null) {
       : "fechada")
     : "aberta";
 
-
   $("vacMsg").textContent = "";
   $("vacMsg").className = "form-status";
-
 
   $("modal").classList.remove("hidden");
 
 }
-
 
 function closeModal() {
 
@@ -1879,12 +1799,10 @@ function closeModal() {
 
 }
 
-
 $("closeModal").addEventListener(
   "click",
   closeModal
 );
-
 
 $("modal").addEventListener("click", e => {
 
@@ -1894,12 +1812,10 @@ $("modal").addEventListener("click", e => {
 
 });
 
-
 $("newVacancyBtn").addEventListener(
   "click",
   () => openVacancyModal()
 );
-
 
 $("saveVacancyBtn").addEventListener(
   "click",
@@ -1917,7 +1833,6 @@ $("saveVacancyBtn").addEventListener(
     const statusValue =
       $("vacStatus").value;
 
-
     if (!characterValue || !workValue) {
 
       statusMessage(
@@ -1929,7 +1844,6 @@ $("saveVacancyBtn").addEventListener(
       return;
 
     }
-
 
     try {
 
@@ -1946,7 +1860,6 @@ $("saveVacancyBtn").addEventListener(
           firebase.firestore.FieldValue.serverTimestamp()
 
       };
-
 
       if (state.editVacancyId) {
 
@@ -1986,7 +1899,6 @@ $("saveVacancyBtn").addEventListener(
 
       }
 
-
       closeModal();
 
       await loadEverything();
@@ -1997,7 +1909,12 @@ $("saveVacancyBtn").addEventListener(
 
       statusMessage(
         $("vacMsg"),
-        "Não foi possível salvar a vaga.",
+        "Erro Firebase: " +
+        (
+          error.code ||
+          error.message ||
+          "erro desconhecido"
+        ),
         "error"
       );
 
@@ -2006,7 +1923,6 @@ $("saveVacancyBtn").addEventListener(
   }
 );
 
-
 async function toggleVacancy(id) {
 
   const vacancy =
@@ -2014,10 +1930,8 @@ async function toggleVacancy(id) {
 
   if (!vacancy) return;
 
-
   const newOpen =
     !isOpen(vacancy);
-
 
   try {
 
@@ -2038,14 +1952,12 @@ async function toggleVacancy(id) {
 
       });
 
-
     await createLog(
       newOpen
       ? "abrir_vaga"
       : "fechar_vaga",
       `${character(vacancy)} • ${work(vacancy)}`
     );
-
 
     toast(
       newOpen
@@ -2054,7 +1966,6 @@ async function toggleVacancy(id) {
       "success"
     );
 
-
     await loadEverything();
 
   } catch(error) {
@@ -2062,14 +1973,18 @@ async function toggleVacancy(id) {
     console.error(error);
 
     toast(
-      "Não foi possível alterar a vaga.",
+      "Erro Firebase: " +
+      (
+        error.code ||
+        error.message ||
+        "erro desconhecido"
+      ),
       "error"
     );
 
   }
 
 }
-
 
 async function deleteVacancy(id) {
 
@@ -2078,13 +1993,11 @@ async function deleteVacancy(id) {
 
   if (!vacancy) return;
 
-
   if (
     !confirm(
       `Excluir a vaga "${character(vacancy)}"?`
     )
   ) return;
-
 
   try {
 
@@ -2093,18 +2006,15 @@ async function deleteVacancy(id) {
       .doc(id)
       .delete();
 
-
     await createLog(
       "excluir_vaga",
       `${character(vacancy)} • ${work(vacancy)}`
     );
 
-
     toast(
       "Vaga excluída.",
       "success"
     );
-
 
     await loadEverything();
 
@@ -2113,14 +2023,18 @@ async function deleteVacancy(id) {
     console.error(error);
 
     toast(
-      "Não foi possível excluir a vaga.",
+      "Erro Firebase: " +
+      (
+        error.code ||
+        error.message ||
+        "erro desconhecido"
+      ),
       "error"
     );
 
   }
 
 }
-
 
 $("vacanciesList").addEventListener(
   "click",
@@ -2131,13 +2045,11 @@ $("vacanciesList").addEventListener(
 
     if (!button) return;
 
-
     const action =
       button.dataset.action;
 
     const id =
       button.dataset.id;
-
 
     if (action === "edit-vacancy") {
 
@@ -2150,11 +2062,9 @@ $("vacanciesList").addEventListener(
 
     }
 
-
     if (action === "toggle-vacancy") {
       toggleVacancy(id);
     }
-
 
     if (action === "delete-vacancy") {
       deleteVacancy(id);
@@ -2162,7 +2072,6 @@ $("vacanciesList").addEventListener(
 
   }
 );
-
 
 $("requestsList").addEventListener(
   "click",
@@ -2173,7 +2082,6 @@ $("requestsList").addEventListener(
 
     if (!button) return;
 
-
     const action =
       button.dataset.action;
 
@@ -2182,7 +2090,6 @@ $("requestsList").addEventListener(
 
     const collection =
       button.dataset.collection;
-
 
     if (action === "approve") {
       approveRequest(id, collection);
@@ -2195,7 +2102,6 @@ $("requestsList").addEventListener(
   }
 );
 
-
 async function sendChat() {
 
   const input =
@@ -2205,7 +2111,6 @@ async function sendChat() {
     clean(input.value);
 
   if (!message) return;
-
 
   try {
 
@@ -2227,7 +2132,6 @@ async function sendChat() {
 
     });
 
-
     input.value = "";
 
     await loadChat();
@@ -2239,7 +2143,12 @@ async function sendChat() {
     console.error(error);
 
     toast(
-      "Não foi possível enviar a mensagem.",
+      "Erro Firebase: " +
+      (
+        error.code ||
+        error.message ||
+        "erro desconhecido"
+      ),
       "error"
     );
 
@@ -2247,12 +2156,10 @@ async function sendChat() {
 
 }
 
-
 $("sendChatBtn").addEventListener(
   "click",
   sendChat
 );
-
 
 $("chatInput").addEventListener(
   "keydown",
@@ -2264,7 +2171,6 @@ $("chatInput").addEventListener(
 
   }
 );
-
 
 const viewNames = {
 
@@ -2284,7 +2190,6 @@ const viewNames = {
 
 };
 
-
 function showView(view) {
 
   document
@@ -2298,7 +2203,6 @@ function showView(view) {
 
     });
 
-
   document
     .querySelectorAll(".side-link")
     .forEach(button => {
@@ -2310,11 +2214,9 @@ function showView(view) {
 
     });
 
-
   const info =
     viewNames[view] ||
     viewNames.home;
-
 
   $("viewLabel").textContent =
     info[0];
@@ -2323,7 +2225,6 @@ function showView(view) {
     info[1];
 
 }
-
 
 document
   .querySelectorAll(".side-link")
@@ -2336,7 +2237,6 @@ document
 
   });
 
-
 $("refreshBtn").addEventListener(
   "click",
   async () => {
@@ -2347,19 +2247,38 @@ $("refreshBtn").addEventListener(
     button.disabled = true;
     button.textContent = "Atualizando...";
 
-    await loadEverything();
+    try {
 
-    button.disabled = false;
-    button.textContent = "↻ Atualizar";
+      await loadEverything();
 
-    toast(
-      "Painel atualizado.",
-      "success"
-    );
+      toast(
+        "Painel atualizado.",
+        "success"
+      );
+
+    } catch(error) {
+
+      console.error(error);
+
+      toast(
+        "Erro Firebase: " +
+        (
+          error.code ||
+          error.message ||
+          "erro desconhecido"
+        ),
+        "error"
+      );
+
+    } finally {
+
+      button.disabled = false;
+      button.textContent = "↻ Atualizar";
+
+    }
 
   }
 );
-
 
 $("logoutBtn").addEventListener(
   "click",
@@ -2376,7 +2295,6 @@ $("logoutBtn").addEventListener(
   }
 );
 
-
 async function bootstrap() {
 
   const saved =
@@ -2385,7 +2303,6 @@ async function bootstrap() {
   if (!saved) {
     return;
   }
-
 
   try {
 
@@ -2396,12 +2313,13 @@ async function bootstrap() {
       !admin.code ||
       !ADMIN_ACCOUNTS[admin.code]
     ) {
+      sessionStorage.removeItem("ltdAdmin");
       return;
     }
 
-
-    await auth.signInAnonymously();
-
+    if (!auth.currentUser) {
+      await auth.signInAnonymously();
+    }
 
     state.admin =
       ADMIN_ACCOUNTS[admin.code]
@@ -2411,13 +2329,10 @@ async function bootstrap() {
         }
       : null;
 
-
     if (!state.admin) return;
-
 
     $("loginView").classList.add("hidden");
     $("appView").classList.remove("hidden");
-
 
     $("meName").textContent =
       state.admin.name;
@@ -2430,23 +2345,38 @@ async function bootstrap() {
       .charAt(0)
       .toUpperCase();
 
-
     await loadEverything();
 
   } catch(error) {
 
-    console.error(error);
+    console.error(
+      "ERRO NO BOOTSTRAP:",
+      error
+    );
 
     sessionStorage.removeItem("ltdAdmin");
+
+    $("loginView").classList.remove("hidden");
+    $("appView").classList.add("hidden");
+
+    statusMessage(
+      $("loginMsg"),
+      "Erro Firebase: " +
+      (
+        error.code ||
+        error.message ||
+        "erro desconhecido"
+      ),
+      "error"
+    );
 
   }
 
 }
-
 
 bootstrap();
 
 </script>
 
 </body>
-    </html>
+          </html>
