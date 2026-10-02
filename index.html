@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>House LTD</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:'Outfit',sans-serif;
+    background:
+        radial-gradient(circle at top left,#641538 0%,transparent 35%),
+        radial-gradient(circle at bottom right,#3b1025 0%,transparent 35%),
+        #10060c;
+    color:#fff;
+    min-height:100vh;
+}
+
+button,input,select{
+    font-family:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+header{
+    width:100%;
+    padding:22px 7%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    background:rgba(15,4,10,.65);
+    backdrop-filter:blur(15px);
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+
+.logo{
+    font-size:26px;
+    font-weight:800;
+}
+
+.logo span{
+    color:#ff5d9e;
+}
+
+.header-btn{
+    border:1px solid rgba(255,255,255,.15);
+    background:rgba(255,255,255,.06);
+    color:white;
+    padding:10px 17px;
+    border-radius:12px;
+}
+
+.hero{
+    max-width:1100px;
+    margin:auto;
+    padding:90px 25px 60px;
+    text-align:center;
+}
+
+.hero h1{
+    font-size:clamp(45px,8vw,85px);
+    line-height:1;
+    margin-bottom:20px;
+}
+
+.hero h1 span{
+    color:#ff5d9e;
+}
+
+.hero p{
+    color:#d8bdc8;
+    max-width:600px;
+    margin:auto;
+    line-height:1.7;
+}
+
+.actions{
+    margin-top:35px;
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    border:0;
+    border-radius:14px;
+    padding:14px 23px;
+    font-size:15px;
+    font-weight:700;
+    color:white;
+    background:linear-gradient(135deg,#ff5d9e,#d52f61);
+    box-shadow:0 10px 35px rgba(213,47,97,.2);
+}
+
+.btn.secondary{
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.12);
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:20px 25px 80px;
+}
+
+.section{
+    margin-top:35px;
+}
+
+.section-title{
+    margin-bottom:18px;
+    font-size:27px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:18px;
+}
+
+.card{
+    background:rgba(255,255,255,.055);
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:20px;
+    overflow:hidden;
+    backdrop-filter:blur(10px);
+}
+
+.card-img{
+    width:100%;
+    height:260px;
+    object-fit:cover;
+    background:#210b16;
+}
+
+.card-content{
+    padding:18px;
+}
+
+.card h3{
+    font-size:21px;
+    margin-bottom:5px;
+}
+
+.card p{
+    color:#c9adb9;
+    font-size:14px;
+}
+
+.badge{
+    display:inline-block;
+    margin-top:12px;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:12px;
+    background:rgba(255,93,158,.12);
+    color:#ff8fbd;
+}
+
+.empty{
+    text-align:center;
+    padding:30px;
+    border:1px dashed rgba(255,255,255,.12);
+    border-radius:18px;
+    color:#aa919d;
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    backdrop-filter:blur(8px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:100;
+}
+
+.modal.active{
+    display:flex;
+}
+
+.modal-box{
+    width:100%;
+    max-width:560px;
+    max-height:90vh;
+    overflow:auto;
+    background:#190912;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:24px;
+    padding:25px;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.close{
+    border:0;
+    background:rgba(255,255,255,.08);
+    color:white;
+    width:35px;
+    height:35px;
+    border-radius:10px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:7px;
+    font-size:14px;
+    color:#d8c0ca;
+}
+
+.form-group input,
+.form-group select{
+    width:100%;
+    padding:13px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.12);
+    background:#0f060b;
+    color:white;
+    outline:none;
+}
+
+.form-group input:focus,
+.form-group select:focus{
+    border-color:#ff5d9e;
+}
+
+.file-preview{
+    width:100%;
+    max-height:220px;
+    object-fit:contain;
+    border-radius:14px;
+    margin-top:10px;
+    display:none;
+    background:#0c0509;
+}
+
+.loading{
+    opacity:.6;
+    pointer-events:none;
+}
+
+.notice{
+    padding:12px;
+    border-radius:12px;
+    background:rgba(255,93,158,.08);
+    color:#e8cbd7;
+    font-size:13px;
+    line-height:1.5;
+    margin-bottom:15px;
+}
+
+footer{
+    text-align:center;
+    color:#795e6b;
+    padding:30px;
+    font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">HOUSE <span>LTD</span></div>
+
+    <button class="header-btn" onclick="openModal('adminModal')">
+        Administração
+    </button>
+</header>
+
+<section class="hero">
+    <h1>House <span>LTD</span></h1>
+
+    <p>
+        Faça sua ficha, escolha seu personagem e participe da nossa comunidade.
+        Aqui você também pode conferir as vagas disponíveis.
+    </p>
+
+    <div class="actions">
+        <button class="btn" onclick="openModal('fichaModal')">
+            Fazer ficha
+        </button>
+
+        <button class="btn secondary" onclick="openModal('trocaModal')">
+            Trocar personagem
+        </button>
+
+        <button class="btn secondary" onclick="document.getElementById('vagas').scrollIntoView({behavior:'smooth'})">
+            Ver vagas
+        </button>
+    </div>
+</section>
+
+<main class="container">
+
+    <section class="section" id="vagas">
+        <h2 class="section-title">Vagas abertas</h2>
+        <div id="vagasAbertas" class="cards"></div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Vagas fechadas</h2>
+        <div id="vagasFechadas" class="cards"></div>
+    </section>
+
+</main>
+
+<footer>
+    House LTD • Sistema de recepção
+</footer>
+
+
+<!-- FICHA -->
+
+<div class="modal" id="fichaModal">
+    <div class="modal-box">
+
+        <div class="modal-header">
+            <h2>Nova ficha</h2>
+            <button class="close" onclick="closeModal('fichaModal')">×</button>
+        </div>
+
+        <div class="notice">
+            Preencha os dados abaixo. A foto do personagem será enviada para o Cloudinary.
+        </div>
+
+        <form id="fichaForm">
+
+            <div class="form-group">
+                <label>Nome / apelido (opcional)</label>
+                <input id="fichaNome">
+            </div>
+
+            <div class="form-group">
+                <label>Idade *</label>
+                <input id="fichaIdade" type="number" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Últimos 4 números do telefone *</label>
+                <input id="fichaTelefone" maxlength="4" minlength="4" required>
+            </div>
+
+            <div class="form-group">
+                <label>Personagem *</label>
+                <input id="fichaPersonagem" required>
+            </div>
+
+            <div class="form-group">
+                <label>Obra *</label>
+                <input id="fichaObra" required>
+            </div>
+
+            <div class="form-group">
+                <label>Foto do personagem *</label>
+                <input id="fichaFoto" type="file" accept="image/*" required>
+                <img id="fichaPreview" class="file-preview">
+            </div>
+
+            <button class="btn" style="width:100%" id="fichaButton">
+                Enviar ficha
+            </button>
+
+        </form>
+    </div>
+</div>
+
+
+<!-- TROCA -->
+
+<div class="modal" id="trocaModal">
+    <div class="modal-box">
+
+        <div class="modal-header">
+            <h2>Trocar personagem</h2>
+            <button class="close" onclick="closeModal('trocaModal')">×</button>
+        </div>
+
+        <div class="notice">
+            Informe o personagem atual e o novo personagem desejado.
+        </div>
+
+        <form id="trocaForm">
+
+            <div class="form-group">
+                <label>Seu nome / apelido</label>
+                <input id="trocaNome">
+            </div>
+
+            <div class="form-group">
+                <label>Últimos 4 números do telefone *</label>
+                <input id="trocaTelefone" maxlength="4" minlength="4" required>
+            </div>
+
+            <div class="form-group">
+                <label>Personagem atual *</label>
+                <input id="trocaAtualPersonagem" required>
+            </div>
+
+            <div class="form-group">
+                <label>Obra atual *</label>
+                <input id="trocaAtualObra" required>
+            </div>
+
+            <div class="form-group">
+                <label>Novo personagem *</label>
+                <input id="trocaNovoPersonagem" required>
+            </div>
+
+            <div class="form-group">
+                <label>Nova obra *</label>
+                <input id="trocaNovaObra" required>
+            </div>
+
+            <div class="form-group">
+                <label>Foto do novo personagem *</label>
+                <input id="trocaFoto" type="file" accept="image/*" required>
+                <img id="trocaPreview" class="file-preview">
+            </div>
+
+            <button class="btn" style="width:100%" id="trocaButton">
+                Enviar troca
+            </button>
+
+        </form>
+    </div>
+</div>
+
+
+<!-- ADMIN -->
+
+<div class="modal" id="adminModal">
+    <div class="modal-box">
+
+        <div class="modal-header">
+            <h2>Administração</h2>
+            <button class="close" onclick="closeModal('adminModal')">×</button>
+        </div>
+
+        <div class="notice">
+            Digite seu código de administrador para entrar.
+        </div>
+
+        <form id="adminForm">
+
+            <div class="form-group">
+                <label>Código</label>
+                <input id="adminCode" autocomplete="off" required>
+            </div>
+
+            <button class="btn" style="width:100%">
+                Entrar
+            </button>
+
+        </form>
+    </div>
+</div>
+
+
+<script type="module">
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    onSnapshot,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+
+/* =========================
+   FIREBASE
+========================= */
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAg4h7phK_shSp4oUT-PJMH_iKu6cjJ82Q",
+    authDomain: "house-6dfc9.firebaseapp.com",
+    projectId: "house-6dfc9",
+    storageBucket: "house-6dfc9.firebasestorage.app",
+    messagingSenderId: "184001079413",
+    appId: "1:184001079413:web:de4df4327d2cabdd30703c",
+    measurementId: "G-LKFTTQJNX3"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+/* =========================
+   CLOUDINARY
+========================= */
+
+const CLOUDINARY_CLOUD_NAME = "gsqmelxb";
+const CLOUDINARY_UPLOAD_PRESET = "House LTD";
+
+
+async function uploadToCloudinary(file){
+
+    if(!file){
+        throw new Error("Selecione uma imagem.");
+    }
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+    const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        {
+            method:"POST",
+            body:formData
+        }
+    );
+
+    const data = await response.json();
+
+    if(!response.ok){
+        throw new Error(
+            data?.error?.message ||
+            "Não foi possível enviar a imagem."
+        );
+    }
+
+    return data.secure_url;
+}
+
+
+/* =========================
+   MODAIS
+========================= */
+
+window.openModal = function(id){
+    document.getElementById(id).classList.add("active");
+}
+
+window.closeModal = function(id){
+    document.getElementById(id).classList.remove("active");
+}
+
+
+/* =========================
+   PREVIEW
+========================= */
+
+function setupPreview(inputId, previewId){
+
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+
+    input.addEventListener("change",()=>{
+
+        const file = input.files[0];
+
+        if(!file){
+            preview.style.display = "none";
+            return;
+        }
+
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    });
+}
+
+setupPreview("fichaFoto","fichaPreview");
+setupPreview("trocaFoto","trocaPreview");
+
+
+/* =========================
+   FICHA
+========================= */
+
+document.getElementById("fichaForm").addEventListener("submit",async(e)=>{
+
+    e.preventDefault();
+
+    const button = document.getElementById("fichaButton");
+
+    try{
+
+        button.disabled = true;
+        button.textContent = "Enviando...";
+
+        const foto = document.getElementById("fichaFoto").files[0];
+
+        const fotoURL = await uploadToCloudinary(foto);
+
+        await addDoc(collection(db,"characterRequests"),{
+
+            tipo:"ficha",
+
+            nome:document.getElementById("fichaNome").value.trim(),
+
+            idade:document.getElementById("fichaIdade").value.trim(),
+
+            telefone4:document.getElementById("fichaTelefone").value.trim(),
+
+            personagem:document.getElementById("fichaPersonagem").value.trim(),
+
+            obra:document.getElementById("fichaObra").value.trim(),
+
+            foto:fotoURL,
+
+            status:"pendente",
+
+            createdAt:serverTimestamp()
+
+        });
+
+        alert("Ficha enviada com sucesso! ❤️");
+
+        e.target.reset();
+
+        document.getElementById("fichaPreview").style.display="none";
+
+        closeModal("fichaModal");
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("Erro ao enviar ficha:\n"+error.message);
+
+    }finally{
+
+        button.disabled=false;
+        button.textContent="Enviar ficha";
+    }
+
+});
+
+
+/* =========================
+   TROCA
+========================= */
+
+document.getElementById("trocaForm").addEventListener("submit",async(e)=>{
+
+    e.preventDefault();
+
+    const button = document.getElementById("trocaButton");
+
+    try{
+
+        button.disabled=true;
+        button.textContent="Enviando...";
+
+        const foto = document.getElementById("trocaFoto").files[0];
+
+        const fotoURL = await uploadToCloudinary(foto);
+
+        await addDoc(collection(db,"characterRequests"),{
+
+            tipo:"troca",
+
+            nome:document.getElementById("trocaNome").value.trim(),
+
+            telefone4:document.getElementById("trocaTelefone").value.trim(),
+
+            personagemAtual:document.getElementById("trocaAtualPersonagem").value.trim(),
+
+            obraAtual:document.getElementById("trocaAtualObra").value.trim(),
+
+            personagemNovo:document.getElementById("trocaNovoPersonagem").value.trim(),
+
+            obraNova:document.getElementById("trocaNovaObra").value.trim(),
+
+            foto:fotoURL,
+
+            status:"pendente",
+
+            createdAt:serverTimestamp()
+
+        });
+
+        alert("Pedido de troca enviado! ❤️");
+
+        e.target.reset();
+
+        document.getElementById("trocaPreview").style.display="none";
+
+        closeModal("trocaModal");
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("Erro ao enviar troca:\n"+error.message);
+
+    }finally{
+
+        button.disabled=false;
+        button.textContent="Enviar troca";
+    }
+
+});
+
+
+/* =========================
+   ADM
+========================= */
+
+document.getElementById("adminForm").addEventListener("submit",(e)=>{
+
+    e.preventDefault();
+
+    const code = document
+        .getElementById("adminCode")
+        .value
+        .trim()
+        .toUpperCase();
+
+    if(!code){
+        return;
+    }
+
+    localStorage.setItem("ltdAdminCode",code);
+
+    window.location.href="admin.html";
+
+});
+
+
+/* =========================
+   VAGAS
+========================= */
+
+function criarCard(vaga){
+
+    const card = document.createElement("div");
+
+    card.className="card";
+
+    card.innerHTML=`
+
+        ${
+            vaga.foto
+            ?
+            `<img class="card-img"
+                 src="${vaga.foto}"
+                 loading="lazy"
+                 onerror="this.style.display='none'">`
+            :
+            `<div class="card-img"></div>`
+        }
+
+        <div class="card-content">
+
+            <h3>${escapeHTML(vaga.personagem || "Sem nome")}</h3>
+
+            <p>${escapeHTML(vaga.obra || "Obra não informada")}</p>
+
+            <span class="badge">
+                ${vaga.status === "aberta" ? "Vaga aberta" : "Vaga fechada"}
+            </span>
+
+        </div>
+    `;
+
+    return card;
+}
+
+
+function renderVagas(lista){
+
+    const abertas = document.getElementById("vagasAbertas");
+    const fechadas = document.getElementById("vagasFechadas");
+
+    abertas.innerHTML="";
+    fechadas.innerHTML="";
+
+    const abertasLista = lista.filter(v=>v.status==="aberta");
+    const fechadasLista = lista.filter(v=>v.status==="fechada");
+
+    if(abertasLista.length===0){
+
+        abertas.innerHTML=`
+            <div class="empty">
+                Nenhuma vaga aberta no momento.
+            </div>
+        `;
+    }else{
+
+        abertasLista.forEach(v=>{
+            abertas.appendChild(criarCard(v));
+        });
+    }
+
+    if(fechadasLista.length===0){
+
+        fechadas.innerHTML=`
+            <div class="empty">
+                Nenhuma vaga fechada.
+            </div>
+        `;
+    }else{
+
+        fechadasLista.forEach(v=>{
+            fechadas.appendChild(criarCard(v));
+        });
+    }
+}
+
+
+onSnapshot(
+    collection(db,"vagas"),
+    snapshot=>{
+
+        const vagas=[];
+
+        snapshot.forEach(doc=>{
+
+            vagas.push({
+                id:doc.id,
+                ...doc.data()
+            });
+
+        });
+
+        vagas.sort((a,b)=>
+            (a.personagem||"").localeCompare(b.personagem||"")
+        );
+
+        renderVagas(vagas);
+
+    },
+    error=>{
+
+        console.error("Erro nas vagas:",error);
+
+    }
+);
+
+
+/* =========================
+   SEGURANÇA DO HTML
+========================= */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+</script>
+
+</body>
+  </html>
