@@ -150,8 +150,6 @@
 
     </header>
 
-    <!-- HOME -->
-
     <section id="view-home" class="admin-view active">
 
       <div class="stats-grid">
@@ -193,8 +191,6 @@
 
     </section>
 
-    <!-- SOLICITAÇÕES -->
-
     <section id="view-requests" class="admin-view">
 
       <div class="section-admin-header">
@@ -209,8 +205,6 @@
       <div id="requestsList" class="admin-list"></div>
 
     </section>
-
-    <!-- VAGAS -->
 
     <section id="view-vacancies" class="admin-view">
 
@@ -231,8 +225,6 @@
 
     </section>
 
-    <!-- MEMBROS -->
-
     <section id="view-members" class="admin-view">
 
       <div class="section-admin-header">
@@ -248,8 +240,6 @@
 
     </section>
 
-    <!-- ADMS -->
-
     <section id="view-admins" class="admin-view">
 
       <div class="section-admin-header">
@@ -264,8 +254,6 @@
       <div id="adminsList" class="admin-profile-grid"></div>
 
     </section>
-
-    <!-- CHAT -->
 
     <section id="view-chat" class="admin-view">
 
@@ -300,8 +288,6 @@
 
     </section>
 
-    <!-- LOGS -->
-
     <section id="view-logs" class="admin-view">
 
       <div class="section-admin-header">
@@ -320,8 +306,6 @@
   </main>
 
 </section>
-
-<!-- MODAL VAGA -->
 
 <div id="modal" class="modal hidden">
 
@@ -403,7 +387,6 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 
 const ADMIN_ACCOUNTS = {
-
   YM7JQ7: { name: "Aiko", role: "Dono" },
   YQ7NM4: { name: "Noah", role: "Sub-dono" },
   JM7XQ8: { name: "Shime", role: "Líder de ADM" },
@@ -418,416 +401,159 @@ const ADMIN_ACCOUNTS = {
   YQ5M7X: { name: "Kally", role: "ADM" },
   TH1K0L: { name: "Lici", role: "ADM" },
   FB61K5: { name: "Belly", role: "ADM" }
-
 };
 
 const state = {
-
   admin: null,
-
   requests: [],
   vacancies: [],
   members: [],
   chat: [],
   logs: [],
-
   editVacancyId: null
-
 };
 
-function $(id) {
-  return document.getElementById(id);
-}
-
-function clean(value) {
-  return String(value || "").trim();
-}
-
-function normalize(value) {
-  return clean(value).toLowerCase();
-}
-
+function $(id) { return document.getElementById(id); }
+function clean(value) { return String(value || "").trim(); }
+function normalize(value) { return clean(value).toLowerCase(); }
 function escapeHTML(value) {
-
   return String(value || "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-
 }
-
-function character(data) {
-  return data.character ||
-         data.personagem ||
-         data.characterName ||
-         "";
-}
-
-function work(data) {
-  return data.work ||
-         data.obra ||
-         data.workName ||
-         data.anime ||
-         "";
-}
-
-function image(data) {
-  return data.image ||
-         data.photo ||
-         data.characterPhoto ||
-         data.photoURL ||
-         data.imageUrl ||
-         "";
-}
-
-function personName(data) {
-  return data.name ||
-         data.nome ||
-         data.nickname ||
-         data.apelido ||
-         "Membro";
-}
-
-function age(data) {
-  return data.age || data.idade || "";
-}
-
-function phone(data) {
-  return data.phoneLast4 ||
-         data.last4 ||
-         data.lastFour ||
-         data.ultimos4 ||
-         data.telefone4 ||
-         "";
-}
-
+function character(data) { return data.character || data.personagem || data.characterName || ""; }
+function work(data) { return data.work || data.obra || data.workName || data.anime || ""; }
+function image(data) { return data.image || data.photo || data.characterPhoto || data.photoURL || data.imageUrl || ""; }
+function personName(data) { return data.name || data.nome || data.nickname || data.apelido || "Membro"; }
+function age(data) { return data.age || data.idade || ""; }
+function phone(data) { return data.phoneLast4 || data.last4 || data.lastFour || data.ultimos4 || data.telefone4 || ""; }
 function isOpen(data) {
-
-  if (typeof data.open === "boolean") {
-    return data.open;
-  }
-
+  if (typeof data.open === "boolean") return data.open;
   return normalize(data.status) === "aberta";
-
 }
-
-function isPending(data) {
-  return normalize(data.status) === "pendente";
-}
-
+function isPending(data) { return normalize(data.status) === "pendente"; }
 function formatDate(value) {
-
-  if (!value) {
-    return "—";
-  }
-
+  if (!value) return "—";
   try {
-
-    const date =
-      value.toDate
-      ? value.toDate()
-      : new Date(value);
-
+    const date = value.toDate ? value.toDate() : new Date(value);
     return date.toLocaleString("pt-BR");
-
-  } catch {
-    return "—";
-  }
-
+  } catch { return "—"; }
 }
-
 function toast(message, type = "") {
-
   const box = $("toast");
-
   box.textContent = message;
   box.className = "toast " + type;
-
-  setTimeout(() => {
-    box.className = "toast hidden";
-  }, 3500);
-
+  setTimeout(() => { box.className = "toast hidden"; }, 3500);
 }
-
 function statusMessage(element, message, type = "") {
-
   element.textContent = message;
   element.className = "form-status " + type;
-
 }
 
 async function login() {
-
-  const code =
-    clean($("adminCode").value).toUpperCase();
-
+  const code = clean($("adminCode").value).toUpperCase();
   const account = ADMIN_ACCOUNTS[code];
-
   if (!account) {
-
-    statusMessage(
-      $("loginMsg"),
-      "Código inválido.",
-      "error"
-    );
-
+    statusMessage($("loginMsg"), "Código inválido.", "error");
     return;
   }
-
   try {
-
-    /*
-     * Primeiro autentica a sessão.
-     */
-    if (!auth.currentUser) {
-      await auth.signInAnonymously();
-    }
-
-    state.admin = {
-      code,
-      ...account
-    };
-
-    sessionStorage.setItem(
-      "ltdAdmin",
-      JSON.stringify(state.admin)
-    );
-
+    if (!auth.currentUser) await auth.signInAnonymously();
+    state.admin = { code, ...account };
+    sessionStorage.setItem("ltdAdmin", JSON.stringify(state.admin));
     $("loginView").classList.add("hidden");
     $("appView").classList.remove("hidden");
-
     $("meName").textContent = account.name;
     $("meRole").textContent = account.role;
-    $("miniAvatar").textContent =
-      account.name.charAt(0).toUpperCase();
-
-    /*
-     * Se o erro acontecer aqui,
-     * agora ele também será mostrado.
-     */
+    $("miniAvatar").textContent = account.name.charAt(0).toUpperCase();
     await loadEverything();
-
     toast("Login realizado.", "success");
-
   } catch(error) {
-
-    console.error(
-      "ERRO COMPLETO DO FIREBASE:",
-      error
-    );
-
-    statusMessage(
-      $("loginMsg"),
-      "Erro Firebase: " +
-      (
-        error.code ||
-        error.message ||
-        "erro desconhecido"
-      ),
-      "error"
-    );
-
-    /*
-     * Se o painel chegou a abrir antes do erro,
-     * volta para a tela de login.
-     */
+    console.error("ERRO COMPLETO DO FIREBASE:", error);
+    statusMessage($("loginMsg"), "Erro Firebase: " + (error.code || error.message || "erro desconhecido"), "error");
     $("loginView").classList.remove("hidden");
     $("appView").classList.add("hidden");
-
     sessionStorage.removeItem("ltdAdmin");
-
   }
-
 }
 
 $("loginBtn").addEventListener("click", login);
-
-$("adminCode").addEventListener("keydown", e => {
-
-  if (e.key === "Enter") {
-    login();
-  }
-
-});
+$("adminCode").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
 
 async function loadCollection(name) {
-
   try {
-
-    const snapshot =
-      await db.collection(name).get();
-
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      collection: name,
-      ...doc.data()
-    }));
-
+    const snapshot = await db.collection(name).get();
+    return snapshot.docs.map(doc => ({ id: doc.id, collection: name, ...doc.data() }));
   } catch(error) {
-
-    console.error(
-      "Erro na coleção:",
-      name,
-      error
-    );
-
+    console.error("Erro na coleção:", name, error);
     throw error;
-
   }
-
 }
 
 async function loadRequests() {
-
-  const canonical =
-    await loadCollection("characterRequests");
-
-  const legacy =
-    await loadCollection("requests");
-
+  const canonical = await loadCollection("characterRequests");
+  const legacy = await loadCollection("requests");
   const map = new Map();
-
   [...legacy, ...canonical].forEach(item => {
-
-    const key =
-      item.id + "_" + item.collection;
-
+    const key = item.id + "_" + item.collection;
     map.set(key, item);
-
   });
-
-  state.requests = Array.from(map.values())
-    .sort((a, b) => {
-
-      const da =
-        a.createdAt?.toMillis?.() || 0;
-
-      const dbb =
-        b.createdAt?.toMillis?.() || 0;
-
-      return dbb - da;
-
-    });
-
+  state.requests = Array.from(map.values()).sort((a, b) => {
+    const da = a.createdAt?.toMillis?.() || 0;
+    const db = b.createdAt?.toMillis?.() || 0;
+    return db - da;
+  });
 }
 
 async function loadVacancies() {
-
-  const canonical =
-    await loadCollection("vagas");
-
-  const legacy =
-    await loadCollection("occupiedCharacters");
-
+  const canonical = await loadCollection("vagas");
+  const legacy = await loadCollection("occupiedCharacters");
   const map = new Map();
-
   legacy.forEach(item => {
-
-    map.set(
-      normalize(character(item)) +
-      "|" +
-      normalize(work(item)),
-      item
-    );
-
+    map.set(normalize(character(item)) + "|" + normalize(work(item)), item);
   });
-
   canonical.forEach(item => {
-
-    map.set(
-      normalize(character(item)) +
-      "|" +
-      normalize(work(item)),
-      item
-    );
-
+    map.set(normalize(character(item)) + "|" + normalize(work(item)), item);
   });
-
-  state.vacancies =
-    Array.from(map.values());
-
+  state.vacancies = Array.from(map.values());
 }
 
-async function loadMembers() {
-
-  state.members =
-    await loadCollection("members");
-
-}
-
-async function loadAdmins() {
-
-  const profiles =
-    await loadCollection("adminProfiles");
-
-  state.adminProfiles = profiles;
-
-}
-
+async function loadMembers() { state.members = await loadCollection("members"); }
+async function loadAdmins() { state.adminProfiles = await loadCollection("adminProfiles"); }
 async function loadChat() {
-
-  let result =
-    await loadCollection("adminChat");
-
-  if (!result.length) {
-    result =
-      await loadCollection("chat");
-  }
-
+  let result = await loadCollection("adminChat");
+  if (!result.length) result = await loadCollection("chat");
   state.chat = result.sort((a, b) => {
-
-    const da =
-      a.createdAt?.toMillis?.() || 0;
-
-    const dbb =
-      b.createdAt?.toMillis?.() || 0;
-
-    return da - dbb;
-
+    const da = a.createdAt?.toMillis?.() || 0;
+    const db = b.createdAt?.toMillis?.() || 0;
+    return da - db;
   });
-
 }
-
 async function loadLogs() {
-
-  state.logs =
-    await loadCollection("accessLogs");
-
+  state.logs = await loadCollection("accessLogs");
   state.logs.sort((a, b) => {
-
-    const da =
-      a.createdAt?.toMillis?.() || 0;
-
-    const dbb =
-      b.createdAt?.toMillis?.() || 0;
-
-    return dbb - da;
-
+    const da = a.createdAt?.toMillis?.() || 0;
+    const db = b.createdAt?.toMillis?.() || 0;
+    return db - da;
   });
-
 }
 
 async function loadEverything() {
-
   await Promise.all([
-
     loadRequests(),
     loadVacancies(),
     loadMembers(),
     loadAdmins(),
     loadChat(),
     loadLogs()
-
   ]);
-
   renderAll();
-
 }
 
 function renderAll() {
-
   renderStats();
   renderHome();
   renderRequests();
@@ -836,1542 +562,472 @@ function renderAll() {
   renderAdmins();
   renderChat();
   renderLogs();
-
 }
 
 function renderStats() {
-
-  const pending =
-    state.requests.filter(isPending).length;
-
-  const open =
-    state.vacancies.filter(isOpen).length;
-
-  const closed =
-    state.vacancies.length - open;
-
+  const pending = state.requests.filter(isPending).length;
+  const open = state.vacancies.filter(isOpen).length;
+  const closed = state.vacancies.length - open;
   $("statRequests").textContent = pending;
   $("statOpen").textContent = open;
   $("statClosed").textContent = closed;
-  $("statMembers").textContent =
-    state.members.length;
-
+  $("statMembers").textContent = state.members.length;
   $("requestBadge").textContent = pending;
-
-  $("requestBadge").classList.toggle(
-    "hidden",
-    pending === 0
-  );
-
+  $("requestBadge").classList.toggle("hidden", pending === 0);
 }
 
 function renderHome() {
-
-  const pending =
-    state.requests.filter(isPending).length;
-
-  const open =
-    state.vacancies.filter(isOpen).length;
-
-  const closed =
-    state.vacancies.length - open;
-
+  const pending = state.requests.filter(isPending).length;
+  const open = state.vacancies.filter(isOpen).length;
+  const closed = state.vacancies.length - open;
   $("homeSummary").innerHTML = `
-
-    <div class="summary-item">
-      <span>Solicitações pendentes</span>
-      <strong>${pending}</strong>
-    </div>
-
-    <div class="summary-item">
-      <span>Vagas disponíveis</span>
-      <strong>${open}</strong>
-    </div>
-
-    <div class="summary-item">
-      <span>Vagas fechadas</span>
-      <strong>${closed}</strong>
-    </div>
-
-    <div class="summary-item">
-      <span>Membros aprovados</span>
-      <strong>${state.members.length}</strong>
-    </div>
-
+    <div class="summary-item"><span>Solicitações pendentes</span><strong>${pending}</strong></div>
+    <div class="summary-item"><span>Vagas disponíveis</span><strong>${open}</strong></div>
+    <div class="summary-item"><span>Vagas fechadas</span><strong>${closed}</strong></div>
+    <div class="summary-item"><span>Membros aprovados</span><strong>${state.members.length}</strong></div>
   `;
-
 }
 
 function renderRequests() {
-
-  const container =
-    $("requestsList");
-
-  const requests =
-    state.requests.filter(isPending);
-
+  const container = $("requestsList");
+  const requests = state.requests.filter(isPending);
   if (!requests.length) {
-
-    container.innerHTML = `
-      <div class="empty-card">
-        Não há solicitações pendentes.
-      </div>
-    `;
-
+    container.innerHTML = `<div class="empty-card">Não há solicitações pendentes.</div>`;
     return;
-
   }
-
-  container.innerHTML =
-    requests.map(req => {
-
-      const isExchange =
-        req.type === "exchange";
-
-      const img = image(req);
-
-      return `
-
+  container.innerHTML = requests.map(req => {
+    const isExchange = req.type === "exchange";
+    const img = image(req);
+    return `
       <article class="request-card">
-
         <div class="request-photo">
-
-          ${
-            img
-            ? `<img src="${escapeHTML(img)}" alt="">`
-            : `<div class="no-image">LTD</div>`
-          }
-
+          ${img ? `<img src="${escapeHTML(img)}" alt="">` : `<div class="no-image">LTD</div>`}
         </div>
-
         <div class="request-content">
-
           <div class="request-top">
-
             <div>
-
-              <span class="request-type">
-                ${isExchange ? "TROCA" : "NOVA FICHA"}
-              </span>
-
-              <h3>
-                ${escapeHTML(character(req))}
-              </h3>
-
+              <span class="request-type">${isExchange ? "TROCA" : "NOVA FICHA"}</span>
+              <h3>${escapeHTML(character(req))}</h3>
             </div>
-
-            <span class="pending-pill">
-              PENDENTE
-            </span>
-
+            <span class="pending-pill">PENDENTE</span>
           </div>
-
           <div class="request-data">
-
-            ${
-              isExchange
-              ? `
-                <p>
-                  <b>Atual:</b>
-                  ${escapeHTML(req.oldCharacter)}
-                  •
-                  ${escapeHTML(req.oldWork)}
-                </p>
-
-                <p>
-                  <b>Novo:</b>
-                  ${escapeHTML(character(req))}
-                  •
-                  ${escapeHTML(work(req))}
-                </p>
-              `
-              : `
-                <p>
-                  <b>Nome:</b>
-                  ${escapeHTML(personName(req))}
-                </p>
-
-                <p>
-                  <b>Idade:</b>
-                  ${escapeHTML(age(req))}
-                </p>
-
-                <p>
-                  <b>Obra:</b>
-                  ${escapeHTML(work(req))}
-                </p>
-
-                <p>
-                  <b>Telefone:</b>
-                  ••••${escapeHTML(phone(req))}
-                </p>
-
-                ${
-                  req.message
-                  ? `
-                    <p>
-                      <b>Mensagem:</b>
-                      ${escapeHTML(req.message)}
-                    </p>
-                  `
-                  : ""
-                }
-              `
-            }
-
+            ${isExchange ? `
+              <p><b>Atual:</b> ${escapeHTML(req.oldCharacter)} • ${escapeHTML(req.oldWork)}</p>
+              <p><b>Novo:</b> ${escapeHTML(character(req))} • ${escapeHTML(work(req))}</p>
+            ` : `
+              <p><b>Nome:</b> ${escapeHTML(personName(req))}</p>
+              <p><b>Idade:</b> ${escapeHTML(age(req))}</p>
+              <p><b>Obra:</b> ${escapeHTML(work(req))}</p>
+              <p><b>Telefone:</b> ••••${escapeHTML(phone(req))}</p>
+              ${req.message ? `<p><b>Mensagem:</b> ${escapeHTML(req.message)}</p>` : ""}
+            `}
           </div>
-
           <div class="request-actions">
-
-            <button
-              class="button primary small"
-              data-action="approve"
-              data-id="${escapeHTML(req.id)}"
-              data-collection="${escapeHTML(req.collection)}"
-            >
-              Aprovar
-            </button>
-
-            <button
-              class="button danger small"
-              data-action="reject"
-              data-id="${escapeHTML(req.id)}"
-              data-collection="${escapeHTML(req.collection)}"
-            >
-              Recusar
-            </button>
-
+            <button class="button primary small" data-action="approve" data-id="${escapeHTML(req.id)}" data-collection="${escapeHTML(req.collection)}">Aprovar</button>
+            <button class="button danger small" data-action="reject" data-id="${escapeHTML(req.id)}" data-collection="${escapeHTML(req.collection)}">Recusar</button>
           </div>
-
         </div>
-
       </article>
-
-      `;
-
-    }).join("");
-
+    `;
+  }).join("");
 }
 
 function renderVacancies() {
-
-  const container =
-    $("vacanciesList");
-
+  const container = $("vacanciesList");
   if (!state.vacancies.length) {
-
-    container.innerHTML = `
-      <div class="empty-card">
-        Nenhuma vaga cadastrada.
-      </div>
-    `;
-
+    container.innerHTML = `<div class="empty-card">Nenhuma vaga cadastrada.</div>`;
     return;
-
   }
-
-  const sorted =
-    [...state.vacancies].sort((a, b) =>
-      character(a).localeCompare(
-        character(b),
-        "pt-BR"
-      )
-    );
-
-  container.innerHTML =
-    sorted.map(vacancy => {
-
-      const open = isOpen(vacancy);
-      const img = image(vacancy);
-
-      return `
-
+  const sorted = [...state.vacancies].sort((a, b) => character(a).localeCompare(character(b), "pt-BR"));
+  container.innerHTML = sorted.map(vacancy => {
+    const open = isOpen(vacancy);
+    const img = image(vacancy);
+    return `
       <article class="admin-vacancy-card">
-
         <div class="admin-vacancy-image">
-
-          ${
-            img
-            ? `<img src="${escapeHTML(img)}" alt="">`
-            : `<div class="no-image">LTD</div>`
-          }
-
-          <span class="${open ? "open-pill" : "closed-pill"}">
-            ${open ? "ABERTA" : "FECHADA"}
-          </span>
-
+          ${img ? `<img src="${escapeHTML(img)}" alt="">` : `<div class="no-image">LTD</div>`}
+          <span class="${open ? "open-pill" : "closed-pill"}">${open ? "ABERTA" : "FECHADA"}</span>
         </div>
-
         <div class="admin-vacancy-body">
-
-          <h3>
-            ${escapeHTML(character(vacancy))}
-          </h3>
-
-          <p>
-            ${escapeHTML(work(vacancy))}
-          </p>
-
+          <h3>${escapeHTML(character(vacancy))}</h3>
+          <p>${escapeHTML(work(vacancy))}</p>
           <div class="admin-card-actions">
-
-            <button
-              class="button secondary small"
-              data-action="edit-vacancy"
-              data-id="${escapeHTML(vacancy.id)}"
-            >
-              Editar
-            </button>
-
-            <button
-              class="button primary small"
-              data-action="toggle-vacancy"
-              data-id="${escapeHTML(vacancy.id)}"
-            >
-              ${open ? "Fechar" : "Abrir"}
-            </button>
-
-            <button
-              class="button danger small"
-              data-action="delete-vacancy"
-              data-id="${escapeHTML(vacancy.id)}"
-            >
-              Excluir
-            </button>
-
+            <button class="button secondary small" data-action="edit-vacancy" data-id="${escapeHTML(vacancy.id)}">Editar</button>
+            <button class="button primary small" data-action="toggle-vacancy" data-id="${escapeHTML(vacancy.id)}">${open ? "Fechar" : "Abrir"}</button>
+            <button class="button danger small" data-action="delete-vacancy" data-id="${escapeHTML(vacancy.id)}">Excluir</button>
           </div>
-
         </div>
-
       </article>
-
-      `;
-
-    }).join("");
-
+    `;
+  }).join("");
 }
 
 function renderMembers() {
-
-  const container =
-    $("membersListAdmin");
-
+  const container = $("membersListAdmin");
   if (!state.members.length) {
-
-    container.innerHTML = `
-      <div class="empty-card">
-        Nenhum membro aprovado.
-      </div>
-    `;
-
+    container.innerHTML = `<div class="empty-card">Nenhum membro aprovado.</div>`;
     return;
-
   }
-
   container.innerHTML = `
-
     <div class="table-scroll">
-
       <table>
-
         <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Idade</th>
-            <th>Personagem</th>
-            <th>Obra</th>
-            <th>Data</th>
-          </tr>
+          <tr><th>Nome</th><th>Idade</th><th>Personagem</th><th>Obra</th><th>Data</th></tr>
         </thead>
-
         <tbody>
-
-          ${
-            state.members.map(member => `
-
-              <tr>
-
-                <td>
-                  ${escapeHTML(personName(member))}
-                </td>
-
-                <td>
-                  ${escapeHTML(age(member))}
-                </td>
-
-                <td>
-                  ${escapeHTML(character(member))}
-                </td>
-
-                <td>
-                  ${escapeHTML(work(member))}
-                </td>
-
-                <td>
-                  ${formatDate(member.approvedAt || member.createdAt)}
-                </td>
-
-              </tr>
-
-            `).join("")
-          }
-
+          ${state.members.map(member => `
+            <tr>
+              <td>${escapeHTML(personName(member))}</td>
+              <td>${escapeHTML(age(member))}</td>
+              <td>${escapeHTML(character(member))}</td>
+              <td>${escapeHTML(work(member))}</td>
+              <td>${formatDate(member.approvedAt || member.createdAt)}</td>
+            </tr>
+          `).join("")}
         </tbody>
-
       </table>
-
     </div>
-
   `;
-
 }
 
 function renderAdmins() {
-
-  const container =
-    $("adminsList");
-
-  const entries =
-    Object.entries(ADMIN_ACCOUNTS);
-
-  container.innerHTML =
-    entries.map(([code, admin]) => {
-
-      const profile =
-        (state.adminProfiles || [])
-        .find(p =>
-          normalize(p.name) ===
-          normalize(admin.name)
-        );
-
-      const avatar =
-        profile?.photo ||
-        profile?.image ||
-        profile?.photoURL ||
-        "";
-
-      return `
-
-        <article class="admin-profile-card">
-
-          <div class="admin-profile-cover">
-
-            ${
-              profile?.cover
-              ? `<img src="${escapeHTML(profile.cover)}" alt="">`
-              : ""
-            }
-
-          </div>
-
-          <div class="admin-profile-avatar">
-
-            ${
-              avatar
-              ? `<img src="${escapeHTML(avatar)}" alt="">`
-              : `<span>${admin.name.charAt(0)}</span>`
-            }
-
-          </div>
-
-          <div class="admin-profile-content">
-
-            <h3>
-              ${escapeHTML(admin.name)}
-            </h3>
-
-            <span>
-              ${escapeHTML(admin.role)}
-            </span>
-
-          </div>
-
-        </article>
-
-      `;
-
-    }).join("");
-
+  const container = $("adminsList");
+  const entries = Object.entries(ADMIN_ACCOUNTS);
+  container.innerHTML = entries.map(([code, admin]) => {
+    const profile = (state.adminProfiles || []).find(p => normalize(p.name) === normalize(admin.name));
+    const avatar = profile?.photo || profile?.image || profile?.photoURL || "";
+    return `
+      <article class="admin-profile-card">
+        <div class="admin-profile-cover">
+          ${profile?.cover ? `<img src="${escapeHTML(profile.cover)}" alt="">` : ""}
+        </div>
+        <div class="admin-profile-avatar">
+          ${avatar ? `<img src="${escapeHTML(avatar)}" alt="">` : `<span>${admin.name.charAt(0)}</span>`}
+        </div>
+        <div class="admin-profile-content">
+          <h3>${escapeHTML(admin.name)}</h3>
+          <span>${escapeHTML(admin.role)}</span>
+        </div>
+      </article>
+    `;
+  }).join("");
 }
 
 function renderChat() {
-
-  const container =
-    $("chatList");
-
+  const container = $("chatList");
   if (!state.chat.length) {
-
-    container.innerHTML = `
-      <div class="empty-card">
-        Nenhuma mensagem ainda.
-      </div>
-    `;
-
+    container.innerHTML = `<div class="empty-card">Nenhuma mensagem ainda.</div>`;
     return;
-
   }
-
-  container.innerHTML =
-    state.chat.map(message => {
-
-      return `
-
-        <div class="chat-message">
-
-          <div class="chat-message-head">
-
-            <strong>
-              ${escapeHTML(
-                message.adminName ||
-                message.name ||
-                "ADM"
-              )}
-            </strong>
-
-            <small>
-              ${formatDate(message.createdAt)}
-            </small>
-
-          </div>
-
-          <p>
-            ${escapeHTML(message.message)}
-          </p>
-
-        </div>
-
-      `;
-
-    }).join("");
-
-  container.scrollTop =
-    container.scrollHeight;
-
+  container.innerHTML = state.chat.map(message => `
+    <div class="chat-message">
+      <div class="chat-message-head">
+        <strong>${escapeHTML(message.adminName || message.name || "ADM")}</strong>
+        <small>${formatDate(message.createdAt)}</small>
+      </div>
+      <p>${escapeHTML(message.message)}</p>
+    </div>
+  `).join("");
+  container.scrollTop = container.scrollHeight;
 }
 
 function renderLogs() {
-
-  const container =
-    $("logsList");
-
+  const container = $("logsList");
   if (!state.logs.length) {
-
-    container.innerHTML = `
-      <div class="empty-card">
-        Nenhum log registrado.
-      </div>
-    `;
-
+    container.innerHTML = `<div class="empty-card">Nenhum log registrado.</div>`;
     return;
-
   }
-
   container.innerHTML = `
-
     <div class="table-scroll">
-
       <table>
-
         <thead>
-          <tr>
-            <th>Administrador</th>
-            <th>Ação</th>
-            <th>Detalhes</th>
-            <th>Data</th>
-          </tr>
+          <tr><th>Administrador</th><th>Ação</th><th>Detalhes</th><th>Data</th></tr>
         </thead>
-
         <tbody>
-
-          ${
-            state.logs.map(log => `
-
-              <tr>
-
-                <td>
-                  ${escapeHTML(
-                    log.adminName || "ADM"
-                  )}
-                </td>
-
-                <td>
-                  ${escapeHTML(log.action || "")}
-                </td>
-
-                <td>
-                  ${escapeHTML(log.details || "")}
-                </td>
-
-                <td>
-                  ${formatDate(log.createdAt)}
-                </td>
-
-              </tr>
-
-            `).join("")
-          }
-
+          ${state.logs.map(log => `
+            <tr>
+              <td>${escapeHTML(log.adminName || "ADM")}</td>
+              <td>${escapeHTML(log.action || "")}</td>
+              <td>${escapeHTML(log.details || "")}</td>
+              <td>${formatDate(log.createdAt)}</td>
+            </tr>
+          `).join("")}
         </tbody>
-
       </table>
-
     </div>
-
   `;
-
 }
 
 async function createLog(action, details) {
-
   if (!state.admin) return;
-
   try {
-
     await db.collection("accessLogs").add({
-
       adminCode: state.admin.code,
       adminName: state.admin.name,
       adminRole: state.admin.role,
-
       action,
       details,
-
-      createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-
-  } catch(error) {
-
-    console.error("Log:", error);
-
-  }
-
+  } catch(error) { console.error("Log:", error); }
 }
 
 async function approveRequest(id, collection) {
-
-  const request =
-    state.requests.find(
-      item =>
-        item.id === id &&
-        item.collection === collection
-    );
-
-  if (!request) {
-    toast("Solicitação não encontrada.", "error");
-    return;
-  }
-
+  const request = state.requests.find(item => item.id === id && item.collection === collection);
+  if (!request) { toast("Solicitação não encontrada.", "error"); return; }
   try {
-
-    const batch =
-      db.batch();
-
-    const requestRef =
-      db.collection(collection).doc(id);
-
+    const batch = db.batch();
+    const requestRef = db.collection(collection).doc(id);
     if (request.type === "exchange") {
-
-      const memberRef =
-        db.collection("members").doc(request.memberId);
-
-      const vacancyRef =
-        db.collection("vagas").doc(request.vacancyId);
-
-      batch.update(requestRef, {
-
-        status: "aprovado",
-
-        approvedBy: state.admin.name,
-
-        approvedAt:
-          firebase.firestore.FieldValue.serverTimestamp()
-
-      });
-
-      batch.update(memberRef, {
-
-        character: request.character,
-        work: request.work,
-        photo: request.photo,
-
-        updatedAt:
-          firebase.firestore.FieldValue.serverTimestamp()
-
-      });
-
-      batch.update(vacancyRef, {
-
-        status: "fechada",
-        open: false,
-
-        updatedAt:
-          firebase.firestore.FieldValue.serverTimestamp()
-
-      });
-
-      const oldVacancies =
-        state.vacancies.filter(v =>
-
-          normalize(character(v)) ===
-            normalize(request.oldCharacter) &&
-
-          normalize(work(v)) ===
-            normalize(request.oldWork)
-
-        );
-
+      const memberRef = db.collection("members").doc(request.memberId);
+      const vacancyRef = db.collection("vagas").doc(request.vacancyId);
+      batch.update(requestRef, { status: "aprovado", approvedBy: state.admin.name, approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      batch.update(memberRef, { character: request.character, work: request.work, photo: request.photo, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      batch.update(vacancyRef, { status: "fechada", open: false, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      const oldVacancies = state.vacancies.filter(v => normalize(character(v)) === normalize(request.oldCharacter) && normalize(work(v)) === normalize(request.oldWork));
       if (oldVacancies.length) {
-
         oldVacancies.forEach(v => {
-
-          const ref =
-            db.collection(
-              v.collection || "vagas"
-            ).doc(v.id);
-
-          batch.update(ref, {
-
-            status: "aberta",
-            open: true,
-
-            updatedAt:
-              firebase.firestore.FieldValue.serverTimestamp()
-
-          });
-
+          const ref = db.collection(v.collection || "vagas").doc(v.id);
+          batch.update(ref, { status: "aberta", open: true, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
         });
-
       } else {
-
-        const oldRef =
-          db.collection("vagas").doc();
-
-        batch.set(oldRef, {
-
-          character: request.oldCharacter,
-          work: request.oldWork,
-
-          image: "",
-
-          status: "aberta",
-          open: true,
-
-          createdAt:
-            firebase.firestore.FieldValue.serverTimestamp(),
-
-          updatedAt:
-            firebase.firestore.FieldValue.serverTimestamp()
-
-        });
-
+        const oldRef = db.collection("vagas").doc();
+        batch.set(oldRef, { character: request.oldCharacter, work: request.oldWork, image: "", status: "aberta", open: true, createdAt: firebase.firestore.FieldValue.serverTimestamp(), updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
       }
-
     } else {
-
-      batch.update(requestRef, {
-
-        status: "aprovado",
-
-        approvedBy: state.admin.name,
-
-        approvedAt:
-          firebase.firestore.FieldValue.serverTimestamp()
-
-      });
-
-      const memberRef =
-        db.collection("members").doc();
-
+      batch.update(requestRef, { status: "aprovado", approvedBy: state.admin.name, approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      const memberRef = db.collection("members").doc();
       batch.set(memberRef, {
-
-        name: request.name || "",
-        age: request.age || "",
-        phoneLast4: request.phoneLast4 || "",
-
-        character: request.character,
-        work: request.work,
-
-        photo: request.photo,
-
-        requestId: id,
-
-        createdAt:
-          firebase.firestore.FieldValue.serverTimestamp(),
-
-        approvedAt:
-          firebase.firestore.FieldValue.serverTimestamp(),
-
-        approvedBy:
-          state.admin.name
-
+        name: request.name || "", age: request.age || "", phoneLast4: request.phoneLast4 || "",
+        character: request.character, work: request.work, photo: request.photo, requestId: id,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        approvedBy: state.admin.name
       });
-
-      const matching =
-        state.vacancies.filter(v =>
-
-          normalize(character(v)) ===
-            normalize(character(request)) &&
-
-          normalize(work(v)) ===
-            normalize(work(request)) &&
-
-          isOpen(v)
-
-        );
-
+      const matching = state.vacancies.filter(v => normalize(character(v)) === normalize(character(request)) && normalize(work(v)) === normalize(work(request)) && isOpen(v));
       if (matching.length) {
-
         matching.forEach(v => {
-
-          const ref =
-            db.collection("vagas").doc(v.id);
-
-          batch.update(ref, {
-
-            status: "fechada",
-            open: false,
-
-            updatedAt:
-              firebase.firestore.FieldValue.serverTimestamp()
-
-          });
-
+          const ref = db.collection("vagas").doc(v.id);
+          batch.update(ref, { status: "fechada", open: false, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
         });
-
       } else {
-
-        const vacancyRef =
-          db.collection("vagas").doc();
-
-        batch.set(vacancyRef, {
-
-          character: request.character,
-          work: request.work,
-          image: request.photo,
-
-          status: "fechada",
-          open: false,
-
-          createdAt:
-            firebase.firestore.FieldValue.serverTimestamp(),
-
-          updatedAt:
-            firebase.firestore.FieldValue.serverTimestamp()
-
-        });
-
+        const vacancyRef = db.collection("vagas").doc();
+        batch.set(vacancyRef, { character: request.character, work: request.work, image: request.photo, status: "fechada", open: false, createdAt: firebase.firestore.FieldValue.serverTimestamp(), updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
       }
-
     }
-
     await batch.commit();
-
-    await createLog(
-      "aprovar_solicitacao",
-      `${request.type === "exchange" ? "Troca" : "Ficha"}: ${character(request)}`
-    );
-
-    toast(
-      "Solicitação aprovada.",
-      "success"
-    );
-
+    await createLog("aprovar_solicitacao", `${request.type === "exchange" ? "Troca" : "Ficha"}: ${character(request)}`);
+    toast("Solicitação aprovada.", "success");
     await loadEverything();
-
-  } catch(error) {
-
-    console.error(error);
-
-    toast(
-      "Erro ao aprovar: " + error.message,
-      "error"
-    );
-
-  }
-
+  } catch(error) { console.error(error); toast("Erro ao aprovar: " + error.message, "error"); }
 }
 
 async function rejectRequest(id, collection) {
-
-  const request =
-    state.requests.find(
-      item =>
-        item.id === id &&
-        item.collection === collection
-    );
-
+  const request = state.requests.find(item => item.id === id && item.collection === collection);
   if (!request) return;
-
-  const confirmed =
-    confirm(
-      "Deseja realmente recusar esta solicitação?"
-    );
-
-  if (!confirmed) return;
-
+  if (!confirm("Deseja realmente recusar esta solicitação?")) return;
   try {
-
-    await db
-      .collection(collection)
-      .doc(id)
-      .update({
-
-        status: "recusado",
-
-        rejectedBy: state.admin.name,
-
-        rejectedAt:
-          firebase.firestore.FieldValue.serverTimestamp()
-
-      });
-
-    await createLog(
-      "recusar_solicitacao",
-      `${character(request)} • ${work(request)}`
-    );
-
-    toast(
-      "Solicitação recusada.",
-      "success"
-    );
-
+    await db.collection(collection).doc(id).update({
+      status: "recusado", rejectedBy: state.admin.name, rejectedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await createLog("recusar_solicitacao", `${character(request)} • ${work(request)}`);
+    toast("Solicitação recusada.", "success");
     await loadEverything();
-
-  } catch(error) {
-
-    console.error(error);
-
-    toast(
-      "Erro ao recusar: " +
-      (error.code || error.message || ""),
-      "error"
-    );
-
-  }
-
+  } catch(error) { console.error(error); toast("Erro ao recusar: " + (error.code || error.message || ""), "error"); }
 }
 
 function openVacancyModal(vacancy = null) {
-
-  state.editVacancyId =
-    vacancy?.id || null;
-
-  $("modalTitle").textContent =
-    vacancy
-    ? "Editar vaga"
-    : "Nova vaga";
-
-  $("vacCharacter").value =
-    vacancy
-    ? character(vacancy)
-    : "";
-
-  $("vacWork").value =
-    vacancy
-    ? work(vacancy)
-    : "";
-
-  $("vacImage").value =
-    vacancy
-    ? image(vacancy)
-    : "";
-
-  $("vacStatus").value =
-    vacancy
-    ? (isOpen(vacancy)
-      ? "aberta"
-      : "fechada")
-    : "aberta";
-
+  state.editVacancyId = vacancy?.id || null;
+  $("modalTitle").textContent = vacancy ? "Editar vaga" : "Nova vaga";
+  $("vacCharacter").value = vacancy ? character(vacancy) : "";
+  $("vacWork").value = vacancy ? work(vacancy) : "";
+  $("vacImage").value = vacancy ? image(vacancy) : "";
+  $("vacStatus").value = vacancy ? (isOpen(vacancy) ? "aberta" : "fechada") : "aberta";
   $("vacMsg").textContent = "";
   $("vacMsg").className = "form-status";
-
   $("modal").classList.remove("hidden");
-
 }
 
-function closeModal() {
+function closeModal() { $("modal").classList.add("hidden"); state.editVacancyId = null; }
+$("closeModal").addEventListener("click", closeModal);
+$("modal").addEventListener("click", e => { if (e.target === $("modal")) closeModal(); });
+$("newVacancyBtn").addEventListener("click", () => openVacancyModal());
 
-  $("modal").classList.add("hidden");
-
-  state.editVacancyId = null;
-
-}
-
-$("closeModal").addEventListener(
-  "click",
-  closeModal
-);
-
-$("modal").addEventListener("click", e => {
-
-  if (e.target === $("modal")) {
-    closeModal();
+$("saveVacancyBtn").addEventListener("click", async () => {
+  const characterValue = clean($("vacCharacter").value);
+  const workValue = clean($("vacWork").value);
+  const imageValue = clean($("vacImage").value);
+  const statusValue = $("vacStatus").value;
+  if (!characterValue || !workValue) {
+    statusMessage($("vacMsg"), "Preencha personagem e obra.", "error");
+    return;
   }
-
+  try {
+    const data = {
+      character: characterValue, work: workValue, image: imageValue,
+      status: statusValue, open: statusValue === "aberta",
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (state.editVacancyId) {
+      await db.collection("vagas").doc(state.editVacancyId).update(data);
+      await createLog("editar_vaga", `${characterValue} • ${workValue}`);
+      toast("Vaga atualizada.", "success");
+    } else {
+      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection("vagas").add(data);
+      await createLog("criar_vaga", `${characterValue} • ${workValue}`);
+      toast("Vaga criada.", "success");
+    }
+    closeModal();
+    await loadEverything();
+  } catch(error) {
+    console.error(error);
+    statusMessage($("vacMsg"), "Erro Firebase: " + (error.code || error.message || "erro desconhecido"), "error");
+  }
 });
 
-$("newVacancyBtn").addEventListener(
-  "click",
-  () => openVacancyModal()
-);
-
-$("saveVacancyBtn").addEventListener(
-  "click",
-  async () => {
-
-    const characterValue =
-      clean($("vacCharacter").value);
-
-    const workValue =
-      clean($("vacWork").value);
-
-    const imageValue =
-      clean($("vacImage").value);
-
-    const statusValue =
-      $("vacStatus").value;
-
-    if (!characterValue || !workValue) {
-
-      statusMessage(
-        $("vacMsg"),
-        "Preencha personagem e obra.",
-        "error"
-      );
-
-      return;
-
-    }
-
-    try {
-
-      const data = {
-
-        character: characterValue,
-        work: workValue,
-        image: imageValue,
-
-        status: statusValue,
-        open: statusValue === "aberta",
-
-        updatedAt:
-          firebase.firestore.FieldValue.serverTimestamp()
-
-      };
-
-      if (state.editVacancyId) {
-
-        await db
-          .collection("vagas")
-          .doc(state.editVacancyId)
-          .update(data);
-
-        await createLog(
-          "editar_vaga",
-          `${characterValue} • ${workValue}`
-        );
-
-        toast(
-          "Vaga atualizada.",
-          "success"
-        );
-
-      } else {
-
-        data.createdAt =
-          firebase.firestore.FieldValue.serverTimestamp();
-
-        await db
-          .collection("vagas")
-          .add(data);
-
-        await createLog(
-          "criar_vaga",
-          `${characterValue} • ${workValue}`
-        );
-
-        toast(
-          "Vaga criada.",
-          "success"
-        );
-
-      }
-
-      closeModal();
-
-      await loadEverything();
-
-    } catch(error) {
-
-      console.error(error);
-
-      statusMessage(
-        $("vacMsg"),
-        "Erro Firebase: " +
-        (
-          error.code ||
-          error.message ||
-          "erro desconhecido"
-        ),
-        "error"
-      );
-
-    }
-
-  }
-);
-
 async function toggleVacancy(id) {
-
-  const vacancy =
-    state.vacancies.find(v => v.id === id);
-
+  const vacancy = state.vacancies.find(v => v.id === id);
   if (!vacancy) return;
-
-  const newOpen =
-    !isOpen(vacancy);
-
+  const newOpen = !isOpen(vacancy);
   try {
-
-    await db
-      .collection("vagas")
-      .doc(id)
-      .update({
-
-        status:
-          newOpen
-          ? "aberta"
-          : "fechada",
-
-        open: newOpen,
-
-        updatedAt:
-          firebase.firestore.FieldValue.serverTimestamp()
-
-      });
-
-    await createLog(
-      newOpen
-      ? "abrir_vaga"
-      : "fechar_vaga",
-      `${character(vacancy)} • ${work(vacancy)}`
-    );
-
-    toast(
-      newOpen
-      ? "Vaga aberta."
-      : "Vaga fechada.",
-      "success"
-    );
-
+    await db.collection("vagas").doc(id).update({
+      status: newOpen ? "aberta" : "fechada", open: newOpen,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await createLog(newOpen ? "abrir_vaga" : "fechar_vaga", `${character(vacancy)} • ${work(vacancy)}`);
+    toast(newOpen ? "Vaga aberta." : "Vaga fechada.", "success");
     await loadEverything();
-
-  } catch(error) {
-
-    console.error(error);
-
-    toast(
-      "Erro Firebase: " +
-      (
-        error.code ||
-        error.message ||
-        "erro desconhecido"
-      ),
-      "error"
-    );
-
-  }
-
+  } catch(error) { console.error(error); toast("Erro Firebase: " + (error.code || error.message || "erro desconhecido"), "error"); }
 }
 
 async function deleteVacancy(id) {
-
-  const vacancy =
-    state.vacancies.find(v => v.id === id);
-
+  const vacancy = state.vacancies.find(v => v.id === id);
   if (!vacancy) return;
-
-  if (
-    !confirm(
-      `Excluir a vaga "${character(vacancy)}"?`
-    )
-  ) return;
-
+  if (!confirm(`Excluir a vaga "${character(vacancy)}"?`)) return;
   try {
-
-    await db
-      .collection("vagas")
-      .doc(id)
-      .delete();
-
-    await createLog(
-      "excluir_vaga",
-      `${character(vacancy)} • ${work(vacancy)}`
-    );
-
-    toast(
-      "Vaga excluída.",
-      "success"
-    );
-
+    await db.collection("vagas").doc(id).delete();
+    await createLog("excluir_vaga", `${character(vacancy)} • ${work(vacancy)}`);
+    toast("Vaga excluída.", "success");
     await loadEverything();
-
-  } catch(error) {
-
-    console.error(error);
-
-    toast(
-      "Erro Firebase: " +
-      (
-        error.code ||
-        error.message ||
-        "erro desconhecido"
-      ),
-      "error"
-    );
-
-  }
-
+  } catch(error) { console.error(error); toast("Erro Firebase: " + (error.code || error.message || "erro desconhecido"), "error"); }
 }
 
-$("vacanciesList").addEventListener(
-  "click",
-  e => {
-
-    const button =
-      e.target.closest("[data-action]");
-
-    if (!button) return;
-
-    const action =
-      button.dataset.action;
-
-    const id =
-      button.dataset.id;
-
-    if (action === "edit-vacancy") {
-
-      const vacancy =
-        state.vacancies.find(v => v.id === id);
-
-      if (vacancy) {
-        openVacancyModal(vacancy);
-      }
-
-    }
-
-    if (action === "toggle-vacancy") {
-      toggleVacancy(id);
-    }
-
-    if (action === "delete-vacancy") {
-      deleteVacancy(id);
-    }
-
+$("vacanciesList").addEventListener("click", e => {
+  const button = e.target.closest("[data-action]");
+  if (!button) return;
+  const action = button.dataset.action;
+  const id = button.dataset.id;
+  if (action === "edit-vacancy") {
+    const vacancy = state.vacancies.find(v => v.id === id);
+    if (vacancy) openVacancyModal(vacancy);
   }
-);
+  if (action === "toggle-vacancy") toggleVacancy(id);
+  if (action === "delete-vacancy") deleteVacancy(id);
+});
 
-$("requestsList").addEventListener(
-  "click",
-  e => {
-
-    const button =
-      e.target.closest("[data-action]");
-
-    if (!button) return;
-
-    const action =
-      button.dataset.action;
-
-    const id =
-      button.dataset.id;
-
-    const collection =
-      button.dataset.collection;
-
-    if (action === "approve") {
-      approveRequest(id, collection);
-    }
-
-    if (action === "reject") {
-      rejectRequest(id, collection);
-    }
-
-  }
-);
+$("requestsList").addEventListener("click", e => {
+  const button = e.target.closest("[data-action]");
+  if (!button) return;
+  const action = button.dataset.action;
+  const id = button.dataset.id;
+  const collection = button.dataset.collection;
+  if (action === "approve") approveRequest(id, collection);
+  if (action === "reject") rejectRequest(id, collection);
+});
 
 async function sendChat() {
-
-  const input =
-    $("chatInput");
-
-  const message =
-    clean(input.value);
-
+  const input = $("chatInput");
+  const message = clean(input.value);
   if (!message) return;
-
   try {
-
     await db.collection("adminChat").add({
-
-      adminCode:
-        state.admin.code,
-
-      adminName:
-        state.admin.name,
-
-      adminRole:
-        state.admin.role,
-
-      message,
-
-      createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
+      adminCode: state.admin.code, adminName: state.admin.name, adminRole: state.admin.role,
+      message, createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-
     input.value = "";
-
     await loadChat();
-
     renderChat();
-
-  } catch(error) {
-
-    console.error(error);
-
-    toast(
-      "Erro Firebase: " +
-      (
-        error.code ||
-        error.message ||
-        "erro desconhecido"
-      ),
-      "error"
-    );
-
-  }
-
+  } catch(error) { console.error(error); toast("Erro Firebase: " + (error.code || error.message || "erro desconhecido"), "error"); }
 }
 
-$("sendChatBtn").addEventListener(
-  "click",
-  sendChat
-);
-
-$("chatInput").addEventListener(
-  "keydown",
-  e => {
-
-    if (e.key === "Enter") {
-      sendChat();
-    }
-
-  }
-);
+$("sendChatBtn").addEventListener("click", sendChat);
+$("chatInput").addEventListener("keydown", e => { if (e.key === "Enter") sendChat(); });
 
 const viewNames = {
-
   home: ["PAINEL", "Visão geral"],
-
   requests: ["RECEPÇÃO", "Solicitações"],
-
   vacancies: ["PERSONAGENS", "Vagas"],
-
   members: ["HOUSE LTD", "Membros"],
-
   admins: ["STAFF", "Administradores"],
-
   chat: ["STAFF", "Chat administrativo"],
-
   logs: ["SEGURANÇA", "Logs"]
-
 };
 
 function showView(view) {
-
-  document
-    .querySelectorAll(".admin-view")
-    .forEach(section => {
-
-      section.classList.toggle(
-        "active",
-        section.id === "view-" + view
-      );
-
-    });
-
-  document
-    .querySelectorAll(".side-link")
-    .forEach(button => {
-
-      button.classList.toggle(
-        "active",
-        button.dataset.view === view
-      );
-
-    });
-
-  const info =
-    viewNames[view] ||
-    viewNames.home;
-
-  $("viewLabel").textContent =
-    info[0];
-
-  $("viewTitle").textContent =
-    info[1];
-
+  document.querySelectorAll(".admin-view").forEach(section => {
+    section.classList.toggle("active", section.id === "view-" + view);
+  });
+  document.querySelectorAll(".side-link").forEach(button => {
+    button.classList.toggle("active", button.dataset.view === view);
+  });
+  const info = viewNames[view] || viewNames.home;
+  $("viewLabel").textContent = info[0];
+  $("viewTitle").textContent = info[1];
 }
 
-document
-  .querySelectorAll(".side-link")
-  .forEach(button => {
+document.querySelectorAll(".side-link").forEach(button => {
+  button.addEventListener("click", () => showView(button.dataset.view));
+});
 
-    button.addEventListener(
-      "click",
-      () => showView(button.dataset.view)
-    );
-
-  });
-
-$("refreshBtn").addEventListener(
-  "click",
-  async () => {
-
-    const button =
-      $("refreshBtn");
-
-    button.disabled = true;
-    button.textContent = "Atualizando...";
-
-    try {
-
-      await loadEverything();
-
-      toast(
-        "Painel atualizado.",
-        "success"
-      );
-
-    } catch(error) {
-
-      console.error(error);
-
-      toast(
-        "Erro Firebase: " +
-        (
-          error.code ||
-          error.message ||
-          "erro desconhecido"
-        ),
-        "error"
-      );
-
-    } finally {
-
-      button.disabled = false;
-      button.textContent = "↻ Atualizar";
-
-    }
-
+$("refreshBtn").addEventListener("click", async () => {
+  const button = $("refreshBtn");
+  button.disabled = true;
+  button.textContent = "Atualizando...";
+  try {
+    await loadEverything();
+    toast("Painel atualizado.", "success");
+  } catch(error) {
+    console.error(error);
+    toast("Erro Firebase: " + (error.code || error.message || "erro desconhecido"), "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "↻ Atualizar";
   }
-);
+});
 
-$("logoutBtn").addEventListener(
-  "click",
-  async () => {
-
-    sessionStorage.removeItem("ltdAdmin");
-
-    try {
-      await auth.signOut();
-    } catch {}
-
-    location.reload();
-
-  }
-);
+$("logoutBtn").addEventListener("click", async () => {
+  sessionStorage.removeItem("ltdAdmin");
+  try { await auth.signOut(); } catch {}
+  location.reload();
+});
 
 async function bootstrap() {
-
-  const saved =
-    sessionStorage.getItem("ltdAdmin");
-
-  if (!saved) {
-    return;
-  }
-
+  const saved = sessionStorage.getItem("ltdAdmin");
+  if (!saved) return;
   try {
-
-    const admin =
-      JSON.parse(saved);
-
-    if (
-      !admin.code ||
-      !ADMIN_ACCOUNTS[admin.code]
-    ) {
+    const admin = JSON.parse(saved);
+    if (!admin.code || !ADMIN_ACCOUNTS[admin.code]) {
       sessionStorage.removeItem("ltdAdmin");
       return;
     }
-
-    if (!auth.currentUser) {
-      await auth.signInAnonymously();
-    }
-
-    state.admin =
-      ADMIN_ACCOUNTS[admin.code]
-      ? {
-          code: admin.code,
-          ...ADMIN_ACCOUNTS[admin.code]
-        }
-      : null;
-
+    if (!auth.currentUser) await auth.signInAnonymously();
+    state.admin = ADMIN_ACCOUNTS[admin.code] ? { code: admin.code, ...ADMIN_ACCOUNTS[admin.code] } : null;
     if (!state.admin) return;
-
     $("loginView").classList.add("hidden");
     $("appView").classList.remove("hidden");
-
-    $("meName").textContent =
-      state.admin.name;
-
-    $("meRole").textContent =
-      state.admin.role;
-
-    $("miniAvatar").textContent =
-      state.admin.name
-      .charAt(0)
-      .toUpperCase();
-
+    $("meName").textContent = state.admin.name;
+    $("meRole").textContent = state.admin.role;
+    $("miniAvatar").textContent = state.admin.name.charAt(0).toUpperCase();
     await loadEverything();
-
   } catch(error) {
-
-    console.error(
-      "ERRO NO BOOTSTRAP:",
-      error
-    );
-
+    console.error("ERRO NO BOOTSTRAP:", error);
     sessionStorage.removeItem("ltdAdmin");
-
     $("loginView").classList.remove("hidden");
     $("appView").classList.add("hidden");
-
-    statusMessage(
-      $("loginMsg"),
-      "Erro Firebase: " +
-      (
-        error.code ||
-        error.message ||
-        "erro desconhecido"
-      ),
-      "error"
-    );
-
+    statusMessage($("loginMsg"), "Erro Firebase: " + (error.code || error.message || "erro desconhecido"), "error");
   }
-
 }
 
 bootstrap();
@@ -2379,4 +1035,4 @@ bootstrap();
 </script>
 
 </body>
-          </html>
+</html>
