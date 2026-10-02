@@ -1,0 +1,2035 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>House LTD • Administração</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:'Outfit',sans-serif;
+    background:
+        radial-gradient(circle at top left,#651638 0%,transparent 35%),
+        radial-gradient(circle at bottom right,#3a1024 0%,transparent 40%),
+        #10060c;
+    color:white;
+    min-height:100vh;
+}
+
+button,input,select{
+    font-family:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.hidden{
+    display:none!important;
+}
+
+
+/* LOGIN */
+
+.login{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+}
+
+.login-box{
+    width:100%;
+    max-width:430px;
+    padding:35px;
+    border-radius:25px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.1);
+    backdrop-filter:blur(18px);
+    text-align:center;
+}
+
+.login-logo{
+    font-size:38px;
+    font-weight:800;
+    margin-bottom:8px;
+}
+
+.login-logo span{
+    color:#ff5d9e;
+}
+
+.login-box p{
+    color:#bda6b0;
+    margin-bottom:25px;
+}
+
+.login-box input{
+    width:100%;
+    padding:15px;
+    border-radius:13px;
+    border:1px solid rgba(255,255,255,.12);
+    background:#10060c;
+    color:white;
+    outline:none;
+    text-align:center;
+    letter-spacing:3px;
+    margin-bottom:13px;
+}
+
+.btn{
+    border:0;
+    border-radius:13px;
+    padding:13px 18px;
+    background:linear-gradient(135deg,#ff5d9e,#d52f61);
+    color:white;
+    font-weight:700;
+}
+
+.btn.secondary{
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.1);
+}
+
+.btn.danger{
+    background:#8d173d;
+}
+
+.btn.green{
+    background:#24734c;
+}
+
+
+/* APP */
+
+#app{
+    display:none;
+}
+
+header{
+    height:75px;
+    padding:0 4%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:rgba(15,4,10,.8);
+    border-bottom:1px solid rgba(255,255,255,.08);
+    position:sticky;
+    top:0;
+    z-index:20;
+    backdrop-filter:blur(15px);
+}
+
+.logo{
+    font-size:24px;
+    font-weight:800;
+}
+
+.logo span{
+    color:#ff5d9e;
+}
+
+.admin-info{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.admin-name{
+    color:#d8c0cb;
+    font-size:14px;
+}
+
+main{
+    max-width:1300px;
+    margin:auto;
+    padding:30px 4% 80px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-bottom:25px;
+}
+
+.topbar h1{
+    font-size:32px;
+}
+
+.tabs{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:8px;
+    margin-bottom:25px;
+}
+
+.tab{
+    border:1px solid rgba(255,255,255,.1);
+    background:rgba(255,255,255,.05);
+    color:#cdb5c0;
+    padding:11px 17px;
+    border-radius:12px;
+    white-space:nowrap;
+}
+
+.tab.active{
+    background:linear-gradient(135deg,#ff5d9e,#d52f61);
+    color:white;
+    border-color:transparent;
+}
+
+.panel{
+    display:none;
+}
+
+.panel.active{
+    display:block;
+}
+
+
+/* STATS */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.stat{
+    padding:20px;
+    border-radius:18px;
+    background:rgba(255,255,255,.055);
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.stat small{
+    color:#a9929e;
+}
+
+.stat strong{
+    display:block;
+    font-size:32px;
+    margin-top:8px;
+}
+
+
+/* REQUEST */
+
+.requests{
+    display:grid;
+    gap:15px;
+}
+
+.request{
+    padding:20px;
+    border-radius:18px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.request-top{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.request h3{
+    margin-bottom:4px;
+}
+
+.request-info{
+    color:#c2aab5;
+    font-size:14px;
+    line-height:1.7;
+}
+
+.request-img{
+    width:100px;
+    height:100px;
+    object-fit:cover;
+    border-radius:15px;
+    margin-top:12px;
+}
+
+.request-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:15px;
+}
+
+
+/* VACANCIES */
+
+.vacancy-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:16px;
+}
+
+.vacancy{
+    overflow:hidden;
+    border-radius:18px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.vacancy img{
+    width:100%;
+    height:240px;
+    object-fit:cover;
+    background:#210b16;
+}
+
+.vacancy-body{
+    padding:15px;
+}
+
+.vacancy-body h3{
+    margin-bottom:4px;
+}
+
+.vacancy-body p{
+    color:#ad96a1;
+    font-size:14px;
+}
+
+.vacancy-actions{
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+    margin-top:13px;
+}
+
+.vacancy-actions button{
+    flex:1;
+    min-width:75px;
+    padding:9px;
+    border-radius:10px;
+    border:0;
+    color:white;
+    background:rgba(255,255,255,.08);
+}
+
+
+/* TABLE */
+
+.table-wrap{
+    overflow:auto;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.08);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:650px;
+}
+
+th,td{
+    padding:14px;
+    text-align:left;
+    border-bottom:1px solid rgba(255,255,255,.07);
+}
+
+th{
+    color:#ff8fbd;
+    background:rgba(255,93,158,.05);
+}
+
+td{
+    color:#d2bdc6;
+}
+
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    backdrop-filter:blur(8px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:100;
+}
+
+.modal.active{
+    display:flex;
+}
+
+.modal-box{
+    width:100%;
+    max-width:520px;
+    max-height:90vh;
+    overflow:auto;
+    padding:25px;
+    border-radius:22px;
+    background:#190912;
+    border:1px solid rgba(255,255,255,.1);
+}
+
+.modal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.close{
+    border:0;
+    background:rgba(255,255,255,.08);
+    color:white;
+    width:34px;
+    height:34px;
+    border-radius:9px;
+}
+
+.form-group{
+    margin-bottom:14px;
+}
+
+.form-group label{
+    display:block;
+    color:#cbb3bd;
+    font-size:14px;
+    margin-bottom:6px;
+}
+
+.form-group input,
+.form-group select{
+    width:100%;
+    padding:13px;
+    border-radius:11px;
+    border:1px solid rgba(255,255,255,.12);
+    background:#0e060b;
+    color:white;
+    outline:none;
+}
+
+.form-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+
+.form-buttons button{
+    flex:1;
+}
+
+.empty{
+    text-align:center;
+    padding:40px;
+    border:1px dashed rgba(255,255,255,.12);
+    border-radius:18px;
+    color:#927784;
+}
+</style>
+</head>
+
+<body>
+
+
+<!-- LOGIN -->
+
+<section class="login" id="login">
+
+    <div class="login-box">
+
+        <div class="login-logo">
+            HOUSE <span>LTD</span>
+        </div>
+
+        <p>
+            Painel administrativo
+        </p>
+
+        <input
+            id="loginCode"
+            type="password"
+            placeholder="Código de acesso"
+            autocomplete="off"
+        >
+
+        <button
+            class="btn"
+            style="width:100%"
+            id="loginButton"
+        >
+            Entrar
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- APP -->
+
+<div id="app">
+
+<header>
+
+    <div class="logo">
+        HOUSE <span>LTD</span>
+    </div>
+
+    <div class="admin-info">
+
+        <span class="admin-name" id="adminName"></span>
+
+        <button class="btn secondary" onclick="logout()">
+            Sair
+        </button>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <div class="topbar">
+
+        <h1>Administração</h1>
+
+        <button
+            class="btn"
+            onclick="openModal('vagaModal')"
+        >
+            + Nova vaga
+        </button>
+
+    </div>
+
+
+    <div class="tabs">
+
+        <button class="tab active" data-panel="inicio">
+            Início
+        </button>
+
+        <button class="tab" data-panel="solicitacoes">
+            Solicitações
+        </button>
+
+        <button class="tab" data-panel="vagas">
+            Vagas
+        </button>
+
+        <button class="tab" data-panel="membros">
+            Membros
+        </button>
+
+    </div>
+
+
+    <!-- INÍCIO -->
+
+    <section class="panel active" id="inicio">
+
+        <div class="stats">
+
+            <div class="stat">
+                <small>Solicitações pendentes</small>
+                <strong id="statPendentes">0</strong>
+            </div>
+
+            <div class="stat">
+                <small>Vagas abertas</small>
+                <strong id="statAbertas">0</strong>
+            </div>
+
+            <div class="stat">
+                <small>Vagas fechadas</small>
+                <strong id="statFechadas">0</strong>
+            </div>
+
+            <div class="stat">
+                <small>Membros</small>
+                <strong id="statMembros">0</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SOLICITAÇÕES -->
+
+    <section class="panel" id="solicitacoes">
+
+        <h2 style="margin-bottom:18px">
+            Solicitações
+        </h2>
+
+        <div id="requestsList" class="requests"></div>
+
+    </section>
+
+
+    <!-- VAGAS -->
+
+    <section class="panel" id="vagas">
+
+        <h2 style="margin-bottom:18px">
+            Vagas
+        </h2>
+
+        <div id="vacancyList" class="vacancy-grid"></div>
+
+    </section>
+
+
+    <!-- MEMBROS -->
+
+    <section class="panel" id="membros">
+
+        <h2 style="margin-bottom:18px">
+            Membros
+        </h2>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Nome</th>
+                        <th>Personagem</th>
+                        <th>Obra</th>
+                        <th>Telefone</th>
+                        <th>Data</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="membersList"></tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+</div>
+
+
+<!-- MODAL VAGA -->
+
+<div class="modal" id="vagaModal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2 id="vagaModalTitle">
+                Nova vaga
+            </h2>
+
+            <button class="close" onclick="closeModal('vagaModal')">
+                ×
+            </button>
+
+        </div>
+
+        <form id="vagaForm">
+
+            <input type="hidden" id="vagaId">
+
+            <div class="form-group">
+
+                <label>Personagem</label>
+
+                <input
+                    id="vagaPersonagem"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Obra</label>
+
+                <input
+                    id="vagaObra"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>URL da foto</label>
+
+                <input
+                    id="vagaFoto"
+                    placeholder="https://..."
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Status</label>
+
+                <select id="vagaStatus">
+
+                    <option value="aberta">
+                        Aberta
+                    </option>
+
+                    <option value="fechada">
+                        Fechada
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="form-buttons">
+
+                <button
+                    type="button"
+                    class="btn secondary"
+                    onclick="closeModal('vagaModal')"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn"
+                >
+                    Salvar
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script type="module">
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    doc,
+    updateDoc,
+    deleteDoc,
+    onSnapshot,
+    serverTimestamp,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+
+/* =========================
+   FIREBASE
+========================= */
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyAg4h7phK_shSp4oUT-PJMH_iKu6cjJ82Q",
+
+    authDomain:
+        "house-6dfc9.firebaseapp.com",
+
+    projectId:
+        "house-6dfc9",
+
+    storageBucket:
+        "house-6dfc9.firebasestorage.app",
+
+    messagingSenderId:
+        "184001079413",
+
+    appId:
+        "1:184001079413:web:de4df4327d2cabdd30703c",
+
+    measurementId:
+        "G-LKFTTQJNX3"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+
+/* =========================
+   ADMINISTRADORES
+========================= */
+
+const ADMINS = {
+
+    "YM7JQ7":{
+        nome:"Aiko",
+        cargo:"Dono"
+    },
+
+    "YQ7NM4":{
+        nome:"Noah",
+        cargo:"Sub-dono"
+    },
+
+    "JM7XQ8":{
+        nome:"Shime",
+        cargo:"Líder de ADM"
+    },
+
+    "Y7KQ2M":{
+        nome:"Shiro",
+        cargo:"ADM"
+    },
+
+    "M7IQY5":{
+        nome:"Isa",
+        cargo:"Staff"
+    },
+
+    "QY7MH3":{
+        nome:"Mah",
+        cargo:"ADM"
+    },
+
+    "Y4JQ7L":{
+        nome:"Luan",
+        cargo:"ADM"
+    },
+
+    "K7YQ9M":{
+        nome:"Ayrken",
+        cargo:"ADM"
+    },
+
+    "YM4QX7":{
+        nome:"Evan",
+        cargo:"ADM"
+    },
+
+    "Q7YTM5":{
+        nome:"Tamsy",
+        cargo:"ADM"
+    },
+
+    "JY7QK6":{
+        nome:"Lucca",
+        cargo:"ADM"
+    },
+
+    "YQ5M7X":{
+        nome:"Kally",
+        cargo:"ADM"
+    },
+
+    "TH1K0L":{
+        nome:"Lici",
+        cargo:"ADM"
+    },
+
+    "GJ6LA5":{
+        nome:"Belly",
+        cargo:"ADM"
+    }
+
+};
+
+
+/* =========================
+   ESTADO
+========================= */
+
+let currentAdmin = null;
+
+let requests = [];
+let vacancies = [];
+let members = [];
+
+
+/* =========================
+   LOGIN
+========================= */
+
+const savedCode =
+    localStorage.getItem("ltdAdminCode");
+
+if(savedCode && ADMINS[savedCode]){
+
+    loginSuccess(savedCode);
+
+}
+
+
+document
+.getElementById("loginButton")
+.addEventListener("click",()=>{
+
+    const code =
+        document
+        .getElementById("loginCode")
+        .value
+        .trim()
+        .toUpperCase();
+
+    if(!ADMINS[code]){
+
+        alert("Código inválido.");
+
+        return;
+    }
+
+    localStorage.setItem(
+        "ltdAdminCode",
+        code
+    );
+
+    loginSuccess(code);
+
+});
+
+
+document
+.getElementById("loginCode")
+.addEventListener("keydown",(e)=>{
+
+    if(e.key==="Enter"){
+
+        document
+        .getElementById("loginButton")
+        .click();
+
+    }
+
+});
+
+
+function loginSuccess(code){
+
+    currentAdmin = ADMINS[code];
+
+    document
+    .getElementById("login")
+    .style.display="none";
+
+    document
+    .getElementById("app")
+    .style.display="block";
+
+    document
+    .getElementById("adminName")
+    .textContent =
+        `${currentAdmin.nome} • ${currentAdmin.cargo}`;
+
+    startDatabase();
+
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+window.logout=function(){
+
+    localStorage.removeItem("ltdAdminCode");
+
+    location.reload();
+
+};
+
+
+/* =========================
+   MODAIS
+========================= */
+
+window.openModal=function(id){
+
+    document
+    .getElementById(id)
+    .classList.add("active");
+
+};
+
+
+window.closeModal=function(id){
+
+    document
+    .getElementById(id)
+    .classList.remove("active");
+
+};
+
+
+/* =========================
+   TABS
+========================= */
+
+document.querySelectorAll(".tab").forEach(tab=>{
+
+    tab.addEventListener("click",()=>{
+
+        document
+        .querySelectorAll(".tab")
+        .forEach(t=>t.classList.remove("active"));
+
+        document
+        .querySelectorAll(".panel")
+        .forEach(p=>p.classList.remove("active"));
+
+        tab.classList.add("active");
+
+        document
+        .getElementById(tab.dataset.panel)
+        .classList.add("active");
+
+    });
+
+});
+
+
+/* =========================
+   FIREBASE
+========================= */
+
+function startDatabase(){
+
+    onSnapshot(
+        collection(db,"characterRequests"),
+        snapshot=>{
+
+            requests=[];
+
+            snapshot.forEach(item=>{
+
+                requests.push({
+                    id:item.id,
+                    ...item.data()
+                });
+
+            });
+
+            requests.sort(
+                (a,b)=>
+                    getTime(b.createdAt) -
+                    getTime(a.createdAt)
+            );
+
+            renderRequests();
+
+            updateStats();
+
+        },
+        error=>{
+
+            console.error(error);
+
+            alert(
+                "Erro ao carregar solicitações. Verifique as regras do Firestore."
+            );
+
+        }
+    );
+
+
+    onSnapshot(
+        collection(db,"vagas"),
+        snapshot=>{
+
+            vacancies=[];
+
+            snapshot.forEach(item=>{
+
+                vacancies.push({
+                    id:item.id,
+                    ...item.data()
+                });
+
+            });
+
+            vacancies.sort((a,b)=>
+                (a.personagem||"")
+                .localeCompare(b.personagem||"")
+            );
+
+            renderVacancies();
+
+            updateStats();
+
+        },
+        error=>{
+
+            console.error(error);
+
+        }
+    );
+
+
+    onSnapshot(
+        collection(db,"members"),
+        snapshot=>{
+
+            members=[];
+
+            snapshot.forEach(item=>{
+
+                members.push({
+                    id:item.id,
+                    ...item.data()
+                });
+
+            });
+
+            renderMembers();
+
+            updateStats();
+
+        },
+        error=>{
+
+            console.error(error);
+
+        }
+    );
+
+}
+
+
+/* =========================
+   REQUESTS
+========================= */
+
+function renderRequests(){
+
+    const container =
+        document.getElementById("requestsList");
+
+    const pending =
+        requests.filter(
+            r=>r.status==="pendente"
+        );
+
+    if(pending.length===0){
+
+        container.innerHTML=`
+            <div class="empty">
+                Nenhuma solicitação pendente.
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML="";
+
+    pending.forEach(request=>{
+
+        const element =
+            document.createElement("div");
+
+        element.className="request";
+
+        let info="";
+
+        if(request.tipo==="ficha"){
+
+            info=`
+
+                <strong>Nova ficha</strong>
+
+                <div class="request-info">
+
+                    Nome:
+                    ${escapeHTML(request.nome || "Não informado")}
+
+                    <br>
+
+                    Idade:
+                    ${escapeHTML(request.idade || "-")}
+
+                    <br>
+
+                    Telefone:
+                    ****${escapeHTML(request.telefone4 || "-")}
+
+                    <br>
+
+                    Personagem:
+                    <strong>
+                    ${escapeHTML(request.personagem || "-")}
+                    </strong>
+
+                    <br>
+
+                    Obra:
+                    ${escapeHTML(request.obra || "-")}
+
+                </div>
+            `;
+
+        }else{
+
+            info=`
+
+                <strong>Troca de personagem</strong>
+
+                <div class="request-info">
+
+                    Nome:
+                    ${escapeHTML(request.nome || "Não informado")}
+
+                    <br>
+
+                    Telefone:
+                    ****${escapeHTML(request.telefone4 || "-")}
+
+                    <br>
+
+                    Atual:
+                    <strong>
+                    ${escapeHTML(request.personagemAtual || "-")}
+                    </strong>
+                    —
+                    ${escapeHTML(request.obraAtual || "-")}
+
+                    <br>
+
+                    Novo:
+                    <strong>
+                    ${escapeHTML(request.personagemNovo || "-")}
+                    </strong>
+                    —
+                    ${escapeHTML(request.obraNova || "-")}
+
+                </div>
+            `;
+
+        }
+
+        element.innerHTML=`
+
+            <div class="request-top">
+
+                <div>
+                    ${info}
+
+                    ${
+                        request.foto
+                        ?
+                        `<img
+                            class="request-img"
+                            src="${request.foto}"
+                        >`
+                        :
+                        ""
+                    }
+
+                </div>
+
+            </div>
+
+            <div class="request-actions">
+
+                <button
+                    class="btn green"
+                    onclick="acceptRequest('${request.id}')"
+                >
+                    Aceitar
+                </button>
+
+                <button
+                    class="btn danger"
+                    onclick="rejectRequest('${request.id}')"
+                >
+                    Recusar
+                </button>
+
+            </div>
+        `;
+
+        container.appendChild(element);
+
+    });
+
+}
+
+
+/* =========================
+   ACEITAR
+========================= */
+
+window.acceptRequest=async function(id){
+
+    const request =
+        requests.find(r=>r.id===id);
+
+    if(!request){
+        return;
+    }
+
+    const confirmacao =
+        confirm(
+            "Tem certeza que deseja aceitar esta solicitação?"
+        );
+
+    if(!confirmacao){
+        return;
+    }
+
+    try{
+
+        if(request.tipo==="ficha"){
+
+            await addDoc(
+                collection(db,"vagas"),
+                {
+
+                    personagem:
+                        request.personagem,
+
+                    obra:
+                        request.obra,
+
+                    foto:
+                        request.foto || "",
+
+                    status:
+                        "fechada",
+
+                    createdAt:
+                        serverTimestamp(),
+
+                    updatedAt:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            await addDoc(
+                collection(db,"members"),
+                {
+
+                    nome:
+                        request.nome || "",
+
+                    idade:
+                        request.idade || "",
+
+                    telefone4:
+                        request.telefone4 || "",
+
+                    personagem:
+                        request.personagem,
+
+                    obra:
+                        request.obra,
+
+                    foto:
+                        request.foto || "",
+
+                    requestId:
+                        request.id,
+
+                    createdAt:
+                        serverTimestamp()
+
+                }
+            );
+
+        }
+
+
+        if(request.tipo==="troca"){
+
+            const vagaSnapshot =
+                await getDocs(
+                    collection(db,"vagas")
+                );
+
+            for(const vagaDoc of vagaSnapshot.docs){
+
+                const vaga =
+                    vagaDoc.data();
+
+                if(
+                    normalize(vaga.personagem) ===
+                    normalize(request.personagemAtual)
+                ){
+
+                    await updateDoc(
+                        doc(
+                            db,
+                            "vagas",
+                            vagaDoc.id
+                        ),
+                        {
+
+                            status:"aberta",
+
+                            updatedAt:
+                                serverTimestamp()
+
+                        }
+                    );
+
+                }
+
+            }
+
+
+            await addDoc(
+                collection(db,"vagas"),
+                {
+
+                    personagem:
+                        request.personagemNovo,
+
+                    obra:
+                        request.obraNova,
+
+                    foto:
+                        request.foto || "",
+
+                    status:
+                        "fechada",
+
+                    createdAt:
+                        serverTimestamp(),
+
+                    updatedAt:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            await addDoc(
+                collection(db,"members"),
+                {
+
+                    nome:
+                        request.nome || "",
+
+                    telefone4:
+                        request.telefone4 || "",
+
+                    personagem:
+                        request.personagemNovo,
+
+                    obra:
+                        request.obraNova,
+
+                    foto:
+                        request.foto || "",
+
+                    requestId:
+                        request.id,
+
+                    createdAt:
+                        serverTimestamp()
+
+                }
+            );
+
+        }
+
+
+        await updateDoc(
+            doc(
+                db,
+                "characterRequests",
+                id
+            ),
+            {
+
+                status:"aceita",
+
+                reviewedBy:
+                    currentAdmin.nome,
+
+                reviewedAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        alert("Solicitação aceita! ❤️");
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Erro ao aceitar:\n"+
+            error.message
+        );
+
+    }
+
+};
+
+
+/* =========================
+   RECUSAR
+========================= */
+
+window.rejectRequest=async function(id){
+
+    const confirmacao =
+        confirm(
+            "Deseja realmente recusar esta solicitação?"
+        );
+
+    if(!confirmacao){
+        return;
+    }
+
+    try{
+
+        await updateDoc(
+            doc(
+                db,
+                "characterRequests",
+                id
+            ),
+            {
+
+                status:"recusada",
+
+                reviewedBy:
+                    currentAdmin.nome,
+
+                reviewedAt:
+                    serverTimestamp()
+
+            }
+        );
+
+        alert("Solicitação recusada.");
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Erro ao recusar:\n"+
+            error.message
+        );
+
+    }
+
+};
+
+
+/* =========================
+   VAGAS
+========================= */
+
+function renderVacancies(){
+
+    const container =
+        document.getElementById("vacancyList");
+
+    if(vacancies.length===0){
+
+        container.innerHTML=`
+            <div class="empty">
+                Nenhuma vaga cadastrada.
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML="";
+
+    vacancies.forEach(vaga=>{
+
+        const element =
+            document.createElement("div");
+
+        element.className="vacancy";
+
+        element.innerHTML=`
+
+            ${
+                vaga.foto
+                ?
+                `<img
+                    src="${vaga.foto}"
+                    onerror="this.style.display='none'"
+                >`
+                :
+                `<div style="height:240px;background:#210b16"></div>`
+            }
+
+            <div class="vacancy-body">
+
+                <h3>
+                    ${escapeHTML(vaga.personagem || "Sem nome")}
+                </h3>
+
+                <p>
+                    ${escapeHTML(vaga.obra || "Sem obra")}
+                </p>
+
+                <p style="margin-top:6px">
+                    Status:
+                    <strong>
+                        ${
+                            vaga.status==="aberta"
+                            ?
+                            "Aberta"
+                            :
+                            "Fechada"
+                        }
+                    </strong>
+                </p>
+
+                <div class="vacancy-actions">
+
+                    <button
+                        onclick="toggleVacancy('${vaga.id}')"
+                    >
+                        ${
+                            vaga.status==="aberta"
+                            ?
+                            "Fechar"
+                            :
+                            "Abrir"
+                        }
+                    </button>
+
+                    <button
+                        onclick="editVacancy('${vaga.id}')"
+                    >
+                        Editar
+                    </button>
+
+                    <button
+                        onclick="deleteVacancy('${vaga.id}')"
+                    >
+                        Excluir
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+        container.appendChild(element);
+
+    });
+
+}
+
+
+/* =========================
+   NOVA / EDITAR VAGA
+========================= */
+
+document
+.getElementById("vagaForm")
+.addEventListener("submit",async(e)=>{
+
+    e.preventDefault();
+
+    const id =
+        document.getElementById("vagaId").value;
+
+    const data={
+
+        personagem:
+            document
+            .getElementById("vagaPersonagem")
+            .value
+            .trim(),
+
+        obra:
+            document
+            .getElementById("vagaObra")
+            .value
+            .trim(),
+
+        foto:
+            document
+            .getElementById("vagaFoto")
+            .value
+            .trim(),
+
+        status:
+            document
+            .getElementById("vagaStatus")
+            .value,
+
+        updatedAt:
+            serverTimestamp()
+
+    };
+
+
+    try{
+
+        if(id){
+
+            await updateDoc(
+                doc(db,"vagas",id),
+                data
+            );
+
+        }else{
+
+            data.createdAt =
+                serverTimestamp();
+
+            await addDoc(
+                collection(db,"vagas"),
+                data
+            );
+
+        }
+
+        closeModal("vagaModal");
+
+        document
+        .getElementById("vagaForm")
+        .reset();
+
+        document
+        .getElementById("vagaId")
+        .value="";
+
+        alert("Vaga salva com sucesso! ❤️");
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Erro ao salvar vaga:\n"+
+            error.message
+        );
+
+    }
+
+});
+
+
+/* =========================
+   EDITAR
+========================= */
+
+window.editVacancy=function(id){
+
+    const vaga =
+        vacancies.find(v=>v.id===id);
+
+    if(!vaga){
+        return;
+    }
+
+    document
+    .getElementById("vagaId")
+    .value=id;
+
+    document
+    .getElementById("vagaPersonagem")
+    .value=vaga.personagem || "";
+
+    document
+    .getElementById("vagaObra")
+    .value=vaga.obra || "";
+
+    document
+    .getElementById("vagaFoto")
+    .value=vaga.foto || "";
+
+    document
+    .getElementById("vagaStatus")
+    .value=vaga.status || "aberta";
+
+    document
+    .getElementById("vagaModalTitle")
+    .textContent="Editar vaga";
+
+    openModal("vagaModal");
+
+};
+
+
+/* =========================
+   ABRIR / FECHAR
+========================= */
+
+window.toggleVacancy=async function(id){
+
+    const vaga =
+        vacancies.find(v=>v.id===id);
+
+    if(!vaga){
+        return;
+    }
+
+    const novoStatus =
+        vaga.status==="aberta"
+        ?
+        "fechada"
+        :
+        "aberta";
+
+    try{
+
+        await updateDoc(
+            doc(db,"vagas",id),
+            {
+
+                status:novoStatus,
+
+                updatedAt:
+                    serverTimestamp()
+
+            }
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Erro ao alterar vaga:\n"+
+            error.message
+        );
+
+    }
+
+};
+
+
+/* =========================
+   EXCLUIR
+========================= */
+
+window.deleteVacancy=async function(id){
+
+    const vaga =
+        vacancies.find(v=>v.id===id);
+
+    if(!vaga){
+        return;
+    }
+
+    const confirmacao =
+        confirm(
+            `Excluir a vaga "${vaga.personagem}"?`
+        );
+
+    if(!confirmacao){
+        return;
+    }
+
+    try{
+
+        await deleteDoc(
+            doc(db,"vagas",id)
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Erro ao excluir vaga:\n"+
+            error.message
+        );
+
+    }
+
+};
+
+
+/* =========================
+   MEMBROS
+========================= */
+
+function renderMembers(){
+
+    const tbody =
+        document.getElementById("membersList");
+
+    if(members.length===0){
+
+        tbody.innerHTML=`
+            <tr>
+                <td colspan="5">
+                    Nenhum membro cadastrado.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    tbody.innerHTML="";
+
+    members.forEach(member=>{
+
+        const tr =
+            document.createElement("tr");
+
+        tr.innerHTML=`
+
+            <td>
+                ${escapeHTML(member.nome || "-")}
+            </td>
+
+            <td>
+                ${escapeHTML(member.personagem || "-")}
+            </td>
+
+            <td>
+                ${escapeHTML(member.obra || "-")}
+            </td>
+
+            <td>
+                ****${escapeHTML(member.telefone4 || "-")}
+            </td>
+
+            <td>
+                ${formatDate(member.createdAt)}
+            </td>
+
+        `;
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* =========================
+   ESTATÍSTICAS
+========================= */
+
+function updateStats(){
+
+    document
+    .getElementById("statPendentes")
+    .textContent =
+        requests.filter(
+            r=>r.status==="pendente"
+        ).length;
+
+    document
+    .getElementById("statAbertas")
+    .textContent =
+        vacancies.filter(
+            v=>v.status==="aberta"
+        ).length;
+
+    document
+    .getElementById("statFechadas")
+    .textContent =
+        vacancies.filter(
+            v=>v.status==="fechada"
+        ).length;
+
+    document
+    .getElementById("statMembros")
+    .textContent =
+        members.length;
+
+}
+
+
+/* =========================
+   UTILIDADES
+========================= */
+
+function normalize(value){
+
+    return String(value || "")
+        .trim()
+        .toLowerCase();
+
+}
+
+
+function getTime(timestamp){
+
+    if(!timestamp){
+        return 0;
+    }
+
+    if(typeof timestamp.toMillis==="function"){
+        return timestamp.toMillis();
+    }
+
+    return 0;
+
+}
+
+
+function formatDate(timestamp){
+
+    if(!timestamp){
+        return "-";
+    }
+
+    const date =
+        timestamp.toDate();
+
+    return date.toLocaleDateString(
+        "pt-BR"
+    );
+
+}
+
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+</script>
+
+</body>
+  </html>
