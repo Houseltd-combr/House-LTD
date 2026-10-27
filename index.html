@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100906">
+  <meta name="description" content="House LTD — Sua comunidade, seus personagens e sua história.">
+  <title>House LTD 🍊</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- FUNDO ANIMADO -->
+  <div class="video-background">
+    <video autoplay muted loop playsinline>
+      <source src="fundo.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+  </div>
+
+  <!-- EFEITOS VISUAIS -->
+  <div class="ambient-light"></div>
+  <div class="particles" aria-hidden="true"></div>
+
+  <!-- CABEÇALHO -->
+  <header class="header">
+    <a href="#inicio" class="logo">
+      HOUSE <span>LTD</span><span class="logo-fruit">🍊</span>
+    </a>
+
+    <button
+      class="menu-toggle"
+      id="menuToggle"
+      type="button"
+      aria-label="Abrir menu"
+      aria-expanded="false"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="navigation" id="navigation">
+      <a href="#inicio">Início</a>
+      <a href="#sobre">Sobre</a>
+      <a href="#vagas">Vagas</a>
+      <a href="#ficha">Ficha</a>
+      <a href="#troca">Troca</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- INÍCIO -->
+    <section class="hero section" id="inicio">
+      <div class="hero-content">
+
+        <div class="status-label">
+          <span class="status-dot"></span>
+          HOUSE ALL · COMUNIDADE
+        </div>
+
+        <p class="hero-small">BEM-VINDO À SUA NOVA HISTÓRIA</p>
+
+        <h1>
+          HOUSE<br>
+          <span>LTD.</span>
+        </h1>
+
+        <p class="hero-description">
+          Um universo de personagens, amizades e histórias.
+          Encontre seu lugar, escolha seu personagem e faça
+          parte da nossa comunidade.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="#ficha" class="button button-primary">
+            Fazer minha ficha <span>↗</span>
+          </a>
+
+          <a href="#vagas" class="button button-outline">
+            Explorar vagas
+          </a>
+        </div>
+
+        <div class="hero-footer">
+          <span>EST. 02.03.2025</span>
+          <span class="hero-divider"></span>
+          <span>SUA QUEBRADA, SUA HISTÓRIA.</span>
+        </div>
+
+      </div>
+
+      <div class="hero-decoration" aria-hidden="true">
+        <span class="decoration-ring ring-one"></span>
+        <span class="decoration-ring ring-two"></span>
+        <span class="decoration-text">LTD</span>
+        <span class="decoration-orange">✳</span>
+      </div>
+    </section>
+
+    <!-- SOBRE -->
+    <section class="section content-section" id="sobre">
+      <div class="section-heading">
+        <span class="section-index">01 / NOSSA IDENTIDADE</span>
+        <h2>MAIS QUE UMA <span>HOUSE.</span></h2>
+        <p>
+          Um espaço para diferentes fandoms, personalidades,
+          amizades e novas experiências.
+        </p>
+      </div>
+
+      <div class="feature-grid">
+
+        <article class="feature-card">
+          <span class="feature-icon">✦</span>
+          <h3>SEU UNIVERSO</h3>
+          <p>
+            Escolha personagens de diferentes obras e encontre
+            pessoas que compartilham seus interesses.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <span class="feature-icon">◈</span>
+          <h3>NOVAS CONEXÕES</h3>
+          <p>
+            Participe das conversas, dinâmicas e atividades
+            da comunidade.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <span class="feature-icon">✧</span>
+          <h3>SUA HISTÓRIA</h3>
+          <p>
+            Crie momentos, desenvolva seu personagem e faça
+            parte da trajetória da LTD.
+          </p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- VAGAS -->
+    <section class="section content-section" id="vagas">
+      <div class="section-heading">
+        <span class="section-index">02 / PERSONAGENS</span>
+        <h2>VAGAS <span>DISPONÍVEIS.</span></h2>
+        <p>
+          Confira os personagens disponíveis antes de enviar
+          sua ficha.
+        </p>
+      </div>
+
+      <div class="vacancy-toolbar">
+        <span class="live-indicator"></span>
+        <span id="vacancyCount">Consultando vagas...</span>
+      </div>
+
+      <div class="vacancy-grid" id="vacancyList">
+        <div class="loading-card">
+          <span class="loading-spinner"></span>
+          <p>Carregando personagens...</p>
+        </div>
+      </div>
+
+      <p class="section-note" id="vacancyMessage" role="status"></p>
+    </section>
+
+    <!-- FICHA -->
+    <section class="section content-section" id="ficha">
+      <div class="section-heading">
+        <span class="section-index">03 / INGRESSO</span>
+        <h2>SUA FICHA, <span>SUA ESCOLHA.</span></h2>
+        <p>
+          Preencha os dados abaixo para solicitar sua entrada
+          na House LTD.
+        </p>
+      </div>
+
+      <form id="characterForm" class="form-panel">
+
+        <div class="form-title">
+          <span class="form-title-icon">✦</span>
+          <div>
+            <h3>FICHA DE PERSONAGEM</h3>
+            <p>Campos marcados com * são obrigatórios.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+
+          <label class="field">
+            <span>Nome ou apelido</span>
+            <input
+              type="text"
+              name="nickname"
+              maxlength="40"
+              placeholder="Como podemos te chamar?"
+            >
+          </label>
+
+          <label class="field">
+            <span>Idade *</span>
+            <input
+              type="number"
+              name="age"
+              min="12"
+              max="99"
+              required
+              placeholder="Sua idade"
+            >
+          </label>
+
+          <label class="field">
+            <span>Nome do personagem *</span>
+            <input
+              type="text"
+              name="character"
+              maxlength="80"
+              required
+              placeholder="Personagem escolhido"
+            >
+          </label>
+
+          <label class="field">
+            <span>Obra ou fandom *</span>
+            <input
+              type="text"
+              name="work"
+              maxlength="100"
+              required
+              placeholder="Anime, série, jogo..."
+            >
+          </label>
+
+          <label class="field">
+            <span>Últimos quatro dígitos do telefone *</span>
+            <input
+              type="text"
+              name="phoneLast4"
+              inputmode="numeric"
+              pattern="[0-9]{4}"
+              minlength="4"
+              maxlength="4"
+              required
+              placeholder="0000"
+            >
+          </label>
+
+          <label class="field">
+            <span>Foto do personagem *</span>
+            <input
+              type="file"
+              name="photo"
+              accept="image/png,image/jpeg,image/webp"
+              required
+            >
+          </label>
+
+        </div>
+
+        <div class="privacy-notice">
+          <span>◈</span>
+          <p>
+            Seus dados serão tratados como informações privadas
+            e utilizados para administrar sua solicitação.
+          </p>
+        </div>
+
+        <button class="button button-primary form-submit" type="submit">
+          Enviar ficha <span>↗</span>
+        </button>
+
+        <p class="form-message" id="formMessage" role="status"></p>
+      </form>
+    </section>
+
+    <!-- TROCA -->
+    <section class="section content-section" id="troca">
+      <div class="section-heading">
+        <span class="section-index">04 / ATUALIZAÇÃO</span>
+        <h2>QUER TROCAR DE <span>PERSONAGEM?</span></h2>
+        <p>
+          Envie sua solicitação de troca. A alteração só será
+          realizada depois da aprovação administrativa.
+        </p>
+      </div>
+
+      <form id="exchangeForm" class="form-panel">
+
+        <div class="form-title">
+          <span class="form-title-icon">↻</span>
+          <div>
+            <h3>SOLICITAÇÃO DE TROCA</h3>
+            <p>Informe os dados da ficha atual e do novo personagem.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+
+          <label class="field">
+            <span>Últimos quatro dígitos do telefone *</span>
+            <input
+              type="text"
+              name="phoneLast4"
+              inputmode="numeric"
+              pattern="[0-9]{4}"
+              minlength="4"
+              maxlength="4"
+              required
+              placeholder="0000"
+            >
+          </label>
+
+          <label class="field">
+            <span>Personagem atual *</span>
+            <input
+              type="text"
+              name="oldCharacter"
+              maxlength="80"
+              required
+              placeholder="Personagem atual"
+            >
+          </label>
+
+          <label class="field">
+            <span>Obra atual *</span>
+            <input
+              type="text"
+              name="oldWork"
+              maxlength="100"
+              required
+              placeholder="Obra atual"
+            >
+          </label>
+
+          <label class="field">
+            <span>Novo personagem *</span>
+            <input
+              type="text"
+              name="newCharacter"
+              maxlength="80"
+              required
+              placeholder="Novo personagem"
+            >
+          </label>
+
+          <label class="field">
+            <span>Nova obra *</span>
+            <input
+              type="text"
+              name="newWork"
+              maxlength="100"
+              required
+              placeholder="Nova obra"
+            >
+          </label>
+
+          <label class="field">
+            <span>Foto do novo personagem *</span>
+            <input
+              type="file"
+              name="photo"
+              accept="image/png,image/jpeg,image/webp"
+              required
+            >
+          </label>
+
+        </div>
+
+        <div class="privacy-notice">
+          <span>!</span>
+          <p>
+            A administração verificará sua solicitação antes
+            de liberar o personagem anterior e ocupar o novo.
+          </p>
+        </div>
+
+        <button class="button button-primary form-submit" type="submit">
+          Solicitar troca <span>↗</span>
+        </button>
+
+        <p class="form-message" id="exchangeMessage" role="status"></p>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- RODAPÉ -->
+  <footer class="footer">
+    <a href="#inicio" class="logo">HOUSE <span>LTD</span> 🍊</a>
+    <p>Uma comunidade. Vários universos.</p>
+    <span class="footer-copy">© HOUSE LTD · 2025–2026</span>
+    <a class="admin-link" href="admin.html">Área administrativa ↗</a>
+  </footer>
+
+  <!-- MENU MOBILE -->
+  <script>
+    const menuToggle = document.getElementById("menuToggle");
+    const navigation = document.getElementById("navigation");
+
+    menuToggle.addEventListener("click", () => {
+      const isOpen = navigation.classList.toggle("active");
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    navigation.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        navigation.classList.remove("active");
+        menuToggle.setAttribute("aria-expanded", "false");
+      });
+    });
+  </script>
+
+  <!--
+    A conexão Firebase, o envio de fotos e o processamento de
+    fichas serão integrados na próxima etapa com as regras de
+    segurança correspondentes.
+  -->
+
+</body>
+</html>
