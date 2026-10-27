@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100906">
+  <title>Administração | House LTD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#100906;--bg2:#1b0e07;--panel:rgba(37,19,9,.88);--panel2:rgba(55,27,9,.72);--orange:#ff9f1c;--orange2:#e56b00;--light:#ffc078;--text:#fff5e9;--muted:#cbb8a5;--line:rgba(255,159,28,.25);--green:#8df0b4;--red:#ff9d8f;--shadow:0 20px 55px rgba(0,0,0,.35)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 10% 0%,#71340d 0,transparent 32%),radial-gradient(ellipse at 90% 80%,#3d1b08 0,transparent 35%),var(--bg);font-family:'Outfit',sans-serif;color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}.btn{border:1px solid var(--line);border-radius:12px;padding:10px 15px;background:rgba(255,255,255,.04);color:var(--text);font-weight:600}.btn:hover{border-color:var(--orange)}.btn.primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#241104;border:0}.btn.good{color:var(--green);border-color:rgba(141,240,180,.3)}.btn.bad{color:var(--red);border-color:rgba(255,157,143,.3)}.login-screen{min-height:100vh;display:grid;place-items:center;padding:20px}.login-card{width:min(420px,100%);padding:30px;border-radius:24px;border:1px solid var(--line);background:var(--panel);box-shadow:var(--shadow)}.brand{font-weight:800;letter-spacing:2px;font-size:1.4rem}.brand span{color:var(--orange)}h1,h2,h3,p{margin-top:0}.login-card p,.muted{color:var(--muted);line-height:1.55}.field{display:flex;flex-direction:column;gap:7px;margin:14px 0}.field label{font-size:.9rem;color:var(--light)}.field input,.field select,.field textarea{width:100%;padding:12px;background:#100906;color:var(--text);border:1px solid var(--line);border-radius:11px;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--orange)}.message{min-height:22px;color:var(--light);font-size:.9rem;margin-top:12px}.app{min-height:100vh}.topbar{height:auto;min-height:76px;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:rgba(16,9,6,.8);backdrop-filter:blur(18px)}.topbar small{display:block;color:var(--muted);margin-top:3px}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:22px;width:min(1440px,96%);margin:24px auto}.sidebar{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:14px;height:max-content;position:sticky;top:20px}.tab-btn{display:block;width:100%;text-align:left;padding:13px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--text);margin:3px 0}.tab-btn.active,.tab-btn:hover{background:rgba(255,159,28,.11);border-color:var(--line);color:var(--light)}.content{min-width:0}.page-head{display:flex;align-items:start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}.page-head h1{margin-bottom:5px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:20px}.stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}.stat small{color:var(--muted)}.stat strong{display:block;font-size:1.9rem;color:var(--light);margin-top:7px}.panel h2{font-size:1.15rem;margin-bottom:14px}.panel+.panel{margin-top:16px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:680px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:.91rem}th{color:var(--light);font-weight:600}td{color:#f5e8db}td small{display:block;color:var(--muted);margin-top:4px}.status{display:inline-block;border-radius:99px;padding:5px 9px;font-size:.76rem;font-weight:700;background:rgba(255,159,28,.12);color:var(--light)}.status.aprovada,.status.aprovado{color:var(--green);background:rgba(141,240,180,.1)}.status.rejeitada,.status.rejeitado{color:var(--red);background:rgba(255,157,143,.1)}.row-actions{display:flex;gap:6px;flex-wrap:wrap}.row-actions .btn{font-size:.82rem;padding:7px 9px}.empty{text-align:center;color:var(--muted);padding:24px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;place-items:center;padding:18px;z-index:20}.modal.show{display:grid}.modal-box{width:min(540px,100%);max-height:90vh;overflow:auto;padding:24px;background:#1a0d06;border:1px solid var(--line);border-radius:22px}.modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.modal-head h2{margin:0}.close{border:0;border-radius:9px;width:36px;height:36px;background:rgba(255,255,255,.08);color:var(--text);font-size:1.2rem}.request-photo{max-width:100%;max-height:240px;border-radius:12px;object-fit:contain;border:1px solid var(--line);margin:10px 0}.vacancy-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.vacancy-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:rgba(255,255,255,.025)}.vacancy-card strong{display:block;margin-bottom:5px}.vacancy-card p{color:var(--muted);margin:0 0 10px}.inline-form{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}.inline-form input{flex:1;min-width:140px;padding:11px;background:#100906;color:var(--text);border:1px solid var(--line);border-radius:10px}.notice{color:var(--muted);font-size:.88rem;line-height:1.5}.toast{position:fixed;bottom:18px;right:18px;z-index:50;max-width:min(420px,calc(100% - 36px));padding:13px 17px;border-radius:13px;background:#2a1709;border:1px solid var(--line);box-shadow:var(--shadow);display:none}.toast.show{display:block}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{position:static;display:flex;overflow-x:auto;gap:5px}.tab-btn{white-space:nowrap;width:auto;flex:0 0 auto}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.topbar{padding:14px}.layout{width:92%;margin:16px auto}.stats{gap:9px}.stat{padding:13px}.stat strong{font-size:1.5rem}.form-row,.vacancy-cards{grid-template-columns:1fr}.panel{padding:14px}}
+  </style>
+</head>
+<body>
+<section class="login-screen" id="loginScreen">
+  <form class="login-card" id="loginForm">
+    <div class="brand">HOUSE <span>LTD</span> 🍊</div>
+    <h1 style="margin:22px 0 8px">Painel da administração</h1>
+    <p>Digite seu nome e o código compartilhado da equipe para continuar.</p>
+    <div class="field"><label for="loginName">Seu nome ou apelido</label><input id="loginName" maxlength="60" required autocomplete="name" placeholder="Como você é conhecido na LTD?"></div>
+    <div class="field"><label for="loginCode">Código de acesso</label><input id="loginCode" required autocomplete="current-password" placeholder="Código compartilhado"></div>
+    <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Entrar no painel</button>
+    <div class="message" id="loginMessage" role="status"></div>
+    <p class="notice"><a href="index.html" style="color:var(--light)">← Voltar para a página inicial</a></p>
+  </form>
+</section>
+
+<div class="app hidden" id="app">
+  <header class="topbar">
+    <div><div class="brand">HOUSE <span>LTD</span> · ADMIN</div><small>Conectado como <strong id="adminName">ADM</strong></small></div>
+    <div class="row-actions"><a class="btn" href="index.html" style="text-decoration:none">Ver site</a><button class="btn bad" id="logoutBtn">Sair</button></div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <button class="tab-btn active" data-tab="home">🏠 Início</button>
+      <button class="tab-btn" data-tab="requests">📨 Solicitações</button>
+      <button class="tab-btn" data-tab="vacancies">🍊 Vagas</button>
+      <button class="tab-btn" data-tab="members">👥 Membros</button>
+    </aside>
+    <main class="content">
+      <section class="tab-page" id="tab-home">
+        <div class="page-head"><div><h1>Visão geral</h1><p class="muted">Resumo atualizado dos registros da House LTD.</p></div></div>
+        <div class="stats">
+          <div class="stat"><small>Solicitações pendentes</small><strong id="statPending">0</strong></div>
+          <div class="stat"><small>Solicitações totais</small><strong id="statRequests">0</strong></div>
+          <div class="stat"><small>Vagas abertas</small><strong id="statOpen">0</strong></div>
+          <div class="stat"><small>Membros cadastrados</small><strong id="statMembers">0</strong></div>
+        </div>
+        <div class="panel"><h2>Solicitações recentes</h2><div id="recentRequests" class="empty">Carregando...</div></div>
+        <div class="panel"><h2>Observação</h2><p class="notice">Use as abas para revisar fichas e trocas, administrar vagas e consultar os membros registrados.</p></div>
+      </section>
+      <section class="tab-page hidden" id="tab-requests">
+        <div class="page-head"><div><h1>Solicitações</h1><p class="muted">Analise fichas novas e pedidos de troca.</p></div><select id="requestFilter" style="padding:10px;background:#100906;color:var(--text);border:1px solid var(--line);border-radius:10px"><option value="todas">Todas</option><option value="pendente">Pendentes</option><option value="aprovada">Aprovadas</option><option value="rejeitada">Rejeitadas</option></select></div>
+        <div class="panel"><div id="requestsTable" class="empty">Carregando solicitações...</div></div>
+      </section>
+      <section class="tab-page hidden" id="tab-vacancies">
+        <div class="page-head"><div><h1>Vagas</h1><p class="muted">Cadastre personagens e altere o status das vagas.</p></div><button class="btn primary" id="addVacancyBtn">+ Nova vaga</button></div>
+        <div class="panel"><div id="vacanciesAdmin" class="vacancy-cards"><div class="empty">Carregando vagas...</div></div></div>
+      </section>
+      <section class="tab-page hidden" id="tab-members">
+        <div class="page-head"><div><h1>Membros</h1><p class="muted">Pessoas cadastradas após aprovação de fichas.</p></div></div>
+        <div class="panel"><div id="membersTable" class="empty">Carregando membros...</div></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="modal" id="vacancyModal">
+  <div class="modal-box"><div class="modal-head"><h2 id="vacancyModalTitle">Nova vaga</h2><button class="close" data-close="vacancyModal">×</button></div>
+    <form id="vacancyForm">
+      <input type="hidden" id="vacancyId">
+      <div class="field"><label for="vacancyCharacter">Personagem *</label><input id="vacancyCharacter" required maxlength="100"></div>
+      <div class="field"><label for="vacancyWork">Obra / fandom *</label><input id="vacancyWork" required maxlength="100"></div>
+      <div class="field"><label for="vacancyStatus">Status</label><select id="vacancyStatus"><option value="aberta">Aberta</option><option value="fechada">Fechada</option></select></div>
+      <div class="field"><label for="vacancyPhoto">Link da imagem (opcional)</label><input id="vacancyPhoto" type="url" placeholder="https://..."></div>
+      <div class="row-actions"><button class="btn primary" type="submit">Salvar vaga</button><button class="btn" type="button" data-close="vacancyModal">Cancelar</button></div>
+      <div class="message" id="vacancyMessage"></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="requestDetailModal">
+  <div class="modal-box"><div class="modal-head"><h2>Detalhes da solicitação</h2><button class="close" data-close="requestDetailModal">×</button></div><div id="requestDetail"></div></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+  import { getFirestore, collection, onSnapshot, doc, updateDoc, addDoc, deleteDoc, getDoc, serverTimestamp, query, orderBy, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAg4h7phK_shSp4oUT-PJMH_iKu6cjJ82Q",
+    authDomain: "house-6dfc9.firebaseapp.com",
+    projectId: "house-6dfc9",
+    storageBucket: "house-6dfc9.firebasestorage.app",
+    messagingSenderId: "184001079413",
+    appId: "1:184001079413:web:de4df4327d2cabdd30703c",
+    measurementId: "G-LKFTTQJNX3"
+  };
+  const ADMIN_CODE = "YM7JQ7";
+  const appFirebase = initializeApp(firebaseConfig);
+  const db = getFirestore(appFirebase);
+  const $ = id => document.getElementById(id);
+  let currentAdmin = "";
+  let requests = [], vacancies = [], members = [];
+  let databaseStarted = false;
+  const unsubscribers = [];
+
+  function escapeHTML(value=""){return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+  function showToast(text){const t=$("toast");t.textContent=text;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3200);}
+  function showModal(id){$(id).classList.add("show");}
+  function closeModal(id){$(id).classList.remove("show");}
+  document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>closeModal(b.dataset.close)));
+  document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("show")}));
+
+  function loginSuccess(name){
+    currentAdmin=name.trim();
+    $("loginScreen").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    $("adminName").textContent=currentAdmin;
+    if(!databaseStarted){databaseStarted=true;startDatabase();}
+  }
+  $("loginForm").addEventListener("submit",e=>{
+    e.preventDefault();
+    const name=$("loginName").value.trim(), code=$("loginCode").value.trim();
+    if(!name){$("loginMessage").textContent="Digite seu nome.";return;}
+    if(code!==ADMIN_CODE){$("loginMessage").textContent="Código incorreto.";return;}
+    sessionStorage.setItem("ltdAdminCode",code);
+    sessionStorage.setItem("ltdAdminName",name);
+    loginSuccess(name);
+  });
+  $("logoutBtn").addEventListener("click",()=>{
+    sessionStorage.removeItem("ltdAdminCode");sessionStorage.removeItem("ltdAdminName");
+    location.href="index.html";
+  });
+  const savedCode=sessionStorage.getItem("ltdAdminCode");
+  const savedName=sessionStorage.getItem("ltdAdminName");
+  if(savedCode===ADMIN_CODE && savedName && savedName.trim()){loginSuccess(savedName);}
+
+  document.querySelectorAll(".tab-btn").forEach(btn=>btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b===btn));
+    document.querySelectorAll(".tab-page").forEach(p=>p.classList.add("hidden"));
+    $("tab-"+btn.dataset.tab).classList.remove("hidden");
+  }));
+  $("requestFilter").addEventListener("change",renderRequests);
+  $("addVacancyBtn").addEventListener("click",()=>openVacancyForm());
+
+  function startDatabase(){
+    unsubscribers.push(onSnapshot(collection(db,"characterRequests"),snap=>{
+      requests=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>dateMillis(b.createdAt)-dateMillis(a.createdAt));
+      renderStats();renderRequests();renderRecentRequests();
+    },err=>{console.error(err);showToast("Erro ao carregar solicitações. Confira as regras do Firestore.");}));
+    unsubscribers.push(onSnapshot(collection(db,"vagas"),snap=>{
+      vacancies=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderStats();renderVacancies();
+    },err=>{console.error(err);showToast("Erro ao carregar vagas.");}));
+    unsubscribers.push(onSnapshot(collection(db,"members"),snap=>{
+      members=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(a.nome||"").localeCompare(String(b.nome||"")));
+      renderStats();renderMembers();
+    },err=>{console.error(err);showToast("Erro ao carregar membros.");}));
+  }
+  function dateMillis(ts){if(!ts)return 0;if(typeof ts.toMillis==="function")return ts.toMillis();if(ts.seconds)return ts.seconds*1000;const n=Date.parse(ts);return Number.isNaN(n)?0:n;}
+  function isOpen(v){return v.aberta===true||v.status==="aberta"||v.status==="aberto"||v.status==="open";}
+  function renderStats(){
+    $("statPending").textContent=requests.filter(r=>(r.status||"pendente")==="pendente").length;
+    $("statRequests").textContent=requests.length;
+    $("statOpen").textContent=vacancies.filter(isOpen).length;
+    $("statMembers").textContent=members.length;
+  }
+  function statusClass(s){if(["aprovada","aprovado"].includes(s))return "aprovada";if(["rejeitada","rejeitado"].includes(s))return "rejeitada";return "";}
+  function renderRecentRequests(){
+    const recent=requests.slice(0,5);
+    if(!recent.length){$("recentRequests").innerHTML='<div class="empty">Nenhuma solicitação recebida ainda.</div>';return;}
+    $("recentRequests").innerHTML=`<div class="table-wrap"><table><thead><tr><th>Pessoa</th><th>Personagem</th><th>Tipo</th><th>Status</th><th></th></tr></thead><tbody>${recent.map(r=>`<tr><td>${escapeHTML(r.nome||r.usuario||"Sem nome")}</td><td>${escapeHTML(r.personagem||"—")}<small>${escapeHTML(r.obra||"")}</small></td><td>${r.type==="troca"?"Troca":"Ficha"}</td><td><span class="status ${statusClass(r.status||"pendente")}">${escapeHTML(r.status||"pendente")}</span></td><td><button class="btn" data-detail="${r.id}">Ver</button></td></tr>`).join("")}</tbody></table></div>`;
+    $("recentRequests").querySelectorAll("[data-detail]").forEach(b=>b.onclick=()=>showRequestDetail(b.dataset.detail));
+  }
+  function renderRequests(){
+    const filter=$("requestFilter").value;
+    const list=requests.filter(r=>filter==="todas"||(r.status||"pendente")===filter);
+    if(!list.length){$("requestsTable").innerHTML='<div class="empty">Nenhuma solicitação nesta categoria.</div>';return;}
+    $("requestsTable").innerHTML=`<div class="table-wrap"><table><thead><tr><th>Solicitante</th><th>Personagem</th><th>Tipo</th><th>Status</th><th>Recebida em</th><th>Ações</th></tr></thead><tbody>${list.map(r=>`<tr><td>${escapeHTML(r.nome||"Sem nome")}<small>${escapeHTML(r.usuario||"")} · final ${escapeHTML(r.telefoneFinal||"----")}</small></td><td>${escapeHTML(r.personagem||"—")}<small>${escapeHTML(r.obra||"")}</small></td><td>${r.type==="troca"?"Troca":"Ficha"}</td><td><span class="status ${statusClass(r.status||"pendente")}">${escapeHTML(r.status||"pendente")}</span></td><td>${dateLabel(r.createdAt)}</td><td><div class="row-actions"><button class="btn" data-detail="${r.id}">Detalhes</button>${(r.status||"pendente")==="pendente"?`<button class="btn good" data-approve="${r.id}">Aprovar</button><button class="btn bad" data-reject="${r.id}">Rejeitar</button>`:""}</div></td></tr>`).join("")}</tbody></table></div>`;
+    $("requestsTable").querySelectorAll("[data-detail]").forEach(b=>b.onclick=()=>showRequestDetail(b.dataset.detail));
+    $("requestsTable").querySelectorAll("[data-approve]").forEach(b=>b.onclick=()=>reviewRequest(b.dataset.approve,"aprovada"));
+    $("requestsTable").querySelectorAll("[data-reject]").forEach(b=>b.onclick=()=>reviewRequest(b.dataset.reject,"rejeitada"));
+  }
+  function dateLabel(ts){const ms=dateMillis(ts);return ms?new Date(ms).toLocaleString("pt-BR"):"—";}
+  function showRequestDetail(id){
+    const r=requests.find(x=>x.id===id);if(!r)return;
+    $("requestDetail").innerHTML=`<p><strong>Nome:</strong> ${escapeHTML(r.nome||"Não informado")}</p><p><strong>Idade:</strong> ${escapeHTML(r.idade??"—")}</p><p><strong>Telefone (final):</strong> ${escapeHTML(r.telefoneFinal||"—")}</p><p><strong>Usuário:</strong> ${escapeHTML(r.usuario||"—")}</p><p><strong>Tipo:</strong> ${r.type==="troca"?"Troca":"Ficha"}</p>${r.type==="troca"?`<p><strong>Personagem atual:</strong> ${escapeHTML(r.personagemAtual||"—")}</p>`:""}<p><strong>Personagem solicitado:</strong> ${escapeHTML(r.personagem||"—")}</p><p><strong>Obra:</strong> ${escapeHTML(r.obra||"—")}</p><p><strong>Observação:</strong> ${escapeHTML(r.observacao||"—")}</p>${r.foto?`<p><a href="${escapeHTML(r.foto)}" target="_blank" rel="noopener">Abrir imagem do personagem</a></p><img class="request-photo" src="${escapeHTML(r.foto)}" alt="Foto do personagem">`:""}<p><strong>Status:</strong> ${escapeHTML(r.status||"pendente")}</p>${(r.status||"pendente")==="pendente"?`<div class="row-actions"><button class="btn good" id="detailApprove">Aprovar</button><button class="btn bad" id="detailReject">Rejeitar</button></div>`:""}<div class="message" id="detailMessage"></div>`;
+    if($("detailApprove"))$("detailApprove").onclick=async()=>{await reviewRequest(id,"aprovada");closeModal("requestDetailModal");};
+    if($("detailReject"))$("detailReject").onclick=async()=>{await reviewRequest(id,"rejeitada");closeModal("requestDetailModal");};
+    showModal("requestDetailModal");
+  }
+  async function reviewRequest(id,status){
+    const r=requests.find(x=>x.id===id);if(!r)return;
+    try{
+      const requestRef=doc(db,"characterRequests",id);
+      await updateDoc(requestRef,{status,reviewedBy:currentAdmin,reviewedAt:serverTimestamp()});
+      if(status==="aprovada"){
+        if(r.type==="troca"&&r.personagemAtual){
+          const old=vacancies.find(v=>String(v.personagem||v.nome||"").toLowerCase()===r.personagemAtual.toLowerCase());
+          if(old)await updateDoc(doc(db,"vagas",old.id),{status:"aberta",aberta:true,updatedAt:serverTimestamp()});
+        }
+        const existing=members.find(m=>(m.telefoneFinal||m.telefone||"")===r.telefoneFinal&&r.telefoneFinal);
+        const memberData={nome:r.nome||r.usuario||"Membro",idade:r.idade||null,telefoneFinal:r.telefoneFinal||"",usuario:r.usuario||"",personagem:r.personagem||"",obra:r.obra||"",foto:r.foto||"",updatedAt:serverTimestamp(),reviewedBy:currentAdmin};
+        if(existing)await updateDoc(doc(db,"members",existing.id),memberData);
+        else await addDoc(collection(db,"members"),{...memberData,createdAt:serverTimestamp()});
+        const match=vacancies.find(v=>String(v.personagem||v.nome||"").toLowerCase()===(r.personagem||"").toLowerCase()&&String(v.obra||v.anime||"").toLowerCase()===(r.obra||"").toLowerCase());
+        if(match)await updateDoc(doc(db,"vagas",match.id),{status:"fechada",aberta:false,updatedAt:serverTimestamp()});
+        else await addDoc(collection(db,"vagas"),{personagem:r.personagem||"",obra:r.obra||"",foto:r.foto||"",status:"fechada",aberta:false,createdAt:serverTimestamp()});
+      }
+      showToast(status==="aprovada"?"Solicitação aprovada.":"Solicitação rejeitada.");
+    }catch(err){console.error(err);showToast("Não foi possível atualizar. Confira as regras do Firestore.");}
+  }
+  function renderVacancies(){
+    if(!vacancies.length){$("vacanciesAdmin").innerHTML='<div class="empty">Nenhuma vaga cadastrada. Use “Nova vaga” para adicionar.</div>';return;}
+    $("vacanciesAdmin").innerHTML=vacancies.map(v=>`<article class="vacancy-card"><strong>${escapeHTML(v.personagem||v.nome||v.titulo||"Vaga sem nome")}</strong><p>${escapeHTML(v.obra||v.anime||v.fandom||"Obra não informada")}</p><span class="status ${isOpen(v)?"aprovada":"rejeitada"}">${isOpen(v)?"Aberta":"Fechada"}</span><div class="row-actions" style="margin-top:12px"><button class="btn" data-edit-vacancy="${v.id}">Editar</button><button class="btn" data-toggle-vacancy="${v.id}">${isOpen(v)?"Fechar":"Abrir"}</button><button class="btn bad" data-delete-vacancy="${v.id}">Excluir</button></div></article>`).join("");
+    $("vacanciesAdmin").querySelectorAll("[data-edit-vacancy]").forEach(b=>b.onclick=()=>openVacancyForm(b.dataset.editVacancy));
+    $("vacanciesAdmin").querySelectorAll("[data-toggle-vacancy]").forEach(b=>b.onclick=()=>toggleVacancy(b.dataset.toggleVacancy));
+    $("vacanciesAdmin").querySelectorAll("[data-delete-vacancy]").forEach(b=>b.onclick=()=>removeVacancy(b.dataset.deleteVacancy));
+  }
+  function openVacancyForm(id=""){
+    $("vacancyForm").reset();$("vacancyId").value=id;$("vacancyMessage").textContent="";
+    const v=vacancies.find(x=>x.id===id);
+    $("vacancyModalTitle").textContent=v?"Editar vaga":"Nova vaga";
+    if(v){$("vacancyCharacter").value=v.personagem||v.nome||"";$("vacancyWork").value=v.obra||v.anime||"";$("vacancyStatus").value=isOpen(v)?"aberta":"fechada";$("vacancyPhoto").value=v.foto||v.imagem||"";}
+    showModal("vacancyModal");
+  }
+  $("vacancyForm").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const id=$("vacancyId").value;
+    const status=$("vacancyStatus").value;
+    const data={personagem:$("vacancyCharacter").value.trim(),obra:$("vacancyWork").value.trim(),status,aberta:status==="aberta",foto:$("vacancyPhoto").value.trim(),updatedAt:serverTimestamp()};
+    try{
+      if(id)await updateDoc(doc(db,"vagas",id),data);
+      else await addDoc(collection(db,"vagas"),{...data,createdAt:serverTimestamp()});
+      closeModal("vacancyModal");showToast(id?"Vaga atualizada.":"Vaga criada.");
+    }catch(err){console.error(err);$("vacancyMessage").textContent="Não foi possível salvar a vaga. Confira as regras do Firestore.";}
+  });
+  async function toggleVacancy(id){
+    const v=vacancies.find(x=>x.id===id);if(!v)return;const open=!isOpen(v);
+    try{await updateDoc(doc(db,"vagas",id),{status:open?"aberta":"fechada",aberta:open,updatedAt:serverTimestamp()});showToast(open?"Vaga aberta.":"Vaga fechada.");}
+    catch(err){console.error(err);showToast("Não foi possível alterar a vaga.");}
+  }
+  async function removeVacancy(id){
+    const v=vacancies.find(x=>x.id===id);if(!v)return;
+    if(!confirm(`Excluir a vaga de ${v.personagem||v.nome||"personagem"}?`))return;
+    try{await deleteDoc(doc(db,"vagas",id));showToast("Vaga excluída.");}
+    catch(err){console.error(err);showToast("Não foi possível excluir a vaga.");}
+  }
+  function renderMembers(){
+    if(!members.length){$("membersTable").innerHTML='<div class="empty">Nenhum membro cadastrado ainda.</div>';return;}
+    $("membersTable").innerHTML=`<div class="table-wrap"><table><thead><tr><th>Nome</th><th>Personagem</th><th>Obra</th><th>Telefone final</th><th>Usuário</th><th>Cadastro</th></tr></thead><tbody>${members.map(m=>`<tr><td>${escapeHTML(m.nome||"—")}<small>${escapeHTML(m.idade??"")} ${m.idade?"anos":""}</small></td><td>${escapeHTML(m.personagem||"—")}</td><td>${escapeHTML(m.obra||"—")}</td><td>${escapeHTML(m.telefoneFinal||m.telefone||"—")}</td><td>${escapeHTML(m.usuario||"—")}</td><td>${dateLabel(m.createdAt||m.updatedAt)}</td></tr>`).join("")}</tbody></table></div>`;
+  }
+</script>
+</body>
+</html>
