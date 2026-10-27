@@ -1,0 +1,942 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100906">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Administração | House LTD 🍊</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .admin-main {
+      width: min(1150px, 100%);
+      min-height: 75vh;
+      margin: auto;
+      padding: 65px 22px;
+    }
+
+    .admin-card {
+      padding: 25px;
+      background: rgba(17, 12, 9, .94);
+      border: 1px solid rgba(255, 122, 24, .28);
+      border-radius: 16px;
+      backdrop-filter: blur(15px);
+    }
+
+    .admin-login {
+      width: min(430px, 100%);
+      margin: 35px auto;
+    }
+
+    .admin-login h1,
+    .admin-heading h1 {
+      margin: 10px 0;
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      line-height: 1.15;
+    }
+
+    .admin-login h1 span,
+    .admin-heading h1 span {
+      color: var(--orange);
+    }
+
+    .admin-subtitle {
+      margin-bottom: 25px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .admin-label {
+      display: block;
+      margin: 15px 0 7px;
+      color: #f0dfd2;
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .admin-input,
+    .admin-select,
+    .admin-textarea {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      color: var(--white);
+      background: #100b08;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .admin-textarea {
+      min-height: 85px;
+      resize: vertical;
+    }
+
+    .admin-input:focus,
+    .admin-select:focus,
+    .admin-textarea:focus {
+      outline: 2px solid var(--orange);
+      outline-offset: 2px;
+    }
+
+    .admin-button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 10px 15px;
+      color: #1a0d04;
+      background: var(--orange);
+      border: 0;
+      border-radius: 8px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .admin-button:hover {
+      background: var(--orange-light);
+      transform: translateY(-1px);
+    }
+
+    .admin-button:disabled {
+      opacity: .55;
+      cursor: wait;
+      transform: none;
+    }
+
+    .admin-button.secondary {
+      color: var(--white);
+      background: #302016;
+      border: 1px solid var(--border);
+    }
+
+    .admin-button.danger {
+      color: #ffe6df;
+      background: #67251b;
+    }
+
+    .admin-button.small {
+      min-height: 34px;
+      padding: 7px 10px;
+      font-size: .75rem;
+    }
+
+    .admin-full {
+      width: 100%;
+      margin-top: 18px;
+    }
+
+    .admin-message {
+      margin-top: 13px;
+      color: var(--orange-light);
+      font-size: .84rem;
+      overflow-wrap: anywhere;
+    }
+
+    .admin-message.error {
+      color: #ff9990;
+    }
+
+    .admin-message:empty {
+      display: none;
+    }
+
+    .admin-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .admin-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 25px 0;
+    }
+
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 25px 0;
+    }
+
+    .admin-stat {
+      padding: 19px;
+      background: rgba(255, 122, 24, .06);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .admin-stat span {
+      display: block;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .admin-stat strong {
+      display: block;
+      margin-top: 5px;
+      color: var(--orange-light);
+      font-size: 1.8rem;
+    }
+
+    .admin-section {
+      margin-top: 25px;
+    }
+
+    .admin-section h2 {
+      margin-bottom: 15px;
+      font-size: 1.15rem;
+    }
+
+    .admin-list {
+      display: grid;
+      gap: 13px;
+    }
+
+    .admin-item {
+      min-width: 0;
+      padding: 19px;
+      background: rgba(10, 7, 5, .75);
+      border: 1px solid rgba(255, 122, 24, .19);
+      border-radius: 12px;
+    }
+
+    .admin-item h3 {
+      margin-bottom: 8px;
+      overflow-wrap: anywhere;
+      font-size: 1rem;
+    }
+
+    .admin-item p {
+      margin: 5px 0;
+      color: #c7b7a9;
+      font-size: .82rem;
+      overflow-wrap: anywhere;
+    }
+
+    .admin-item img {
+      display: block;
+      width: 100%;
+      max-width: 180px;
+      max-height: 220px;
+      object-fit: cover;
+      margin: 12px 0;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+    }
+
+    .admin-item-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .admin-tag {
+      display: inline-block;
+      padding: 4px 9px;
+      margin: 5px 0;
+      color: #ffc18c;
+      background: rgba(255, 122, 24, .09);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: .7rem;
+    }
+
+    .admin-empty {
+      padding: 25px;
+      color: var(--muted);
+      text-align: center;
+      background: rgba(255, 122, 24, .035);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+    }
+
+    .admin-vacancy-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .admin-vacancy-form .wide {
+      grid-column: 1 / -1;
+    }
+
+    .admin-footer {
+      margin-top: 35px;
+      color: var(--muted);
+      font-size: .78rem;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .admin-main {
+        padding: 35px 15px;
+      }
+
+      .admin-card {
+        padding: 19px;
+      }
+
+      .admin-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-vacancy-form {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-vacancy-form .wide {
+        grid-column: auto;
+      }
+
+      .admin-topline {
+        align-items: flex-start;
+      }
+
+      .admin-toolbar .admin-button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="video-background" aria-hidden="true">
+    <video autoplay muted loop playsinline>
+      <source src="fundo.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+  </div>
+
+  <div class="ambient-light" aria-hidden="true"></div>
+  <div class="particles" aria-hidden="true"></div>
+
+  <header class="header">
+    <a href="index.html" class="logo">HOUSE <span>LTD</span> 🍊</a>
+    <a class="button button-outline" href="index.html">← Voltar ao site</a>
+  </header>
+
+  <main class="admin-main">
+
+    <!-- LOGIN -->
+    <section id="loginPanel" class="admin-card admin-login">
+      <span class="eyebrow">ACESSO RESTRITO</span>
+      <h1>PAINEL <span>ADMIN.</span></h1>
+      <p class="admin-subtitle">
+        Entre com seu código administrativo autorizado.
+      </p>
+
+      <form id="loginForm">
+        <label class="admin-label" for="adminCode">
+          Código administrativo
+        </label>
+
+        <input
+          id="adminCode"
+          class="admin-input"
+          type="password"
+          minlength="1"
+          maxlength="256"
+          autocomplete="current-password"
+          placeholder="Digite seu código"
+          required
+        >
+
+        <button class="admin-button admin-full" type="submit">
+          Entrar no painel ↗
+        </button>
+
+        <p class="admin-message" id="loginMessage" role="status"></p>
+      </form>
+
+      <p class="admin-footer">
+        O código será validado pelo servidor. Não o compartilhe.
+      </p>
+    </section>
+
+    <!-- PAINEL PROTEGIDO -->
+    <section id="dashboard" hidden>
+      <div class="admin-topline">
+        <div class="admin-heading">
+          <span class="eyebrow">CENTRAL DE CONTROLE</span>
+          <h1>HOUSE <span>LTD.</span></h1>
+          <p class="admin-subtitle">Gerenciamento da comunidade.</p>
+        </div>
+
+        <button class="admin-button secondary" id="logoutButton" type="button">
+          Sair da administração
+        </button>
+      </div>
+
+      <div class="admin-stats">
+        <div class="admin-stat">
+          <span>Fichas pendentes</span>
+          <strong id="pendingCount">—</strong>
+        </div>
+        <div class="admin-stat">
+          <span>Trocas pendentes</span>
+          <strong id="exchangeCount">—</strong>
+        </div>
+        <div class="admin-stat">
+          <span>Vagas abertas</span>
+          <strong id="openVacancyCount">—</strong>
+        </div>
+      </div>
+
+      <div class="admin-toolbar">
+        <button class="admin-button" type="button" data-view="requests">
+          Fichas
+        </button>
+        <button class="admin-button secondary" type="button" data-view="exchanges">
+          Trocas
+        </button>
+        <button class="admin-button secondary" type="button" data-view="vacancies">
+          Vagas
+        </button>
+        <button class="admin-button secondary" type="button" id="refreshButton">
+          ↻ Atualizar
+        </button>
+      </div>
+
+      <p class="admin-message" id="dashboardMessage" role="status"></p>
+
+      <!-- FICHAS -->
+      <section class="admin-card admin-section" id="requestsSection">
+        <h2>Fichas recebidas</h2>
+        <div id="requestsList" class="admin-list">
+          <p class="admin-empty">Carregue as fichas para começar.</p>
+        </div>
+      </section>
+
+      <!-- TROCAS -->
+      <section class="admin-card admin-section" id="exchangesSection" hidden>
+        <h2>Solicitações de troca</h2>
+        <div id="exchangesList" class="admin-list">
+          <p class="admin-empty">Carregue as solicitações de troca.</p>
+        </div>
+      </section>
+
+      <!-- VAGAS -->
+      <section class="admin-card admin-section" id="vacanciesSection" hidden>
+        <h2>Gerenciar vagas</h2>
+
+        <form id="vacancyForm" class="admin-vacancy-form">
+          <label class="admin-label">
+            Personagem
+            <input class="admin-input" name="character" maxlength="80" required>
+          </label>
+
+          <label class="admin-label">
+            Obra
+            <input class="admin-input" name="work" maxlength="100" required>
+          </label>
+
+          <label class="admin-label wide">
+            Identificador da vaga (opcional)
+            <input class="admin-input" name="vacancyId" maxlength="100"
+              placeholder="Deixe vazio para gerar um novo">
+          </label>
+
+          <label class="admin-label">
+            Estado
+            <select class="admin-select" name="status" required>
+              <option value="open">Disponível</option>
+              <option value="closed">Fechada</option>
+            </select>
+          </label>
+
+          <div class="wide">
+            <button class="admin-button" type="submit">
+              Salvar vaga
+            </button>
+            <button class="admin-button secondary" type="reset">
+              Limpar formulário
+            </button>
+          </div>
+        </form>
+
+        <p class="admin-message" id="vacancyMessage" role="status"></p>
+
+        <div id="vacanciesList" class="admin-list" style="margin-top:22px">
+          <p class="admin-empty">Carregue as vagas para começar.</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a href="index.html" class="logo">HOUSE <span>LTD</span> 🍊</a>
+    <p>Área administrativa · Acesso restrito</p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+    import {
+      getAuth,
+      signInWithCustomToken,
+      signOut,
+      onAuthStateChanged
+    } from
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    import {
+      getFunctions,
+      httpsCallable
+    } from
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCRUNymKVh-UxKkSvNEUZkzAjmRi_4_AQU",
+      authDomain: "house-ltd.firebaseapp.com",
+      projectId: "house-ltd",
+      storageBucket: "house-ltd.firebasestorage.app",
+      messagingSenderId: "821811124213",
+      appId: "1:821811124213:web:c8dd2b2f1e1a41bcd632bc",
+      measurementId: "G-P28WHBV9VB"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const functions = getFunctions(app, "us-central1");
+
+    /*
+      CONTRATO DO SERVIDOR:
+      loginWithAdminCode({ code }) -> { customToken }
+      adminListRequests({ type }) -> { items: [...] }
+      adminReviewRequest({ id, type, decision }) -> { success: true }
+      adminListVacancies({}) -> { items: [...] }
+      adminSaveVacancy({ id, character, work, status }) -> { success: true }
+      adminLogout({}) -> { success: true }
+
+      Essas Cloud Functions precisam ser implementadas e implantadas
+      antes que o painel possa operar. O cliente nunca valida o código
+      sozinho nem recebe uma credencial administrativa permanente.
+    */
+
+    const api = {
+      login: httpsCallable(functions, "loginWithAdminCode"),
+      listRequests: httpsCallable(functions, "adminListRequests"),
+      reviewRequest: httpsCallable(functions, "adminReviewRequest"),
+      listVacancies: httpsCallable(functions, "adminListVacancies"),
+      saveVacancy: httpsCallable(functions, "adminSaveVacancy"),
+      logout: httpsCallable(functions, "adminLogout")
+    };
+
+    const $ = selector => document.querySelector(selector);
+
+    const loginPanel = $("#loginPanel");
+    const dashboard = $("#dashboard");
+    const loginForm = $("#loginForm");
+    const loginMessage = $("#loginMessage");
+    const dashboardMessage = $("#dashboardMessage");
+
+    let activeView = "requests";
+    let busy = false;
+
+    function message(element, text, error = false) {
+      element.textContent = text || "";
+      element.classList.toggle("error", error);
+    }
+
+    function showLogin(text = "") {
+      loginPanel.hidden = false;
+      dashboard.hidden = true;
+      message(loginMessage, text);
+    }
+
+    function showDashboard() {
+      loginPanel.hidden = true;
+      dashboard.hidden = false;
+    }
+
+    function setBusy(button, state) {
+      button.disabled = state;
+    }
+
+    function callableError(error) {
+      const code = error?.code || "";
+
+      if (code.includes("unauthenticated")) {
+        return "Sua sessão expirou ou o acesso não foi autorizado. Entre novamente.";
+      }
+
+      if (code.includes("permission-denied")) {
+        return "Você não tem permissão para realizar esta operação.";
+      }
+
+      if (code.includes("resource-exhausted")) {
+        return "Muitas tentativas. Aguarde antes de tentar novamente.";
+      }
+
+      if (code.includes("not-found")) {
+        return "O registro solicitado não foi encontrado.";
+      }
+
+      if (code.includes("already-exists")) {
+        return "Este personagem ou registro já existe.";
+      }
+
+      return error?.message || "Não foi possível concluir a operação.";
+    }
+
+    async function callApi(callable, data = {}) {
+      const result = await callable(data);
+      return result.data;
+    }
+
+    loginForm.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      if (busy) return;
+
+      const button = loginForm.querySelector("button[type=submit]");
+      const codeInput = $("#adminCode");
+      const code = codeInput.value;
+
+      if (!code.trim()) {
+        message(loginMessage, "Digite seu código administrativo.", true);
+        return;
+      }
+
+      busy = true;
+      setBusy(button, true);
+      message(loginMessage, "Verificando acesso...");
+
+      try {
+        const result = await callApi(api.login, { code });
+
+        if (!result?.customToken) {
+          throw new Error("O servidor não retornou uma sessão válida.");
+        }
+
+        await signInWithCustomToken(auth, result.customToken);
+        codeInput.value = "";
+        showDashboard();
+        await refreshAll();
+      } catch (error) {
+        console.error("Falha no login administrativo:", error);
+        message(loginMessage, callableError(error), true);
+      } finally {
+        busy = false;
+        setBusy(button, false);
+      }
+    });
+
+    onAuthStateChanged(auth, user => {
+      /*
+        Não basta existir uma sessão Firebase: o servidor deve verificar
+        a autorização administrativa em TODA operação privilegiada.
+      */
+      if (!user) {
+        showLogin();
+      }
+    });
+
+    function makeElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = String(text);
+      return element;
+    }
+
+    function makeButton(text, className, callback) {
+      const button = makeElement("button", className, text);
+      button.type = "button";
+      button.addEventListener("click", callback);
+      return button;
+    }
+
+    function renderItems(container, items, emptyText, renderItem) {
+      container.replaceChildren();
+
+      if (!Array.isArray(items) || items.length === 0) {
+        container.append(makeElement("p", "admin-empty", emptyText));
+        return;
+      }
+
+      for (const item of items) {
+        container.append(renderItem(item));
+      }
+    }
+
+    function renderRequest(item, type) {
+      const card = makeElement("article", "admin-item");
+      const title = type === "character"
+        ? (item.character || "Personagem sem nome")
+        : (item.newCharacter || "Troca de personagem");
+
+      card.append(makeElement("h3", "", title));
+      card.append(makeElement("span", "admin-tag",
+        "Status: " + (item.status || "pendente")));
+
+      if (item.nickname) {
+        card.append(makeElement("p", "", "Apelido: " + item.nickname));
+      }
+
+      if (item.age != null) {
+        card.append(makeElement("p", "", "Idade: " + item.age));
+      }
+
+      if (item.work) {
+        card.append(makeElement("p", "", "Obra: " + item.work));
+      }
+
+      if (type === "exchange") {
+        card.append(makeElement("p", "",
+          "Atual: " + (item.oldCharacter || "—") +
+          " · " + (item.oldWork || "—")));
+      }
+
+      if (item.photoUrl) {
+        try {
+          const url = new URL(item.photoUrl);
+          if (url.protocol === "https:" &&
+              url.hostname === "res.cloudinary.com") {
+            const img = document.createElement("img");
+            img.src = url.href;
+            img.alt = "Foto do personagem";
+            img.loading = "lazy";
+            img.referrerPolicy = "no-referrer";
+            card.append(img);
+          }
+        } catch {}
+      }
+
+      /*
+        Por privacidade, o painel não exibe os dígitos do telefone.
+        A verificação da titularidade deve ocorrer por um processo seguro.
+      */
+
+      const actions = makeElement("div", "admin-item-actions");
+
+      if (item.status === "pending") {
+        actions.append(makeButton("Aprovar", "admin-button small",
+          () => review(item.id, type, "approve")));
+        actions.append(makeButton("Recusar", "admin-button danger small",
+          () => review(item.id, type, "reject")));
+      }
+
+      card.append(actions);
+      return card;
+    }
+
+    async function loadRequests(type) {
+      const container = type === "character"
+        ? $("#requestsList")
+        : $("#exchangesList");
+
+      container.replaceChildren(
+        makeElement("p", "admin-empty", "Carregando solicitações...")
+      );
+
+      try {
+        const result = await callApi(api.listRequests, { type });
+        const items = result.items || [];
+
+        renderItems(
+          container,
+          items,
+          "Nenhuma solicitação encontrada.",
+          item => renderRequest(item, type)
+        );
+
+        const pending = items.filter(item => item.status === "pending").length;
+
+        if (type === "character") {
+          $("#pendingCount").textContent = pending;
+        } else {
+          $("#exchangeCount").textContent = pending;
+        }
+      } catch (error) {
+        console.error(error);
+        renderItems(container, [],
+          callableError(error), () => document.createElement("div"));
+      }
+    }
+
+    async function review(id, type, decision) {
+      if (!id || !["character", "exchange"].includes(type)) {
+        message(dashboardMessage, "Solicitação inválida.", true);
+        return;
+      }
+
+      const action = decision === "approve" ? "aprovar" : "recusar";
+      if (!confirm("Deseja realmente " + action + " esta solicitação?")) {
+        return;
+      }
+
+      try {
+        message(dashboardMessage, "Processando decisão...");
+
+        await callApi(api.reviewRequest, { id, type, decision });
+
+        message(dashboardMessage,
+          "Solicitação processada. Atualizando painel...");
+
+        await refreshAll();
+      } catch (error) {
+        console.error(error);
+        message(dashboardMessage, callableError(error), true);
+      }
+    }
+
+    function renderVacancy(item) {
+      const card = makeElement("article", "admin-item");
+      card.append(makeElement("h3", "", item.character || "Sem nome"));
+      card.append(makeElement("p", "", "Obra: " + (item.work || "—")));
+      card.append(makeElement("span", "admin-tag",
+        item.status === "open" ? "Disponível" : "Fechada"));
+
+      const actions = makeElement("div", "admin-item-actions");
+
+      actions.append(makeButton("Editar", "admin-button small", () => {
+        const form = $("#vacancyForm");
+        form.elements.vacancyId.value = item.id || "";
+        form.elements.character.value = item.character || "";
+        form.elements.work.value = item.work || "";
+        form.elements.status.value = item.status || "open";
+        form.scrollIntoView({ behavior: "smooth", block: "center" });
+      }));
+
+      actions.append(makeButton(
+        item.status === "open" ? "Fechar vaga" : "Abrir vaga",
+        "admin-button secondary small",
+        async () => {
+          try {
+            await callApi(api.saveVacancy, {
+              id: item.id,
+              character: item.character,
+              work: item.work,
+              status: item.status === "open" ? "closed" : "open"
+            });
+            await loadVacancies();
+          } catch (error) {
+            message($("#vacancyMessage"), callableError(error), true);
+          }
+        }
+      ));
+
+      card.append(actions);
+      return card;
+    }
+
+    async function loadVacancies() {
+      const container = $("#vacanciesList");
+      container.replaceChildren(
+        makeElement("p", "admin-empty", "Carregando vagas...")
+      );
+
+      try {
+        const result = await callApi(api.listVacancies);
+        const items = result.items || [];
+
+        $("#openVacancyCount").textContent =
+          items.filter(item => item.status === "open").length;
+
+        renderItems(container, items, "Nenhuma vaga cadastrada.", renderVacancy);
+      } catch (error) {
+        console.error(error);
+        renderItems(container, [],
+          callableError(error), () => document.createElement("div"));
+      }
+    }
+
+    $("#vacancyForm").addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const form = event.currentTarget;
+      const data = new FormData(form);
+
+      const character = String(data.get("character") || "").trim();
+      const work = String(data.get("work") || "").trim();
+      const id = String(data.get("vacancyId") || "").trim();
+      const status = String(data.get("status") || "");
+
+      if (!character || !work || !["open", "closed"].includes(status)) {
+        message($("#vacancyMessage"), "Preencha os campos corretamente.", true);
+        return;
+      }
+
+      try {
+        await callApi(api.saveVacancy, {
+          ...(id ? { id } : {}),
+          character,
+          work,
+          status
+        });
+
+        form.reset();
+        message($("#vacancyMessage"), "Vaga salva com sucesso.");
+        await loadVacancies();
+      } catch (error) {
+        console.error(error);
+        message($("#vacancyMessage"), callableError(error), true);
+      }
+    });
+
+    async function refreshAll() {
+      await Promise.all([
+        loadRequests("character"),
+        loadRequests("exchange"),
+        loadVacancies()
+      ]);
+    }
+
+    function setView(view) {
+      activeView = view;
+
+      $("#requestsSection").hidden = view !== "requests";
+      $("#exchangesSection").hidden = view !== "exchanges";
+      $("#vacanciesSection").hidden = view !== "vacancies";
+
+      document.querySelectorAll("[data-view]").forEach(button => {
+        const selected = button.dataset.view === view;
+        button.classList.toggle("secondary", !selected);
+      });
+    }
+
+    document.querySelectorAll("[data-view]").forEach(button => {
+      button.addEventListener("click", async () => {
+        const view = button.dataset.view;
+        setView(view);
+
+        if (view === "requests") await loadRequests("character");
+        if (view === "exchanges") await loadRequests("exchange");
+        if (view === "vacancies") await loadVacancies();
+      });
+    });
+
+    $("#refreshButton").addEventListener("click", refreshAll);
+
+    $("#logoutButton").addEventListener("click", async () => {
+      if (!confirm("Deseja sair do painel administrativo?")) return;
+
+      try {
+        await callApi(api.logout);
+      } catch (error) {
+        /*
+          Mesmo se o endpoint de logout falhar, encerra a sessão
+          Firebase local. A autorização também deve expirar no servidor.
+        */
+        console.error(error);
+      } finally {
+        await signOut(auth);
+        showLogin("Você saiu do painel.");
+      }
+    });
+
+    setView("requests");
+  </script>
+</body>
+</html>
