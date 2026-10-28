@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080808">
+  <meta name="description" content="House LTD — fichas, personagens, trocas e comunidade.">
+  <title>HOUSE LTD 🍊</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <video class="video-bg" autoplay muted loop playsinline aria-hidden="true">
+    <source src="Fundo.mp4" type="video/mp4">
+  </video>
+  <div class="video-shade"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="wordmark" href="#inicio" aria-label="House LTD início">HOUSE <span>LTD</span></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <nav class="nav" id="mainNav">
+      <a href="#inicio" class="nav-link active">Início</a>
+      <a href="#ficha" class="nav-link">Ficha</a>
+      <a href="#troca" class="nav-link">Troca</a>
+      <a href="#vagas" class="nav-link">Vagas</a>
+      <a href="#buscar" class="nav-link">Buscar membro</a>
+      <a href="#historia" class="nav-link">Nossa história</a>
+      <a href="admin.html" class="nav-admin">Administração ↗</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero section" id="inicio">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="pulse"></span> HOUSE ALL • DESDE 02.03.2025</p>
+        <h1>UMA HOUSE.<br><span>MIL UNIVERSOS.</span></h1>
+        <p class="hero-description">Seu personagem, sua história, seu espaço. Entre na LTD e faça parte dessa bagunça organizada.</p>
+        <div class="hero-actions">
+          <a class="button button-orange" href="#ficha">Fazer minha ficha <span>↗</span></a>
+          <a class="button button-ghost" href="#vagas">Ver personagens</a>
+        </div>
+        <div class="hero-stats">
+          <div><strong>01</strong><span>comunidade</span></div>
+          <div><strong>∞</strong><span>possibilidades</span></div>
+          <div><strong>100%</strong><span>House All</span></div>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="Identidade visual House LTD">
+        <div class="art-tag">LTD® / HOUSE ALL</div>
+        <div class="art-word">HOUSE</div>
+        <div class="art-word art-word-outline">LTD</div>
+        <div class="art-sticker">SEU<br>UNIVERSO<br><b>COMEÇA AQUI.</b></div>
+        <div class="art-cross">✳</div>
+        <div class="art-bottom">NO LIMITS. JUST YOUR STORY.</div>
+      </div>
+      <a class="scroll-cue" href="#atalhos">SCROLL PARA EXPLORAR <span>↓</span></a>
+    </section>
+
+    <section class="section shortcuts" id="atalhos">
+      <div class="section-heading">
+        <p class="eyebrow">01 / ESCOLHA SEU CAMINHO</p>
+        <h2>O QUE VAMOS <span>FAZER?</span></h2>
+      </div>
+      <div class="shortcut-grid">
+        <a class="shortcut-card" href="#ficha"><span class="card-number">01</span><span class="card-icon">✎</span><h3>CRIAR FICHA</h3><p>Registre seu personagem e entre para a LTD.</p><span class="card-arrow">↗</span></a>
+        <a class="shortcut-card" href="#troca"><span class="card-number">02</span><span class="card-icon">⇄</span><h3>TROCAR PERSONAGEM</h3><p>Peça a troca do personagem que você usa.</p><span class="card-arrow">↗</span></a>
+        <a class="shortcut-card" href="#vagas"><span class="card-number">03</span><span class="card-icon">▦</span><h3>VER VAGAS</h3><p>Confira os personagens disponíveis.</p><span class="card-arrow">↗</span></a>
+        <a class="shortcut-card" href="#buscar"><span class="card-number">04</span><span class="card-icon">⌕</span><h3>BUSCAR MEMBRO</h3><p>Consulte seu cadastro usando os quatro últimos dígitos.</p><span class="card-arrow">↗</span></a>
+      </div>
+    </section>
+
+    <section class="section split-section" id="ficha">
+      <div class="section-heading">
+        <p class="eyebrow">02 / REGISTRO DE MEMBRO</p>
+        <h2>SUA FICHA.<br><span>SUA IDENTIDADE.</span></h2>
+        <p class="muted">Preencha com atenção. Os campos marcados com * são obrigatórios. Sua informação pessoal não deve ser exibida publicamente.</p>
+        <div class="note-box"><span>✳</span><p><b>Antes de enviar</b><br>Confira se o personagem está disponível em “Vagas”. O envio desta ficha não significa aprovação automática.</p></div>
+      </div>
+      <form class="form-panel" id="characterForm">
+        <div class="form-title"><span>FICHA DE PERSONAGEM</span><span class="form-index">LTD / 001</span></div>
+        <div class="form-grid">
+          <label>Nome ou apelido <small>(opcional)</small><input name="nickname" maxlength="40" placeholder="Como podemos te chamar?"></label>
+          <label>Idade *<input name="age" type="number" min="13" max="99" required placeholder="Sua idade"></label>
+          <label>Últimos 4 dígitos do telefone *<input name="phoneLast4" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required placeholder="0000"></label>
+          <label>Personagem *<input name="character" maxlength="80" required placeholder="Nome do personagem"></label>
+          <label class="full">Obra / universo *<input name="work" maxlength="100" required placeholder="Anime, série, jogo, artista..."></label>
+          <label class="full">Link da foto do personagem <small>(opcional)</small><input name="photo" type="url" placeholder="https://..."></label>
+        </div>
+        <label class="checkline"><input type="checkbox" required> Confirmo que revisei os dados e aceito que a administração analise minha solicitação.</label>
+        <button class="button button-orange button-wide" type="submit">Enviar ficha <span>↗</span></button>
+        <p class="form-feedback" id="characterFeedback" role="status"></p>
+      </form>
+    </section>
+
+    <section class="section split-section swap-section" id="troca">
+      <div class="section-heading">
+        <p class="eyebrow">03 / SOLICITAÇÃO DE TROCA</p>
+        <h2>UM NOVO<br><span>CAPÍTULO.</span></h2>
+        <p class="muted">Informe o personagem atual e aquele que deseja usar. A troca só deve ser considerada concluída depois da aprovação da administração.</p>
+      </div>
+      <form class="form-panel" id="swapForm">
+        <div class="form-title"><span>TROCA DE PERSONAGEM</span><span class="form-index">LTD / 002</span></div>
+        <div class="form-grid">
+          <label>Seu apelido *<input name="nickname" maxlength="40" required placeholder="Nome usado na house"></label>
+          <label>Últimos 4 dígitos do telefone *<input name="phoneLast4" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required placeholder="0000"></label>
+          <label>Personagem atual *<input name="oldCharacter" maxlength="80" required placeholder="Personagem atual"></label>
+          <label>Obra atual *<input name="oldWork" maxlength="100" required placeholder="Obra atual"></label>
+          <label>Personagem desejado *<input name="newCharacter" maxlength="80" required placeholder="Novo personagem"></label>
+          <label>Obra desejada *<input name="newWork" maxlength="100" required placeholder="Obra do personagem"></label>
+          <label class="full">Link da foto nova <small>(opcional)</small><input name="photo" type="url" placeholder="https://..."></label>
+        </div>
+        <label class="checkline"><input type="checkbox" required> Entendo que a vaga só muda após a aprovação da administração.</label>
+        <button class="button button-orange button-wide" type="submit">Solicitar troca <span>↗</span></button>
+        <p class="form-feedback" id="swapFeedback" role="status"></p>
+      </form>
+    </section>
+
+    <section class="section" id="vagas">
+      <div class="section-heading row-heading">
+        <div><p class="eyebrow">04 / CATÁLOGO DE PERSONAGENS</p><h2>PROCURE SUA <span>VAGA.</span></h2></div>
+        <span class="demo-pill">CATÁLOGO LOCAL / DEMONSTRAÇÃO</span>
+      </div>
+      <div class="search-bar"><span>⌕</span><input id="vacancySearch" placeholder="Buscar personagem ou obra..." aria-label="Buscar personagem ou obra"><select id="vacancyFilter" aria-label="Filtrar vagas"><option value="all">Todas as vagas</option><option value="available">Disponíveis</option><option value="occupied">Ocupadas</option></select></div>
+      <div class="vacancy-grid" id="vacancyGrid">
+        <div class="empty-state">Carregando vagas...</div>
+      </div>
+      <p class="tiny-note">A lista exibida neste protótipo usa dados de demonstração salvos neste navegador. Para sincronizar entre todos os membros, será necessário conectar o Firebase.</p>
+    </section>
+
+    <section class="section lookup-section" id="buscar">
+      <div class="lookup-copy"><p class="eyebrow">05 / ÁREA DO MEMBRO</p><h2>ENCONTRE<br><span>SEU CADASTRO.</span></h2><p class="muted">Digite os quatro últimos dígitos informados na sua ficha para procurar registros neste navegador.</p></div>
+      <form class="lookup-panel" id="lookupForm"><label>Últimos 4 dígitos do telefone<input name="phoneLast4" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required placeholder="0000"></label><button class="button button-orange button-wide" type="submit">Buscar cadastro ↗</button><div id="lookupResults" class="lookup-results" aria-live="polite"></div></form>
+    </section>
+
+    <section class="section history-section" id="historia">
+      <p class="eyebrow">06 / DE ONDE VIEMOS</p>
+      <h2>UMA HOUSE FEITA<br><span>DE UNIVERSOS.</span></h2>
+      <div class="history-content"><div class="history-date">02 <span>MAR</span><small>2025</small></div><p>A House LTD nasceu como uma comunidade aberta a diferentes fandoms, personagens e histórias. A proposta é simples: reunir pessoas, criar conexões e manter um espaço organizado para todo mundo participar.</p></div>
+      <a class="button button-ghost" href="#inicio">Voltar ao topo ↑</a>
+    </section>
+  </main>
+
+  <footer class="footer"><a class="wordmark" href="#inicio">HOUSE <span>LTD</span></a><p>UMA HOUSE. MIL UNIVERSOS.</p><span>© HOUSE LTD • 2025—2026</span></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
