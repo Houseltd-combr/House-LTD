@@ -40,13 +40,29 @@ function showMessage(message, kind = "error") {
   formMessage.className = `message ${kind}`;
   formMessage.hidden = false;
 }
-function getFields(form) {
+async function getFields(form) {
   const data = Object.fromEntries(new FormData(form).entries());
   delete data.agree;
+  if (data.age !== undefined && data.age !== "") data.age = Number(data.age);
   if (data.phoneLast4 && !/^\d{4}$/.test(data.phoneLast4)) throw new Error("Informe exatamente os quatro últimos dígitos do telefone.");
-  if (data.photoUrl && !validUrl(data.photoUrl)) throw new Error("O link da foto não é válido.");
-  for (const key of ["oldPhotoUrl", "newPhotoUrl"]) if (data[key] && !validUrl(data[key])) throw new Error("Confira os links das fotos.");
+  const photoFields = { photoFile: "photoUrl", oldPhotoFile: "oldPhotoUrl", newPhotoFile: "newPhotoUrl" };
+  for (const [fileKey, urlKey] of Object.entries(photoFields)) {
+    const file = data[fileKey];
+    delete data[fileKey];
+    if (file instanceof File && file.size > 0) data[urlKey] = await uploadPhoto(file);
+    else delete data[urlKey];
+  }
   return data;
+}
+async function uploadPhoto(file) {
+  // Upload direto para Cloudinary (preset unsigned da House LTD).
+  const body = new FormData();
+  body.append("file", file);
+  body.append("upload_preset", "house-ltd");
+  const response = await fetch("https://api.cloudinary.com/v1_1/gsqmelxb/image/upload", { method: "POST", body });
+  const result = await response.json();
+  if (!response.ok || !result.secure_url) throw new Error("Não foi possível enviar a foto. Confira o preset de upload house-ltd no Cloudinary.");
+  return result.secure_url;
 }
 function validUrl(value) {
   try { const url = new URL(value); return url.protocol === "https:" || url.protocol === "http:"; } catch { return false; }
@@ -58,7 +74,7 @@ async function submitForm(form, type) {
   try {
     if (!firebaseConfigIsReady()) throw new Error("Falta configurar a apiKey do Firebase no arquivo firebase.js.");
     await ensureAnonymousAuth();
-    const data = getFields(form);
+    const data = await getFields(form);
     const collectionName = type === "reception" ? "characterRequests" : "exchangeRequests";
     await addDoc(collection(db, collectionName), {
       ...data,
@@ -90,12 +106,12 @@ async function loadVacancies() {
   const container = $("#vacancyList");
   container.innerHTML = '<div class="empty-state">Carregando vagas...</div>';
   try {
-    if (!firebaseConfigIsReady()) throw new Error("config");
+    if (!firebaseConfigIsReady()) throw new Error("Falta configurar a apiKey real do Firebase no arquivo firebase.js.");
     await ensureAnonymousAuth();
     const snapshot = await getDocs(collection(db, "vagas"));
     const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     const filtered = items.filter(item => {
-      const open = item.open === true || item.status === "open" || item.status === "aberta";
+      const open = item.open === true || item.status === "open" || item.status === "aberta" || item.status === "aberta / livre";
       if (vacancyFilter === "open") return open;
       if (vacancyFilter === "closed") return !open;
       return true;
@@ -105,7 +121,7 @@ async function loadVacancies() {
       return;
     }
     container.replaceChildren(...filtered.map(item => {
-      const open = item.open === true || item.status === "open" || item.status === "aberta";
+      const open = item.open === true || item.status === "open" || item.status === "aberta" || item.status === "aberta / livre";
       const card = document.createElement("div"); card.className = "vacancy-item";
       const info = document.createElement("div");
       const name = document.createElement("strong"); name.textContent = item.character || item.personagem || item.name || "Personagem";

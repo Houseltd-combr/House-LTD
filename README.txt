@@ -46,3 +46,6 @@ OBSERVAÇÕES IMPORTANTES
 - A API key do Firebase para web normalmente identifica o projeto, mas as regras do Firestore são o que protege os dados.
 - As imagens são aceitas como URLs http/https. Upload de imagem ainda não está conectado; Cloudinary pode ser integrado numa etapa seguinte.
 - O fluxo atual cria o pedido e permite a análise administrativa. Antes de uso amplo, teste todas as ações com dados fictícios e confira a consistência de trocas e membros.
+
+
+ATUALIZAÇÃO VISUAL/FUNCIONAL: tema escuro com laranja; ficha e troca continuam abrindo em área própria por botão; campo de foto usa upload de arquivo para Cloudinary; o código administrativo ignora espaços e diferença entre maiúsculas/minúsculas (006LTD).

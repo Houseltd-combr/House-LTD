@@ -15,7 +15,7 @@ let isAuthorized = false;
 $("#loginForm").addEventListener("submit", async event => {
   event.preventDefault();
   const form = new FormData(event.currentTarget);
-  const enteredCode = String(form.get("accessCode") || "");
+  const enteredCode = String(form.get("accessCode") || "").replace(/\s+/g, "").toUpperCase();
   adminName = String(form.get("adminName") || "").trim();
   const message = $("#loginMessage");
   message.hidden = false; message.className = "message error";

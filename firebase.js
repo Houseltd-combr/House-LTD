@@ -6,7 +6,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.14.1/firebas
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "COLE_AQUI_SUA_API_KEY_COMPLETA",
+  apiKey: "AIzaSyCRUNymKVh-UxKkSvNEUZkzAjmRi_4_AQU",
   authDomain: "house-ltd.firebaseapp.com",
   projectId: "house-ltd",
   storageBucket: "house-ltd.firebasestorage.app",

@@ -80,7 +80,7 @@
             <label>Últimos 4 dígitos do telefone<input name="phoneLast4" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required placeholder="0000"></label>
             <label>Personagem desejado<input name="character" maxlength="80" required placeholder="Nome do personagem"></label>
             <label>Obra / fandom<input name="work" maxlength="100" required placeholder="Anime, série, jogo..."></label>
-            <label>Link da foto (opcional)<input name="photoUrl" type="url" placeholder="https://..."></label>
+            <label>Foto do personagem (opcional)<input name="photoFile" type="file" accept="image/*"></label>
           </div>
           <label class="check-line"><input type="checkbox" name="agree" required> Confirmo que as informações estão corretas.</label>
           <button class="btn btn-primary" type="submit">Enviar ficha 🍊</button>
@@ -94,8 +94,8 @@
             <label>Obra atual<input name="oldWork" maxlength="100" required placeholder="Obra / fandom"></label>
             <label>Novo personagem desejado<input name="newCharacter" maxlength="80" required placeholder="Novo personagem"></label>
             <label>Nova obra / fandom<input name="newWork" maxlength="100" required placeholder="Obra / fandom"></label>
-            <label>Link da foto atual (opcional)<input name="oldPhotoUrl" type="url" placeholder="https://..."></label>
-            <label>Link da nova foto (opcional)<input name="newPhotoUrl" type="url" placeholder="https://..."></label>
+            <label>Foto atual (opcional)<input name="oldPhotoFile" type="file" accept="image/*"></label>
+            <label>Foto do novo personagem (opcional)<input name="newPhotoFile" type="file" accept="image/*"></label>
           </div>
           <label class="check-line"><input type="checkbox" name="agree" required> Entendo que a troca depende de aprovação.</label>
           <button class="btn btn-primary" type="submit">Enviar solicitação ↗</button>
