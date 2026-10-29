@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f28c28"><title>Administração • House LTD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+  <div class="video-bg" aria-hidden="true"><video autoplay muted loop playsinline><source src="Fundo.mp4" type="video/mp4"></video></div><div class="bg-wash"></div>
+  <header class="topbar wrap"><a class="brand" href="index.html"><span class="brand-fruit">🍊</span><span>HOUSE <b>LTD</b><small>PAINEL ADMINISTRATIVO</small></span></a><a class="btn btn-light btn-small" href="index.html">← Voltar ao início</a></header>
+  <main class="wrap admin-main">
+    <section id="loginPanel" class="login-card">
+      <span class="eyebrow">ÁREA RESTRITA</span><h1>Entrada da administração</h1><p>Informe o código compartilhado e o nome pelo qual você será identificado nos registros.</p>
+      <form id="loginForm">
+        <label>Seu nome<input name="adminName" maxlength="60" required placeholder="Nome do ADM"></label>
+        <label>Código de acesso<input name="accessCode" type="password" autocomplete="current-password" required placeholder="Código compartilhado"></label>
+        <button class="btn btn-primary" type="submit">Entrar no painel ↗</button>
+      </form>
+      <div id="loginMessage" class="message" hidden></div>
+      <p class="security-note">Atenção: um código escrito no JavaScript público não é uma proteção segura. Este modelo usa uma lista de administradores autorizados no Firestore; configure a autorização conforme o README antes de usar dados reais.</p>
+    </section>
+
+    <section id="dashboard" hidden>
+      <div class="admin-welcome"><div><span class="eyebrow">CENTRAL DE CONTROLE</span><h1>Olá, <span id="adminNameDisplay">ADM</span> 🍊</h1><p>Gerencie as fichas e mantenha o pomar organizado.</p></div><button id="logoutButton" class="btn btn-light btn-small">Sair</button></div>
+      <div class="admin-tabs"><button class="tab active" data-tab="requests">Solicitações</button><button class="tab" data-tab="exchanges">Trocas</button><button class="tab" data-tab="vacancies">Vagas</button></div>
+      <div id="adminMessage" class="message" hidden></div>
+      <section id="tab-requests" class="admin-panel"><div class="panel-heading"><h2>Fichas de recepção</h2><button class="btn btn-light btn-small" data-refresh>Atualizar ↻</button></div><div id="requestsList" class="request-list"><div class="empty-state">Carregando...</div></div></section>
+      <section id="tab-exchanges" class="admin-panel" hidden><div class="panel-heading"><h2>Solicitações de troca</h2><button class="btn btn-light btn-small" data-refresh>Atualizar ↻</button></div><div id="exchangesList" class="request-list"><div class="empty-state">Carregando...</div></div></section>
+      <section id="tab-vacancies" class="admin-panel" hidden>
+        <div class="panel-heading"><h2>Gerenciar vagas</h2></div>
+        <form id="vacancyForm" class="vacancy-form"><label>Personagem<input name="character" required maxlength="80" placeholder="Nome do personagem"></label><label>Obra / fandom<input name="work" required maxlength="100" placeholder="Obra"></label><label>Disponibilidade<select name="open"><option value="true">Aberta</option><option value="false">Fechada / ocupada</option></select></label><button class="btn btn-primary" type="submit">Adicionar vaga +</button></form>
+        <div id="adminVacanciesList" class="request-list"></div>
+      </section>
+    </section>
+  </main>
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

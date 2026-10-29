@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/adminProfiles/$(request.auth.uid))
+        && get(/databases/$(database)/documents/adminProfiles/$(request.auth.uid)).data.active == true;
+    }
+    function validPhoneLast4(data) {
+      return data.phoneLast4 is string && data.phoneLast4.matches('^[0-9]{4}$');
+    }
+    function safeOptionalUrl(data, key) {
+      return !(key in data) || data[key] == '' ||
+        (data[key] is string && data[key].size() <= 600 && data[key].matches('^https?://.*'));
+    }
+
+    // Public site: visitors may submit new requests, but may not read or alter them.
+    match /characterRequests/{requestId} {
+      allow create: if signedIn()
+        && request.resource.data.type == 'reception'
+        && request.resource.data.status == 'pending'
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 60
+        && request.resource.data.age is int && request.resource.data.age >= 13 && request.resource.data.age <= 99
+        && validPhoneLast4(request.resource.data)
+        && request.resource.data.character is string && request.resource.data.character.size() > 0 && request.resource.data.character.size() <= 80
+        && request.resource.data.work is string && request.resource.data.work.size() > 0 && request.resource.data.work.size() <= 100
+        && safeOptionalUrl(request.resource.data, 'photoUrl');
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /exchangeRequests/{requestId} {
+      allow create: if signedIn()
+        && request.resource.data.type == 'exchange'
+        && request.resource.data.status == 'pending'
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 60
+        && validPhoneLast4(request.resource.data)
+        && request.resource.data.oldCharacter is string && request.resource.data.oldCharacter.size() > 0
+        && request.resource.data.oldWork is string && request.resource.data.oldWork.size() > 0
+        && request.resource.data.newCharacter is string && request.resource.data.newCharacter.size() > 0
+        && request.resource.data.newWork is string && request.resource.data.newWork.size() > 0
+        && safeOptionalUrl(request.resource.data, 'oldPhotoUrl')
+        && safeOptionalUrl(request.resource.data, 'newPhotoUrl');
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /vagas/{vacancyId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /members/{memberId} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    match /adminProfiles/{uid} {
+      // Admins cannot grant themselves access; provision profiles manually in console.
+      allow read: if signedIn() && request.auth.uid == uid || isAdmin();
+      allow write: if false;
+    }
+
+    match /accessLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    match /adminChat/{messageId} {
+      allow read, create: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // Default-deny everything not explicitly listed above.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
