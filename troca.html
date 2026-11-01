@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f28a24"><title>Troca • House LTD</title><link rel="stylesheet" href="style.css"></head>
+<body><header class="topbar"><a class="brand" href="index.html">🍊 HOUSE LTD</a><button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">☰</button><nav id="mainNav"><a href="index.html">Início</a><a href="ficha.html">Ficha</a><a class="active" href="troca.html">Troca</a><a href="sobre.html">Sobre</a><a href="admin.html">Administração</a></nav></header>
+<main class="page narrow"><p class="eyebrow">ATUALIZAÇÃO DE PERSONAGEM</p><h1>Solicitar troca</h1><p class="muted">A troca só será realizada depois da aprovação da administração. Sua vaga atual continua reservada enquanto o pedido estiver pendente.</p>
+<form id="swapForm" class="panel form-grid">
+<label>Seu nome ou apelido<input name="memberName" maxlength="60" required></label>
+<label>Últimos 4 dígitos do telefone<input name="phoneLast4" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required></label>
+<label>Personagem atual<input name="oldCharacter" maxlength="80" required></label>
+<label>Obra atual<input name="oldWork" maxlength="80" required></label>
+<label>Novo personagem<input name="newCharacter" maxlength="80" required></label>
+<label>Nova obra / fandom<input name="newWork" maxlength="80" required></label>
+<label class="full">Link da imagem nova (opcional)<input name="newPhotoUrl" type="url" placeholder="https://..."></label>
+<label class="full">Motivo da troca (opcional)<textarea name="reason" rows="3" maxlength="500"></textarea></label>
+<div class="full"><button class="btn primary" type="submit">Enviar solicitação</button><p class="form-message" id="formMessage" role="status"></p></div>
+</form></main><footer>HOUSE LTD 🍊</footer><script type="module" src="js/troca.js"></script><script src="js/menu.js"></script></body></html>
